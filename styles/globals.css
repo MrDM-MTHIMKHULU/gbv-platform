@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap');
+
+:root {
+  --ink: #0D0A0B;
+  --deep: #1A0F12;
+  --rose: #C41E3A;
+  --rose-soft: #E8445A;
+  --blush: #F2A0AD;
+  --cream: #FAF6F4;
+  --warm: #F5EDE8;
+  --sand: #E8D8CF;
+  --fog: #B8A8A2;
+  --muted: #7A6A65;
+  --white: #FFFFFF;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+}
