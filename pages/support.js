@@ -1,0 +1,235 @@
+import Head from 'next/head';
+import Layout from '../components/Layout';
+
+export default function SupportPage() {
+  return (
+    <Layout>
+      <Head>
+        <title>Talk to Someone | SafeHaven</title>
+        <meta
+          name="description"
+          content="Free, confidential hotlines and counselling services for GBV survivors in South Africa, available any time."
+        />
+      </Head>
+
+      <section className="page-header">
+        <p className="eyebrow">Talk to someone</p>
+        <h1>You don&apos;t have to carry this alone</h1>
+        <p className="sub">
+          All of the services below are free and confidential. Calls don&apos;t
+          appear as a specific number on some phone bills — if you&apos;re
+          worried about your call history, use Quick Exit and consider
+          calling from a phone your abuser can&apos;t access.
+        </p>
+      </section>
+
+      <section className="urgent">
+        <div className="urgent-card">
+          <p className="urgent-label">In immediate danger</p>
+          <p className="urgent-name">SAPS Emergency</p>
+          <a href="tel:10111" className="urgent-number">10111</a>
+        </div>
+        <div className="urgent-card">
+          <p className="urgent-label">24/7 crisis support &amp; referrals</p>
+          <p className="urgent-name">GBV Command Centre</p>
+          <a href="tel:0800428428" className="urgent-number">0800 428 428</a>
+        </div>
+      </section>
+
+      <section className="content">
+        <div className="group">
+          <h2>Counselling &amp; emotional support</h2>
+          <div className="contact-list">
+            <div className="contact-row">
+              <div>
+                <p className="c-name">Lifeline South Africa</p>
+                <p className="c-desc">24-hour trauma &amp; crisis counselling</p>
+              </div>
+              <a href="tel:0861322322">0861 322 322</a>
+            </div>
+            <div className="contact-row">
+              <div>
+                <p className="c-name">Stop Gender Violence Helpline</p>
+                <p className="c-desc">National helpline for abuse survivors</p>
+              </div>
+              <a href="tel:0800150150">0800 150 150</a>
+            </div>
+            <div className="contact-row">
+              <div>
+                <p className="c-name">TEARS Foundation</p>
+                <p className="c-desc">24/7 GBV crisis line &amp; support</p>
+              </div>
+              <a href="tel:0800083277">0800 083 277</a>
+            </div>
+          </div>
+        </div>
+
+        <div className="group">
+          <h2>Legal &amp; rights support</h2>
+          <div className="contact-list">
+            <div className="contact-row">
+              <div>
+                <p className="c-name">Legal Aid South Africa</p>
+                <p className="c-desc">Free legal advice, weekdays 7am–7pm</p>
+              </div>
+              <a href="tel:0800110110">0800 110 110</a>
+            </div>
+            <div className="contact-row">
+              <div>
+                <p className="c-name">POWA</p>
+                <p className="c-desc">Counselling, legal support &amp; shelter referrals</p>
+              </div>
+              <a href="tel:0766945911">076 694 5911</a>
+            </div>
+          </div>
+        </div>
+
+        <div className="group">
+          <h2>If you&apos;re under 18</h2>
+          <div className="contact-list">
+            <div className="contact-row">
+              <div>
+                <p className="c-name">Childline South Africa</p>
+                <p className="c-desc">
+                  24/7, free, and confidential — for children and teens
+                  facing abuse of any kind
+                </p>
+              </div>
+              <a href="tel:116">116</a>
+            </div>
+          </div>
+          <p className="note">
+            Childline will always try to help you talk to a trusted adult —
+            you won&apos;t be forced to do anything you&apos;re not ready
+            for.
+          </p>
+        </div>
+      </section>
+
+      <style jsx>{`
+        .page-header {
+          max-width: 720px;
+          margin: 0 auto;
+          text-align: center;
+          padding: 70px 24px 40px;
+        }
+        .eyebrow {
+          font-size: 0.8rem;
+          font-weight: 700;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          color: var(--rose);
+          margin-bottom: 18px;
+        }
+        .page-header h1 {
+          font-size: clamp(1.9rem, 4vw, 2.6rem);
+          font-weight: 800;
+          color: var(--ink);
+          margin-bottom: 18px;
+          letter-spacing: -0.02em;
+        }
+        .sub {
+          font-size: 0.98rem;
+          line-height: 1.65;
+          color: var(--muted);
+          max-width: 540px;
+          margin: 0 auto;
+        }
+
+        .urgent {
+          max-width: 700px;
+          margin: 0 auto;
+          padding: 0 24px 50px;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+        .urgent-card {
+          background: var(--rose-deep);
+          color: white;
+          border-radius: 12px;
+          padding: 24px 20px;
+          text-align: center;
+        }
+        .urgent-label {
+          font-size: 0.72rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          color: var(--blush);
+          margin-bottom: 10px;
+        }
+        .urgent-name {
+          font-size: 0.95rem;
+          font-weight: 600;
+          margin-bottom: 10px;
+        }
+        .urgent-number {
+          font-size: 1.5rem;
+          font-weight: 800;
+          color: white;
+          text-decoration: none;
+        }
+
+        .content {
+          max-width: 700px;
+          margin: 0 auto;
+          padding: 0 24px 90px;
+        }
+        .group {
+          margin-bottom: 44px;
+        }
+        .group h2 {
+          font-size: 1.15rem;
+          font-weight: 800;
+          color: var(--ink);
+          margin-bottom: 16px;
+        }
+        .contact-list {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .contact-row {
+          background: var(--warm);
+          border-radius: 10px;
+          padding: 16px 20px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          flex-wrap: wrap;
+        }
+        .c-name {
+          font-size: 0.95rem;
+          font-weight: 700;
+          color: var(--ink);
+          margin-bottom: 3px;
+        }
+        .c-desc {
+          font-size: 0.82rem;
+          color: var(--muted);
+        }
+        .contact-row a {
+          font-size: 1.05rem;
+          font-weight: 800;
+          color: var(--rose-deep);
+          text-decoration: none;
+          white-space: nowrap;
+        }
+        .note {
+          font-size: 0.85rem;
+          color: var(--muted);
+          margin-top: 12px;
+          line-height: 1.6;
+        }
+
+        @media (max-width: 600px) {
+          .urgent {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+    </Layout>
+  );
+}
