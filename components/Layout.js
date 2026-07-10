@@ -1,31 +1,43 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useTranslation } from 'next-i18next';
 import QuickExitButton from './QuickExitButton';
 
 export default function Layout({ children }) {
+  const { t } = useTranslation('common');
+  const router = useRouter();
+
+  const changeLanguage = (e) => {
+    const locale = e.target.value;
+    router.push(router.pathname, router.asPath, { locale });
+  };
+
   return (
     <>
-      <QuickExitButton />
+      <QuickExitButton label={t('quick_exit')} />
 
       <div className="e-bar">
-        <span>In immediate danger?</span>
+        <span>{t('emergency_prompt')}</span>
         <a href="tel:10111">SAPS 10111</a>
         <span className="e-divider">·</span>
-        <a href="tel:0800428428">GBV Command Centre 0800 428 428</a>
+        <a href="tel:0800428428">{t('emergency_gbv')}</a>
       </div>
 
       <nav>
         <Link href="/" className="logo">SafeHaven</Link>
         <ul className="nav-links">
-          <li><Link href="/map">Find help</Link></li>
-          <li><Link href="/rights">Your rights</Link></li>
-          <li><Link href="/support">Support</Link></li>
+          <li><Link href="/map">{t('nav_find_help')}</Link></li>
+          <li><Link href="/rights">{t('nav_rights')}</Link></li>
+          <li><Link href="/support">{t('nav_support')}</Link></li>
           <li>
-            <select aria-label="Choose language" className="lang-select">
-              <option>English</option>
-              <option>isiZulu</option>
-              <option>isiXhosa</option>
-              <option>Afrikaans</option>
-              <option>Sesotho</option>
+            <select
+              aria-label="Choose language"
+              className="lang-select"
+              value={router.locale}
+              onChange={changeLanguage}
+            >
+              <option value="en">English</option>
+              <option value="zu">isiZulu</option>
             </select>
           </li>
         </ul>
@@ -37,26 +49,23 @@ export default function Layout({ children }) {
         <div className="footer-top">
           <div className="footer-brand">
             <p className="footer-logo">SafeHaven</p>
-            <p className="footer-tagline">
-              Centralised GBV information and support, built for South
-              African women and girls.
-            </p>
+            <p className="footer-tagline">{t('footer_tagline')}</p>
           </div>
           <div className="footer-col">
-            <p className="footer-heading">Support</p>
-            <Link href="/map">Find a shelter</Link>
-            <Link href="/rights">Your legal rights</Link>
-            <Link href="/support">Talk to someone</Link>
+            <p className="footer-heading">{t('footer_heading_support')}</p>
+            <Link href="/map">{t('footer_find_shelter')}</Link>
+            <Link href="/rights">{t('footer_legal_rights')}</Link>
+            <Link href="/support">{t('footer_talk')}</Link>
           </div>
           <div className="footer-col">
-            <p className="footer-heading">Platform</p>
-            <Link href="/about-abuse">About abuse</Link>
-            <Link href="/">Languages</Link>
-            <Link href="/">About SafeHaven</Link>
+            <p className="footer-heading">{t('footer_heading_platform')}</p>
+            <Link href="/about-abuse">{t('footer_about_abuse')}</Link>
+            <Link href="/">{t('footer_languages')}</Link>
+            <Link href="/">{t('footer_about')}</Link>
           </div>
         </div>
         <div className="footer-bottom">
-          <span>SafeHaven · Built for South African women and girls</span>
+          <span>{t('footer_bottom')}</span>
           <span className="footer-emergency">GBV Command Centre: 0800 428 428</span>
         </div>
       </footer>
