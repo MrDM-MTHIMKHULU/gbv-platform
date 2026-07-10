@@ -18,7 +18,6 @@ export default function QuickExitButton() {
           color: white;
           border: none;
           padding: 10px 20px;
-          font-family: 'Syne', sans-serif;
           font-weight: 700;
           font-size: 0.75rem;
           letter-spacing: 0.1em;
