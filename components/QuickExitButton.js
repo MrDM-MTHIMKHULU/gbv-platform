@@ -1,4 +1,4 @@
-export default function QuickExitButton() {
+export default function QuickExitButton({ label = 'Quick Exit' }) {
   const handleExit = () => {
     window.location.replace('https://www.google.com');
   };
@@ -6,7 +6,7 @@ export default function QuickExitButton() {
   return (
     <>
       <button onClick={handleExit} aria-label="Quick exit - leave this site immediately">
-        Quick Exit
+        {label}
       </button>
       <style jsx>{`
         button {
