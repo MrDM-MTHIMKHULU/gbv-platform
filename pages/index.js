@@ -1,8 +1,12 @@
 import Head from 'next/head';
 import Link from 'next/link';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 import Layout from '../components/Layout';
 
 export default function Home() {
+  const { t } = useTranslation('common');
+
   return (
     <Layout>
       <Head>
@@ -14,96 +18,84 @@ export default function Home() {
       </Head>
 
       <section className="hero">
-        <p className="eyebrow">Free · Confidential · Available in 5 languages</p>
+        <p className="eyebrow">{t('hero_eyebrow')}</p>
         <h1>
-          Support for women and girls,
-          <span> when you need it most.</span>
+          {t('hero_title_1')}
+          <span> {t('hero_title_2')}</span>
         </h1>
-        <p className="hero-desc">
-          SafeHaven brings shelters, legal guidance, and someone to talk to into
-          one place — built for South Africa, in the languages you speak.
-        </p>
+        <p className="hero-desc">{t('hero_desc')}</p>
         <div className="hero-actions">
-          <Link href="/map" className="btn-primary">Find help near me</Link>
-          <Link href="/rights" className="btn-secondary">Know your rights</Link>
+          <Link href="/map" className="btn-primary">{t('hero_btn_map')}</Link>
+          <Link href="/rights" className="btn-secondary">{t('hero_btn_rights')}</Link>
         </div>
       </section>
 
       <section className="stats">
         <div className="stat">
           <p className="stat-num">127+</p>
-          <p className="stat-label">Verified shelters &amp; services listed</p>
+          <p className="stat-label">{t('stat_shelters')}</p>
         </div>
         <div className="stat">
           <p className="stat-num">9</p>
-          <p className="stat-label">Provinces covered</p>
+          <p className="stat-label">{t('stat_provinces')}</p>
         </div>
         <div className="stat">
           <p className="stat-num">5</p>
-          <p className="stat-label">South African languages</p>
+          <p className="stat-label">{t('stat_languages')}</p>
         </div>
         <div className="stat">
           <p className="stat-num">24/7</p>
-          <p className="stat-label">Emergency numbers, always visible</p>
+          <p className="stat-label">{t('stat_available')}</p>
         </div>
       </section>
 
       <section className="how">
-        <h2>How SafeHaven helps</h2>
+        <h2>{t('how_title')}</h2>
         <div className="how-grid">
           <div className="how-step">
             <p className="how-num">01</p>
-            <p className="how-title">Find services near you</p>
-            <p className="how-text">
-              Search shelters, clinics, and legal aid offices by province and
-              see exactly what each one offers before you go.
-            </p>
+            <p className="how-title">{t('how_1_title')}</p>
+            <p className="how-text">{t('how_1_text')}</p>
           </div>
           <div className="how-step">
             <p className="how-num">02</p>
-            <p className="how-title">Understand your options</p>
-            <p className="how-text">
-              Plain-language guides explain protection orders, reporting
-              abuse, and what South African law allows you to do.
-            </p>
+            <p className="how-title">{t('how_2_title')}</p>
+            <p className="how-text">{t('how_2_text')}</p>
           </div>
           <div className="how-step">
             <p className="how-num">03</p>
-            <p className="how-title">Get support, safely</p>
-            <p className="how-text">
-              Everything on this site can be closed instantly with Quick
-              Exit, and nothing here is stored or tracked.
-            </p>
+            <p className="how-title">{t('how_3_title')}</p>
+            <p className="how-text">{t('how_3_text')}</p>
           </div>
         </div>
       </section>
 
       <section className="resources">
-        <h2>Where to start</h2>
+        <h2>{t('resources_title')}</h2>
         <div className="resource-grid">
           <Link href="/about-abuse" className="resource-card resource-rose">
-            <p className="resource-title">Is this abuse?</p>
-            <p className="resource-sub">Recognise the signs of different forms of abuse</p>
+            <p className="resource-title">{t('resource_abuse_title')}</p>
+            <p className="resource-sub">{t('resource_abuse_sub')}</p>
           </Link>
           <Link href="/map" className="resource-card resource-teal">
-            <p className="resource-title">Shelters near me</p>
-            <p className="resource-sub">An interactive map of verified services by province</p>
+            <p className="resource-title">{t('resource_map_title')}</p>
+            <p className="resource-sub">{t('resource_map_sub')}</p>
           </Link>
           <Link href="/rights" className="resource-card resource-plum">
-            <p className="resource-title">Protection orders</p>
-            <p className="resource-sub">A step-by-step guide to applying, free of charge</p>
+            <p className="resource-title">{t('resource_rights_title')}</p>
+            <p className="resource-sub">{t('resource_rights_sub')}</p>
           </Link>
           <Link href="/support" className="resource-card resource-rose">
-            <p className="resource-title">Talk to someone</p>
-            <p className="resource-sub">Hotlines and counselling services, any time of day</p>
+            <p className="resource-title">{t('resource_support_title')}</p>
+            <p className="resource-sub">{t('resource_support_sub')}</p>
           </Link>
         </div>
       </section>
 
       <section className="cta">
-        <h2>You don&apos;t have to figure this out alone.</h2>
-        <p>Everything on SafeHaven is free, confidential, and built to work even on a slow connection.</p>
-        <Link href="/map" className="btn-primary">Start here</Link>
+        <h2>{t('cta_title')}</h2>
+        <p>{t('cta_desc')}</p>
+        <Link href="/map" className="btn-primary">{t('cta_btn')}</Link>
       </section>
 
       <style jsx>{`
@@ -309,4 +301,12 @@ export default function Home() {
       `}</style>
     </Layout>
   );
+}
+
+export async function getStaticProps({ locale }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
 }
