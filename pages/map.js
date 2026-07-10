@@ -24,11 +24,12 @@ export default function MapPage() {
       <section className="map-wrap">
         <iframe
           title="SafeHaven service map"
-          src="REPLACE_WITH_YOUR_LOOKER_STUDIO_EMBED_URL"
+          src="https://datastudio.google.com/embed/reporting/40f1ad2b-8328-4089-9158-2be5908979b5/page/Nfb3F"
           width="100%"
           height="600"
           frameBorder="0"
           allowFullScreen
+          sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
         />
       </section>
 
