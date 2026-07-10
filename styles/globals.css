@@ -1,17 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --ink: #0D0A0B;
-  --deep: #1A0F12;
-  --rose: #C41E3A;
-  --rose-soft: #E8445A;
-  --blush: #F2A0AD;
-  --cream: #FAF6F4;
-  --warm: #F5EDE8;
-  --sand: #E8D8CF;
-  --fog: #B8A8A2;
-  --muted: #7A6A65;
-  --white: #FFFFFF;
+  --ink: #1a1523;
+  --plum: #4a2545;
+  --rose: #c2185b;
+  --rose-deep: #8e1046;
+  --blush: #fce4ec;
+  --cream: #fdf9f7;
+  --warm: #f7eef0;
+  --sand: #e8d9de;
+  --muted: #7a6d75;
+  --teal: #0f6e63;
+  --teal-light: #e3f3f0;
+  --white: #ffffff;
 }
 
 * {
@@ -25,7 +26,7 @@ html {
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--cream);
   color: var(--ink);
 }
