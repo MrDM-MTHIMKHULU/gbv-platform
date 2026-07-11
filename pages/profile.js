@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Layout from '../components/Layout';
+import EmergencyAlert from '../components/EmergencyAlert';
 import { supabase } from '../lib/supabaseClient';
 
 const PROVINCES = [
@@ -34,6 +35,7 @@ export default function ProfilePage() {
   const [province, setProvince] = useState('');
   const [language, setLanguage] = useState('en');
   const [phone, setPhone] = useState('');
+  const [emergencyContact, setEmergencyContact] = useState(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -52,6 +54,11 @@ export default function ProfilePage() {
       setProvince(meta.province || '');
       setLanguage(meta.preferred_language || 'en');
       setPhone(meta.phone || '');
+      setEmergencyContact({
+        name: meta.emergency_contact_name || '',
+        phone: meta.emergency_contact_phone || '',
+        email: meta.emergency_contact_email || '',
+      });
       setLoading(false);
     });
   }, [router]);
@@ -176,6 +183,8 @@ export default function ProfilePage() {
               {saving ? 'Saving…' : 'Save changes'}
             </button>
           </form>
+
+          <EmergencyAlert initialContacts={emergencyContact} />
         </div>
       </section>
 
