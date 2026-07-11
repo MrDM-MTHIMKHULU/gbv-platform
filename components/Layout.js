@@ -1,15 +1,35 @@
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import QuickExitButton from './QuickExitButton';
+import { supabase } from '../lib/supabaseClient';
 
 export default function Layout({ children }) {
   const { t } = useTranslation('common');
   const router = useRouter();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => listener.subscription.unsubscribe();
+  }, []);
 
   const changeLanguage = (e) => {
     const locale = e.target.value;
     router.push(router.pathname, router.asPath, { locale });
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/');
   };
 
   return (
@@ -29,6 +49,16 @@ export default function Layout({ children }) {
           <li><Link href="/map">{t('nav_find_help')}</Link></li>
           <li><Link href="/rights">{t('nav_rights')}</Link></li>
           <li><Link href="/support">{t('nav_support')}</Link></li>
+          <li><Link href="/chat">Chat</Link></li>
+          {user ? (
+            <li>
+              <button className="auth-btn" onClick={handleLogout}>Log out</button>
+            </li>
+          ) : (
+            <li>
+              <Link href="/login" className="auth-link">Log in</Link>
+            </li>
+          )}
           <li>
             <select
               aria-label="Choose language"
@@ -114,7 +144,7 @@ export default function Layout({ children }) {
         }
         .nav-links {
           display: flex;
-          gap: 28px;
+          gap: 24px;
           list-style: none;
           align-items: center;
         }
@@ -123,6 +153,19 @@ export default function Layout({ children }) {
           color: var(--muted);
           font-size: 0.9rem;
           font-weight: 600;
+        }
+        .auth-link {
+          color: var(--rose-deep) !important;
+        }
+        .auth-btn {
+          background: none;
+          border: 1px solid var(--sand);
+          border-radius: 6px;
+          padding: 6px 14px;
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--ink);
+          cursor: pointer;
         }
         .lang-select {
           background: var(--blush);
@@ -194,7 +237,7 @@ export default function Layout({ children }) {
             grid-template-columns: 1fr;
           }
           .nav-links {
-            gap: 14px;
+            gap: 12px;
           }
         }
       `}</style>
