@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
-export default function EmergencyAlert({ initialContacts, onSaved }) {
+export default function EmergencyAlert({ initialContacts, senderName, onSaved }) {
   const [contactName, setContactName] = useState(initialContacts?.name || '');
   const [contactPhone, setContactPhone] = useState(initialContacts?.phone || '');
   const [contactEmail, setContactEmail] = useState(initialContacts?.email || '');
@@ -47,8 +47,10 @@ export default function EmergencyAlert({ initialContacts, onSaved }) {
     setStatus('');
 
     const finish = async (mapLink) => {
+      const name = senderName?.trim() || 'Someone using SafeHaven';
+
       if (method === 'sms') {
-        const message = `I need help. This isn\u2019t a test.${
+        const message = `${name} needs help. This isn\u2019t a test.${
           mapLink ? ` My location: ${mapLink}` : ''
         }`;
         window.location.href = `sms:${contactPhone}?body=${encodeURIComponent(message)}`;
@@ -61,7 +63,7 @@ export default function EmergencyAlert({ initialContacts, onSaved }) {
         const res = await fetch('/api/send-alert', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contactEmail, mapLink }),
+          body: JSON.stringify({ contactEmail, mapLink, senderName: name }),
         });
         const data = await res.json();
         if (data.sent) {
