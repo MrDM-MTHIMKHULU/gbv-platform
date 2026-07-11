@@ -46,35 +46,46 @@ export default function EmergencyAlert({ initialContacts, onSaved }) {
     setLocating(true);
     setStatus('');
 
-    const composeMessage = (locationText) =>
-      `I need help. This isn\u2019t a test.${locationText}`;
-
-    const openWithLocation = (locationText) => {
-      const message = composeMessage(locationText);
+    const finish = async (mapLink) => {
       if (method === 'sms') {
+        const message = `I need help. This isn\u2019t a test.${
+          mapLink ? ` My location: ${mapLink}` : ''
+        }`;
         window.location.href = `sms:${contactPhone}?body=${encodeURIComponent(message)}`;
-      } else {
-        window.location.href = `mailto:${contactEmail}?subject=${encodeURIComponent(
-          'I need help'
-        )}&body=${encodeURIComponent(message)}`;
+        setLocating(false);
+        return;
+      }
+
+      // Automatic email — sent from the server, no app opens
+      try {
+        const res = await fetch('/api/send-alert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contactEmail, mapLink }),
+        });
+        const data = await res.json();
+        if (data.sent) {
+          setStatus('Alert sent.');
+        } else {
+          setStatus('Could not send the alert. Please try again.');
+        }
+      } catch {
+        setStatus('Could not send the alert. Please try again.');
       }
       setLocating(false);
     };
 
     if (!navigator.geolocation) {
-      openWithLocation('');
+      finish(null);
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        const mapLink = `https://maps.google.com/?q=${latitude},${longitude}`;
-        openWithLocation(` My location: ${mapLink}`);
+        finish(`https://maps.google.com/?q=${latitude},${longitude}`);
       },
-      () => {
-        openWithLocation(' (I couldn\u2019t share my location \u2014 please try calling me.)');
-      },
+      () => finish(null),
       { timeout: 8000 }
     );
   };
@@ -84,9 +95,10 @@ export default function EmergencyAlert({ initialContacts, onSaved }) {
       <p className="eyebrow">Emergency alert</p>
       <h2>Trusted contact</h2>
       <p className="note">
-        Save someone you trust below. If you ever need to, the button will
-        open a pre-filled message with your location for you to send \u2014
-        nothing is sent automatically or without you tapping send yourself.
+        Save someone you trust below. &quot;Text my location&quot; opens your
+        messages app so you confirm before sending. &quot;Email my
+        location&quot; sends automatically the moment you tap it \u2014 make
+        sure that\u2019s really what you want before you press it.
       </p>
 
       <form onSubmit={handleSaveContact}>
