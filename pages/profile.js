@@ -184,7 +184,7 @@ export default function ProfilePage() {
             </button>
           </form>
 
-          <EmergencyAlert initialContacts={emergencyContact} />
+          <EmergencyAlert initialContacts={emergencyContact} senderName={fullName} />
         </div>
       </section>
 
