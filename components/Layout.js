@@ -51,9 +51,14 @@ export default function Layout({ children }) {
           <li><Link href="/support">{t('nav_support')}</Link></li>
           <li><Link href="/chat">Chat</Link></li>
           {user ? (
-            <li>
-              <button className="auth-btn" onClick={handleLogout}>Log out</button>
-            </li>
+            <>
+              <li>
+                <Link href="/profile" className="auth-link">Profile</Link>
+              </li>
+              <li>
+                <button className="auth-btn" onClick={handleLogout}>Log out</button>
+              </li>
+            </>
           ) : (
             <li>
               <Link href="/login" className="auth-link">Log in</Link>
