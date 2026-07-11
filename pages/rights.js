@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Link from 'next/link';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Layout from '../components/Layout';
 
@@ -21,6 +22,9 @@ export default function RightsPage() {
           situation. For free legal help, call Legal Aid South Africa on{' '}
           <a href="tel:0800110110">0800 110 110</a> (weekdays, 7am–7pm).
         </p>
+        <Link href="/wizard" className="wizard-cta">
+          Not sure where to start? Answer 5 quick questions →
+        </Link>
       </section>
 
       <section className="content">
@@ -155,6 +159,17 @@ export default function RightsPage() {
         .sub :global(a) {
           color: var(--rose-deep);
           font-weight: 700;
+        }
+        .wizard-cta {
+          display: inline-block;
+          margin-top: 22px;
+          background: var(--rose);
+          color: white;
+          padding: 12px 24px;
+          border-radius: 8px;
+          font-size: 0.9rem;
+          font-weight: 700;
+          text-decoration: none;
         }
 
         .content {
