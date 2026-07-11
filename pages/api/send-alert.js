@@ -9,9 +9,11 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing contact email' });
   }
 
+  const name = senderName?.trim() || 'Someone using SafeHaven';
+
   const bodyText = mapLink
-    ? `${senderName || 'Someone using SafeHaven'} needs help. This isn't a test.\n\nTheir location: ${mapLink}`
-    : `${senderName || 'Someone using SafeHaven'} needs help. This isn't a test.\n\nLocation could not be determined — please try calling them.`;
+    ? `${name} needs help. This isn't a test.\n\nTheir location: ${mapLink}`
+    : `${name} needs help. This isn't a test.\n\nLocation could not be determined — please try calling them.`;
 
   try {
     const response = await fetch('https://api.resend.com/emails', {
@@ -23,7 +25,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         from: 'SafeHaven Alerts <alerts@resend.dev>',
         to: [contactEmail],
-        subject: 'I need help',
+        subject: `URGENT: ${name} needs help`,
         text: bodyText,
       }),
     });
