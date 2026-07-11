@@ -1,11 +1,28 @@
+import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 import Layout from '../components/Layout';
+import { supabase } from '../lib/supabaseClient';
 
 export default function Home() {
   const { t } = useTranslation('common');
+  const [ageGroup, setAgeGroup] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setAgeGroup(data.user?.user_metadata?.age_group ?? null);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setAgeGroup(session?.user?.user_metadata?.age_group ?? null);
+    });
+
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  const isGirl = ageGroup === 'under18';
 
   return (
     <Layout>
@@ -17,18 +34,36 @@ export default function Home() {
         />
       </Head>
 
-      <section className="hero">
-        <p className="eyebrow">{t('hero_eyebrow')}</p>
-        <h1>
-          {t('hero_title_1')}
-          <span> {t('hero_title_2')}</span>
-        </h1>
-        <p className="hero-desc">{t('hero_desc')}</p>
-        <div className="hero-actions">
-          <Link href="/map" className="btn-primary">{t('hero_btn_map')}</Link>
-          <Link href="/rights" className="btn-secondary">{t('hero_btn_rights')}</Link>
-        </div>
-      </section>
+      {isGirl ? (
+        <section className="hero">
+          <p className="eyebrow">A safe, private space for you</p>
+          <h1>
+            Something doesn&apos;t feel right?
+            <span> You deserve to feel safe.</span>
+          </h1>
+          <p className="hero-desc">
+            Learn what abuse can look like, get support finding a trusted
+            adult to talk to, and know that none of this is your fault.
+          </p>
+          <div className="hero-actions">
+            <Link href="/about-abuse" className="btn-primary">Is this abuse?</Link>
+            <Link href="/support" className="btn-secondary">Talk to someone</Link>
+          </div>
+        </section>
+      ) : (
+        <section className="hero">
+          <p className="eyebrow">{t('hero_eyebrow')}</p>
+          <h1>
+            {t('hero_title_1')}
+            <span> {t('hero_title_2')}</span>
+          </h1>
+          <p className="hero-desc">{t('hero_desc')}</p>
+          <div className="hero-actions">
+            <Link href="/map" className="btn-primary">{t('hero_btn_map')}</Link>
+            <Link href="/rights" className="btn-secondary">{t('hero_btn_rights')}</Link>
+          </div>
+        </section>
+      )}
 
       <section className="stats">
         <div className="stat">
@@ -70,27 +105,51 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="resources">
-        <h2>{t('resources_title')}</h2>
-        <div className="resource-grid">
-          <Link href="/about-abuse" className="resource-card resource-rose">
-            <p className="resource-title">{t('resource_abuse_title')}</p>
-            <p className="resource-sub">{t('resource_abuse_sub')}</p>
-          </Link>
-          <Link href="/map" className="resource-card resource-teal">
-            <p className="resource-title">{t('resource_map_title')}</p>
-            <p className="resource-sub">{t('resource_map_sub')}</p>
-          </Link>
-          <Link href="/rights" className="resource-card resource-plum">
-            <p className="resource-title">{t('resource_rights_title')}</p>
-            <p className="resource-sub">{t('resource_rights_sub')}</p>
-          </Link>
-          <Link href="/support" className="resource-card resource-rose">
-            <p className="resource-title">{t('resource_support_title')}</p>
-            <p className="resource-sub">{t('resource_support_sub')}</p>
-          </Link>
-        </div>
-      </section>
+      {isGirl ? (
+        <section className="resources">
+          <h2>Where to start</h2>
+          <div className="resource-grid">
+            <Link href="/about-abuse" className="resource-card resource-rose">
+              <p className="resource-title">Is this abuse?</p>
+              <p className="resource-sub">Learn to recognise the signs</p>
+            </Link>
+            <Link href="/support" className="resource-card resource-teal">
+              <p className="resource-title">Talk to Childline</p>
+              <p className="resource-sub">Free, confidential, and here for you — 116</p>
+            </Link>
+            <Link href="/chat" className="resource-card resource-plum">
+              <p className="resource-title">Ask a question</p>
+              <p className="resource-sub">Chat privately with our assistant</p>
+            </Link>
+            <Link href="/support" className="resource-card resource-rose">
+              <p className="resource-title">Find a trusted adult</p>
+              <p className="resource-sub">You don&apos;t have to handle this alone</p>
+            </Link>
+          </div>
+        </section>
+      ) : (
+        <section className="resources">
+          <h2>{t('resources_title')}</h2>
+          <div className="resource-grid">
+            <Link href="/about-abuse" className="resource-card resource-rose">
+              <p className="resource-title">{t('resource_abuse_title')}</p>
+              <p className="resource-sub">{t('resource_abuse_sub')}</p>
+            </Link>
+            <Link href="/map" className="resource-card resource-teal">
+              <p className="resource-title">{t('resource_map_title')}</p>
+              <p className="resource-sub">{t('resource_map_sub')}</p>
+            </Link>
+            <Link href="/rights" className="resource-card resource-plum">
+              <p className="resource-title">{t('resource_rights_title')}</p>
+              <p className="resource-sub">{t('resource_rights_sub')}</p>
+            </Link>
+            <Link href="/support" className="resource-card resource-rose">
+              <p className="resource-title">{t('resource_support_title')}</p>
+              <p className="resource-sub">{t('resource_support_sub')}</p>
+            </Link>
+          </div>
+        </section>
+      )}
 
       <section className="cta">
         <h2>{t('cta_title')}</h2>
