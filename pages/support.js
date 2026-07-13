@@ -1,8 +1,46 @@
+import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Layout from '../components/Layout';
+import { supabase } from '../lib/supabaseClient';
 
 export default function SupportPage() {
+  const [ageGroup, setAgeGroup] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setAgeGroup(data.user?.user_metadata?.age_group ?? null);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_e, session) => {
+      setAgeGroup(session?.user?.user_metadata?.age_group ?? null);
+    });
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  const isGirl = ageGroup === 'under18';
+
+  const childlineGroup = (
+    <div className="group">
+      <h2>{isGirl ? 'Start here' : "If you're under 18"}</h2>
+      <div className="contact-list">
+        <div className="contact-row">
+          <div>
+            <p className="c-name">Childline South Africa</p>
+            <p className="c-desc">
+              24/7, free, and confidential — for children and teens
+              facing abuse of any kind
+            </p>
+          </div>
+          <a href="tel:116">116</a>
+        </div>
+      </div>
+      <p className="note">
+        Childline will always try to help you talk to a trusted adult —
+        you won&apos;t be forced to do anything you&apos;re not ready
+        for.
+      </p>
+    </div>
+  );
   return (
     <Layout>
       <Head>
@@ -25,19 +63,38 @@ export default function SupportPage() {
       </section>
 
       <section className="urgent">
-        <div className="urgent-card">
-          <p className="urgent-label">In immediate danger</p>
-          <p className="urgent-name">SAPS Emergency</p>
-          <a href="tel:10111" className="urgent-number">10111</a>
-        </div>
-        <div className="urgent-card">
-          <p className="urgent-label">24/7 crisis support &amp; referrals</p>
-          <p className="urgent-name">GBV Command Centre</p>
-          <a href="tel:0800428428" className="urgent-number">0800 428 428</a>
-        </div>
+        {isGirl ? (
+          <>
+            <div className="urgent-card">
+              <p className="urgent-label">Talk to someone right now</p>
+              <p className="urgent-name">Childline</p>
+              <a href="tel:116" className="urgent-number">116</a>
+            </div>
+            <div className="urgent-card">
+              <p className="urgent-label">In immediate danger</p>
+              <p className="urgent-name">SAPS Emergency</p>
+              <a href="tel:10111" className="urgent-number">10111</a>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="urgent-card">
+              <p className="urgent-label">In immediate danger</p>
+              <p className="urgent-name">SAPS Emergency</p>
+              <a href="tel:10111" className="urgent-number">10111</a>
+            </div>
+            <div className="urgent-card">
+              <p className="urgent-label">24/7 crisis support &amp; referrals</p>
+              <p className="urgent-name">GBV Command Centre</p>
+              <a href="tel:0800428428" className="urgent-number">0800 428 428</a>
+            </div>
+          </>
+        )}
       </section>
 
       <section className="content">
+        {isGirl && childlineGroup}
+
         <div className="group">
           <h2>Counselling &amp; emotional support</h2>
           <div className="contact-list">
@@ -85,26 +142,7 @@ export default function SupportPage() {
           </div>
         </div>
 
-        <div className="group">
-          <h2>If you&apos;re under 18</h2>
-          <div className="contact-list">
-            <div className="contact-row">
-              <div>
-                <p className="c-name">Childline South Africa</p>
-                <p className="c-desc">
-                  24/7, free, and confidential — for children and teens
-                  facing abuse of any kind
-                </p>
-              </div>
-              <a href="tel:116">116</a>
-            </div>
-          </div>
-          <p className="note">
-            Childline will always try to help you talk to a trusted adult —
-            you won&apos;t be forced to do anything you&apos;re not ready
-            for.
-          </p>
-        </div>
+        {!isGirl && childlineGroup}
       </section>
 
       <style jsx>{`
