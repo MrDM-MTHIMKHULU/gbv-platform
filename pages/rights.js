@@ -34,17 +34,23 @@ export default function RightsPage() {
         style={
           isGirl
             ? {
-                '--rose': '#8b5cf6',
-                '--rose-deep': '#6d28d9',
-                '--blush': '#f3e8ff',
-                '--teal': '#0891b2',
+                '--rose': '#f97316',
+                '--rose-deep': '#c2410c',
+                '--blush': '#ffedd5',
+                '--teal': '#eab308',
                 '--teal-light': '#fef9c3',
-                '--warm': '#ffedd5',
-                '--ink': '#312e81',
+                '--warm': '#fed7aa',
+                '--ink': '#7c2d12',
               }
             : undefined
         }
       >
+
+      {isGirl && (
+        <div className="mode-badge">
+          <span>A space made just for you</span>
+        </div>
+      )}
 
       <section className="page-header">
         <p className="eyebrow">Know your rights</p>
@@ -61,12 +67,11 @@ export default function RightsPage() {
 
       {isGirl && (
         <section className="girl-banner">
-          <p className="girl-banner-title">If you&apos;re under 18</p>
+          <p className="girl-banner-title">Real talk if you&apos;re under 18</p>
           <p className="girl-banner-text">
-            You generally can&apos;t apply for a protection order entirely on
-            your own &mdash; a parent, guardian, or another trusted adult
-            usually needs to help you through this process. Childline can
-            help you figure out who that could be, and guide you from there.
+            You can&apos;t usually do the court thing alone &mdash; you&apos;ll
+            need an adult on your side. Sounds annoying, but Childline can
+            help you work out who that could be, fast and privately.
           </p>
           <a href="tel:116" className="girl-banner-link">Call Childline: 116</a>
         </section>
@@ -175,6 +180,21 @@ export default function RightsPage() {
       </div>
 
       <style jsx>{`
+        .mode-badge {
+          text-align: center;
+          padding: 14px 0 0;
+        }
+        .mode-badge span {
+          display: inline-block;
+          background: var(--rose-deep);
+          color: white;
+          font-size: 0.75rem;
+          font-weight: 800;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          padding: 8px 18px;
+          border-radius: 999px;
+        }
         .page-header {
           max-width: 720px;
           margin: 0 auto;
