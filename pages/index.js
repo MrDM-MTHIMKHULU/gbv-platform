@@ -38,28 +38,34 @@ export default function Home() {
         style={
           isGirl
             ? {
-                '--rose': '#8b5cf6',
-                '--rose-deep': '#6d28d9',
-                '--blush': '#f3e8ff',
-                '--teal': '#0891b2',
+                '--rose': '#f97316',
+                '--rose-deep': '#c2410c',
+                '--blush': '#ffedd5',
+                '--teal': '#eab308',
                 '--teal-light': '#fef9c3',
-                '--warm': '#ffedd5',
-                '--ink': '#312e81',
+                '--warm': '#fed7aa',
+                '--ink': '#7c2d12',
               }
             : undefined
         }
       >
 
+      {isGirl && (
+        <div className="mode-badge">
+          <span>A space made just for you</span>
+        </div>
+      )}
+
       {isGirl ? (
         <section className="hero">
-          <p className="eyebrow">A safe, private space for you</p>
+          <p className="eyebrow">Hey, you</p>
           <h1>
-            Something doesn&apos;t feel right?
-            <span> You deserve to feel safe.</span>
+            Something feel off at home?
+            <span> Let&apos;s figure it out together.</span>
           </h1>
           <p className="hero-desc">
-            Learn what abuse can look like, get support finding a trusted
-            adult to talk to, and know that none of this is your fault.
+            No judgment, no pressure. Just clear answers about what abuse
+            can look like and people who&apos;ll actually listen.
           </p>
           <div className="hero-actions">
             <Link href="/about-abuse" className="btn-primary">Is this abuse?</Link>
@@ -123,23 +129,23 @@ export default function Home() {
 
       {isGirl ? (
         <section className="resources">
-          <h2>Where to start</h2>
+          <h2>Pick what you need right now</h2>
           <div className="resource-grid">
             <Link href="/about-abuse" className="resource-card resource-rose">
-              <p className="resource-title">Is this abuse?</p>
-              <p className="resource-sub">Learn to recognise the signs</p>
+              <p className="resource-title">Wait, is this actually abuse?</p>
+              <p className="resource-sub">Some things are sneaky. Let&apos;s check.</p>
             </Link>
             <Link href="/support" className="resource-card resource-teal">
-              <p className="resource-title">Talk to Childline</p>
-              <p className="resource-sub">Free, confidential, and here for you — 116</p>
+              <p className="resource-title">Call Childline</p>
+              <p className="resource-sub">Free, secret, and they get it &mdash; 116</p>
             </Link>
             <Link href="/chat" className="resource-card resource-plum">
-              <p className="resource-title">Ask a question</p>
-              <p className="resource-sub">Chat privately with our assistant</p>
+              <p className="resource-title">Just ask, no pressure</p>
+              <p className="resource-sub">Chat privately, no one else sees it</p>
             </Link>
             <Link href="/support" className="resource-card resource-rose">
-              <p className="resource-title">Find a trusted adult</p>
-              <p className="resource-sub">You don&apos;t have to handle this alone</p>
+              <p className="resource-title">Who can I actually tell?</p>
+              <p className="resource-sub">We&apos;ll help you figure that out</p>
             </Link>
           </div>
         </section>
@@ -176,6 +182,21 @@ export default function Home() {
       </div>
 
       <style jsx>{`
+        .mode-badge {
+          text-align: center;
+          padding: 14px 0 0;
+        }
+        .mode-badge span {
+          display: inline-block;
+          background: var(--rose-deep);
+          color: white;
+          font-size: 0.75rem;
+          font-weight: 800;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          padding: 8px 18px;
+          border-radius: 999px;
+        }
         .hero {
           max-width: 720px;
           margin: 0 auto;
