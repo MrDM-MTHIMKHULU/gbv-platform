@@ -29,6 +29,15 @@ export default function QuickExitButton({ label = 'Quick Exit' }) {
         button:hover {
           background: #9c1530;
         }
+        @media (max-width: 860px) {
+          button {
+            top: 10px;
+            right: 10px;
+            padding: 7px 12px;
+            font-size: 0.65rem;
+            letter-spacing: 0.05em;
+          }
+        }
       `}</style>
     </>
   );
