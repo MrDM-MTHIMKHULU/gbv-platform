@@ -1,9 +1,25 @@
+import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Layout from '../components/Layout';
+import { supabase } from '../lib/supabaseClient';
 
 export default function RightsPage() {
+  const [ageGroup, setAgeGroup] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setAgeGroup(data.user?.user_metadata?.age_group ?? null);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_e, session) => {
+      setAgeGroup(session?.user?.user_metadata?.age_group ?? null);
+    });
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  const isGirl = ageGroup === 'under18';
+
   return (
     <Layout>
       <Head>
@@ -26,6 +42,19 @@ export default function RightsPage() {
           Not sure where to start? Answer 5 quick questions →
         </Link>
       </section>
+
+      {isGirl && (
+        <section className="girl-banner">
+          <p className="girl-banner-title">If you&apos;re under 18</p>
+          <p className="girl-banner-text">
+            You generally can&apos;t apply for a protection order entirely on
+            your own &mdash; a parent, guardian, or another trusted adult
+            usually needs to help you through this process. Childline can
+            help you figure out who that could be, and guide you from there.
+          </p>
+          <a href="tel:116" className="girl-banner-link">Call Childline: 116</a>
+        </section>
+      )}
 
       <section className="content">
         <div className="block">
@@ -168,6 +197,39 @@ export default function RightsPage() {
           padding: 12px 24px;
           border-radius: 8px;
           font-size: 0.9rem;
+          font-weight: 700;
+          text-decoration: none;
+        }
+
+        .girl-banner {
+          max-width: 640px;
+          margin: 0 auto 40px;
+          padding: 22px 26px;
+          background: var(--blush);
+          border-radius: 14px;
+          text-align: center;
+        }
+        .girl-banner-title {
+          font-size: 0.78rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: var(--rose-deep);
+          margin-bottom: 10px;
+        }
+        .girl-banner-text {
+          font-size: 0.92rem;
+          line-height: 1.6;
+          color: var(--ink);
+          margin-bottom: 14px;
+        }
+        .girl-banner-link {
+          display: inline-block;
+          background: var(--rose);
+          color: white;
+          padding: 10px 20px;
+          border-radius: 8px;
+          font-size: 0.85rem;
           font-weight: 700;
           text-decoration: none;
         }
