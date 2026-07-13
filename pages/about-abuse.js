@@ -34,26 +34,32 @@ export default function AboutAbusePage() {
         style={
           isGirl
             ? {
-                '--rose': '#8b5cf6',
-                '--rose-deep': '#6d28d9',
-                '--blush': '#f3e8ff',
-                '--teal': '#0891b2',
+                '--rose': '#f97316',
+                '--rose-deep': '#c2410c',
+                '--blush': '#ffedd5',
+                '--teal': '#eab308',
                 '--teal-light': '#fef9c3',
-                '--warm': '#ffedd5',
-                '--ink': '#312e81',
+                '--warm': '#fed7aa',
+                '--ink': '#7c2d12',
               }
             : undefined
         }
       >
 
+      {isGirl && (
+        <div className="mode-badge">
+          <span>A space made just for you</span>
+        </div>
+      )}
+
       {isGirl ? (
         <section className="page-header">
-          <p className="eyebrow">Is this happening to you?</p>
-          <h1>You&apos;re not imagining it, and it&apos;s not your fault</h1>
+          <p className="eyebrow">Real talk</p>
+          <h1>If it feels wrong, it probably is</h1>
           <p className="sub">
-            Abuse isn&apos;t always hitting or shouting. Sometimes it&apos;s
-            quieter than that. If something here feels familiar, telling a
-            trusted adult is the bravest, safest next step.
+            Yelling isn&apos;t the only kind of abuse. Sometimes it&apos;s
+            quiet, confusing, or makes you feel crazy for noticing. You&apos;re
+            not crazy. Here&apos;s what it can actually look like.
           </p>
         </section>
       ) : (
@@ -137,15 +143,14 @@ export default function AboutAbusePage() {
 
       {isGirl ? (
         <section className="cta">
-          <h2>Telling someone is not overreacting</h2>
+          <h2>Telling someone isn&apos;t snitching</h2>
           <p>
-            A parent, teacher, school counsellor, or Childline &mdash; you
-            don&apos;t have to have all the words figured out first. They can
-            help you from there.
+            A parent, teacher, coach, Childline &mdash; anyone you trust.
+            You don&apos;t need the perfect words. Just start talking.
           </p>
           <div className="cta-actions">
-            <Link href="/support" className="btn-primary">Talk to Childline</Link>
-            <Link href="/chat" className="btn-secondary">Ask a question first</Link>
+            <Link href="/support" className="btn-primary">Call Childline now</Link>
+            <Link href="/chat" className="btn-secondary">Ask first, quietly</Link>
           </div>
         </section>
       ) : (
@@ -166,6 +171,21 @@ export default function AboutAbusePage() {
       </div>
 
       <style jsx>{`
+        .mode-badge {
+          text-align: center;
+          padding: 14px 0 0;
+        }
+        .mode-badge span {
+          display: inline-block;
+          background: var(--rose-deep);
+          color: white;
+          font-size: 0.75rem;
+          font-weight: 800;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          padding: 8px 18px;
+          border-radius: 999px;
+        }
         .page-header {
           max-width: 720px;
           margin: 0 auto;
