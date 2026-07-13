@@ -1,9 +1,25 @@
+import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Link from 'next/link';
 import Layout from '../components/Layout';
+import { supabase } from '../lib/supabaseClient';
 
 export default function AboutAbusePage() {
+  const [ageGroup, setAgeGroup] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setAgeGroup(data.user?.user_metadata?.age_group ?? null);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_e, session) => {
+      setAgeGroup(session?.user?.user_metadata?.age_group ?? null);
+    });
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  const isGirl = ageGroup === 'under18';
+
   return (
     <Layout>
       <Head>
@@ -14,15 +30,27 @@ export default function AboutAbusePage() {
         />
       </Head>
 
-      <section className="page-header">
-        <p className="eyebrow">Is this abuse?</p>
-        <h1>Abuse doesn&apos;t always look like you&apos;d expect</h1>
-        <p className="sub">
-          Under South African law, abuse isn&apos;t only physical. If
-          something here sounds familiar, you&apos;re not overreacting —
-          and you&apos;re not alone.
-        </p>
-      </section>
+      {isGirl ? (
+        <section className="page-header">
+          <p className="eyebrow">Is this happening to you?</p>
+          <h1>You&apos;re not imagining it, and it&apos;s not your fault</h1>
+          <p className="sub">
+            Abuse isn&apos;t always hitting or shouting. Sometimes it&apos;s
+            quieter than that. If something here feels familiar, telling a
+            trusted adult is the bravest, safest next step.
+          </p>
+        </section>
+      ) : (
+        <section className="page-header">
+          <p className="eyebrow">Is this abuse?</p>
+          <h1>Abuse doesn&apos;t always look like you&apos;d expect</h1>
+          <p className="sub">
+            Under South African law, abuse isn&apos;t only physical. If
+            something here sounds familiar, you&apos;re not overreacting —
+            and you&apos;re not alone.
+          </p>
+        </section>
+      )}
 
       <section className="types">
         <div className="type-card">
@@ -91,18 +119,33 @@ export default function AboutAbusePage() {
         </p>
       </section>
 
-      <section className="cta">
-        <h2>You don&apos;t have to figure out what to call it first</h2>
-        <p>
-          You don&apos;t need a label to deserve support. Whether you want
-          to understand your legal options or just talk to someone, both
-          are here when you&apos;re ready.
-        </p>
-        <div className="cta-actions">
-          <Link href="/rights" className="btn-primary">Know your rights</Link>
-          <Link href="/support" className="btn-secondary">Talk to someone</Link>
-        </div>
-      </section>
+      {isGirl ? (
+        <section className="cta">
+          <h2>Telling someone is not overreacting</h2>
+          <p>
+            A parent, teacher, school counsellor, or Childline &mdash; you
+            don&apos;t have to have all the words figured out first. They can
+            help you from there.
+          </p>
+          <div className="cta-actions">
+            <Link href="/support" className="btn-primary">Talk to Childline</Link>
+            <Link href="/chat" className="btn-secondary">Ask a question first</Link>
+          </div>
+        </section>
+      ) : (
+        <section className="cta">
+          <h2>You don&apos;t have to figure out what to call it first</h2>
+          <p>
+            You don&apos;t need a label to deserve support. Whether you want
+            to understand your legal options or just talk to someone, both
+            are here when you&apos;re ready.
+          </p>
+          <div className="cta-actions">
+            <Link href="/rights" className="btn-primary">Know your rights</Link>
+            <Link href="/support" className="btn-secondary">Talk to someone</Link>
+          </div>
+        </section>
+      )}
 
       <style jsx>{`
         .page-header {
