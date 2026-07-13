@@ -51,6 +51,22 @@ export default function SupportPage() {
         />
       </Head>
 
+      <div
+        style={
+          isGirl
+            ? {
+                '--rose': '#8b5cf6',
+                '--rose-deep': '#6d28d9',
+                '--blush': '#f3e8ff',
+                '--teal': '#0891b2',
+                '--teal-light': '#fef9c3',
+                '--warm': '#ffedd5',
+                '--ink': '#312e81',
+              }
+            : undefined
+        }
+      >
+
       <section className="page-header">
         <p className="eyebrow">Talk to someone</p>
         <h1>You don&apos;t have to carry this alone</h1>
@@ -144,6 +160,8 @@ export default function SupportPage() {
 
         {!isGirl && childlineGroup}
       </section>
+
+      </div>
 
       <style jsx>{`
         .page-header {
