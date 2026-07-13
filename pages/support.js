@@ -19,29 +19,6 @@ export default function SupportPage() {
 
   const isGirl = ageGroup === 'under18';
 
-  const childlineGroup = (
-    <div className="group">
-      <h2>{isGirl ? 'Call this first' : "If you're under 18"}</h2>
-      <div className="contact-list">
-        <div className="contact-row">
-          <div>
-            <p className="c-name">Childline South Africa</p>
-            <p className="c-desc">
-              {isGirl
-                ? "They won't judge you, and it's totally free"
-                : '24/7, free, and confidential — for children and teens facing abuse of any kind'}
-            </p>
-          </div>
-          <a href="tel:116">116</a>
-        </div>
-      </div>
-      <p className="note">
-        {isGirl
-          ? "They won't force you to do anything \u2014 they'll just help you figure out your next move."
-          : "Childline will always try to help you talk to a trusted adult — you won't be forced to do anything you're not ready for."}
-      </p>
-    </div>
-  );
   return (
     <Layout>
       <Head>
@@ -128,7 +105,7 @@ export default function SupportPage() {
       </section>
 
       <section className="content">
-        {isGirl && childlineGroup}
+        {isGirl && <ChildlineCard isGirl={isGirl} />}
 
         <div className="group">
           <h2>Counselling &amp; emotional support</h2>
@@ -177,7 +154,7 @@ export default function SupportPage() {
           </div>
         </div>
 
-        {!isGirl && childlineGroup}
+        {!isGirl && <ChildlineCard isGirl={isGirl} />}
       </section>
 
       </div>
@@ -325,6 +302,81 @@ export default function SupportPage() {
   );
 }
 
+function ChildlineCard({ isGirl }) {
+  return (
+    <div className="group">
+      <h2>{isGirl ? 'Call this first' : "If you're under 18"}</h2>
+      <div className="contact-list">
+        <div className="contact-row">
+          <div>
+            <p className="c-name">Childline South Africa</p>
+            <p className="c-desc">
+              {isGirl
+                ? "They won't judge you, and it's totally free"
+                : '24/7, free, and confidential — for children and teens facing abuse of any kind'}
+            </p>
+          </div>
+          <a href="tel:116">116</a>
+        </div>
+      </div>
+      <p className="note">
+        {isGirl
+          ? "They won't force you to do anything \u2014 they'll just help you figure out your next move."
+          : "Childline will always try to help you talk to a trusted adult — you won't be forced to do anything you're not ready for."}
+      </p>
+
+      <style jsx>{`
+        .group {
+          margin-bottom: 44px;
+        }
+        .group h2 {
+          font-size: 1.15rem;
+          font-weight: 800;
+          color: var(--ink);
+          margin-bottom: 16px;
+        }
+        .contact-list {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .contact-row {
+          background: var(--warm);
+          border-radius: 10px;
+          padding: 16px 20px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          flex-wrap: wrap;
+        }
+        .c-name {
+          font-size: 0.95rem;
+          font-weight: 700;
+          color: var(--ink);
+          margin-bottom: 3px;
+        }
+        .c-desc {
+          font-size: 0.82rem;
+          color: var(--muted);
+        }
+        .contact-row a {
+          font-size: 1.05rem;
+          font-weight: 800;
+          color: var(--rose-deep);
+          text-decoration: none;
+          white-space: nowrap;
+        }
+        .note {
+          font-size: 0.85rem;
+          color: var(--muted);
+          margin-top: 12px;
+          line-height: 1.6;
+        }
+      `}</style>
+    </div>
+  );
+}
 
 export async function getStaticProps({ locale }) {
   return {
