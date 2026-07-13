@@ -30,6 +30,22 @@ export default function AboutAbusePage() {
         />
       </Head>
 
+      <div
+        style={
+          isGirl
+            ? {
+                '--rose': '#8b5cf6',
+                '--rose-deep': '#6d28d9',
+                '--blush': '#f3e8ff',
+                '--teal': '#0891b2',
+                '--teal-light': '#fef9c3',
+                '--warm': '#ffedd5',
+                '--ink': '#312e81',
+              }
+            : undefined
+        }
+      >
+
       {isGirl ? (
         <section className="page-header">
           <p className="eyebrow">Is this happening to you?</p>
@@ -146,6 +162,8 @@ export default function AboutAbusePage() {
           </div>
         </section>
       )}
+
+      </div>
 
       <style jsx>{`
         .page-header {
