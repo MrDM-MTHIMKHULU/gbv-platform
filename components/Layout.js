@@ -9,6 +9,7 @@ export default function Layout({ children }) {
   const { t } = useTranslation('common');
   const router = useRouter();
   const [user, setUser] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -21,6 +22,12 @@ export default function Layout({ children }) {
 
     return () => listener.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    const closeMenu = () => setMenuOpen(false);
+    router.events.on('routeChangeStart', closeMenu);
+    return () => router.events.off('routeChangeStart', closeMenu);
+  }, [router.events]);
 
   const changeLanguage = (e) => {
     const locale = e.target.value;
@@ -45,7 +52,18 @@ export default function Layout({ children }) {
 
       <nav>
         <Link href="/" className="logo">SafeHaven</Link>
-        <ul className="nav-links">
+
+        <button
+          className="menu-toggle"
+          aria-label="Toggle menu"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+
+        <ul className={`nav-links ${menuOpen ? 'open' : ''}`}>
           <li><Link href="/map">{t('nav_find_help')}</Link></li>
           <li><Link href="/rights">{t('nav_rights')}</Link></li>
           <li><Link href="/support">{t('nav_support')}</Link></li>
@@ -130,34 +148,55 @@ export default function Layout({ children }) {
 
         nav {
           background: var(--white);
-          padding: 0 6%;
+          padding: 0 5%;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          height: 68px;
+          height: 64px;
           position: sticky;
           top: 0;
           z-index: 1000;
           border-bottom: 1px solid var(--sand);
         }
         nav :global(.logo) {
-          font-size: 1.3rem;
+          font-size: 1.2rem;
           font-weight: 800;
           color: var(--rose-deep);
           letter-spacing: -0.02em;
           text-decoration: none;
+          flex-shrink: 0;
         }
+
+        .menu-toggle {
+          display: none;
+          flex-direction: column;
+          justify-content: center;
+          gap: 5px;
+          background: none;
+          border: none;
+          padding: 8px;
+          cursor: pointer;
+        }
+        .menu-toggle span {
+          width: 22px;
+          height: 2px;
+          background: var(--ink);
+          display: block;
+        }
+
         .nav-links {
           display: flex;
-          gap: 24px;
+          gap: 20px;
           list-style: none;
           align-items: center;
+          flex-wrap: wrap;
         }
         .nav-links :global(a) {
           text-decoration: none;
           color: var(--muted);
-          font-size: 0.9rem;
+          font-size: 0.88rem;
           font-weight: 600;
+          white-space: nowrap;
         }
         .auth-link {
           color: var(--rose-deep) !important;
@@ -171,15 +210,59 @@ export default function Layout({ children }) {
           font-weight: 600;
           color: var(--ink);
           cursor: pointer;
+          white-space: nowrap;
         }
         .lang-select {
           background: var(--blush);
           border: none;
-          padding: 6px 12px;
+          padding: 6px 10px;
           border-radius: 6px;
-          font-size: 0.85rem;
+          font-size: 0.8rem;
           color: var(--rose-deep);
           font-weight: 600;
+        }
+
+        @media (max-width: 860px) {
+          nav {
+            padding: 0 4%;
+            padding-right: 90px;
+          }
+          .menu-toggle {
+            display: flex;
+          }
+          .nav-links {
+            display: none;
+            position: absolute;
+            top: 64px;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border-bottom: 1px solid var(--sand);
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+            padding: 16px 5% 20px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+          }
+          .nav-links.open {
+            display: flex;
+          }
+          .nav-links li {
+            width: 100%;
+          }
+          .nav-links :global(a) {
+            display: block;
+            padding: 10px 0;
+            font-size: 0.95rem;
+            width: 100%;
+          }
+          .auth-btn,
+          .lang-select {
+            width: 100%;
+            margin: 6px 0;
+            text-align: left;
+            padding: 10px 12px;
+          }
         }
 
         footer {
