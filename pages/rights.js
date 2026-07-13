@@ -30,6 +30,22 @@ export default function RightsPage() {
         />
       </Head>
 
+      <div
+        style={
+          isGirl
+            ? {
+                '--rose': '#8b5cf6',
+                '--rose-deep': '#6d28d9',
+                '--blush': '#f3e8ff',
+                '--teal': '#0891b2',
+                '--teal-light': '#fef9c3',
+                '--warm': '#ffedd5',
+                '--ink': '#312e81',
+              }
+            : undefined
+        }
+      >
+
       <section className="page-header">
         <p className="eyebrow">Know your rights</p>
         <h1>Protection orders &amp; the law</h1>
@@ -155,6 +171,8 @@ export default function RightsPage() {
           </div>
         </div>
       </section>
+
+      </div>
 
       <style jsx>{`
         .page-header {
