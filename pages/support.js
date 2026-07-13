@@ -21,23 +21,24 @@ export default function SupportPage() {
 
   const childlineGroup = (
     <div className="group">
-      <h2>{isGirl ? 'Start here' : "If you're under 18"}</h2>
+      <h2>{isGirl ? 'Call this first' : "If you're under 18"}</h2>
       <div className="contact-list">
         <div className="contact-row">
           <div>
             <p className="c-name">Childline South Africa</p>
             <p className="c-desc">
-              24/7, free, and confidential — for children and teens
-              facing abuse of any kind
+              {isGirl
+                ? "They won't judge you, and it's totally free"
+                : '24/7, free, and confidential — for children and teens facing abuse of any kind'}
             </p>
           </div>
           <a href="tel:116">116</a>
         </div>
       </div>
       <p className="note">
-        Childline will always try to help you talk to a trusted adult —
-        you won&apos;t be forced to do anything you&apos;re not ready
-        for.
+        {isGirl
+          ? "They won't force you to do anything \u2014 they'll just help you figure out your next move."
+          : "Childline will always try to help you talk to a trusted adult — you won't be forced to do anything you're not ready for."}
       </p>
     </div>
   );
@@ -55,28 +56,46 @@ export default function SupportPage() {
         style={
           isGirl
             ? {
-                '--rose': '#8b5cf6',
-                '--rose-deep': '#6d28d9',
-                '--blush': '#f3e8ff',
-                '--teal': '#0891b2',
+                '--rose': '#f97316',
+                '--rose-deep': '#c2410c',
+                '--blush': '#ffedd5',
+                '--teal': '#eab308',
                 '--teal-light': '#fef9c3',
-                '--warm': '#ffedd5',
-                '--ink': '#312e81',
+                '--warm': '#fed7aa',
+                '--ink': '#7c2d12',
               }
             : undefined
         }
       >
 
-      <section className="page-header">
-        <p className="eyebrow">Talk to someone</p>
-        <h1>You don&apos;t have to carry this alone</h1>
-        <p className="sub">
-          All of the services below are free and confidential. Calls don&apos;t
-          appear as a specific number on some phone bills — if you&apos;re
-          worried about your call history, use Quick Exit and consider
-          calling from a phone your abuser can&apos;t access.
-        </p>
-      </section>
+      {isGirl && (
+        <div className="mode-badge">
+          <span>A space made just for you</span>
+        </div>
+      )}
+
+      {isGirl ? (
+        <section className="page-header">
+          <p className="eyebrow">You don&apos;t have to do this alone</p>
+          <h1>Someone&apos;s ready to listen right now</h1>
+          <p className="sub">
+            Free, secret, and yours to use whenever. If you&apos;re worried
+            about anyone seeing this, hit Quick Exit and try again from a
+            phone that&apos;s actually yours.
+          </p>
+        </section>
+      ) : (
+        <section className="page-header">
+          <p className="eyebrow">Talk to someone</p>
+          <h1>You don&apos;t have to carry this alone</h1>
+          <p className="sub">
+            All of the services below are free and confidential. Calls don&apos;t
+            appear as a specific number on some phone bills — if you&apos;re
+            worried about your call history, use Quick Exit and consider
+            calling from a phone your abuser can&apos;t access.
+          </p>
+        </section>
+      )}
 
       <section className="urgent">
         {isGirl ? (
@@ -164,6 +183,21 @@ export default function SupportPage() {
       </div>
 
       <style jsx>{`
+        .mode-badge {
+          text-align: center;
+          padding: 14px 0 0;
+        }
+        .mode-badge span {
+          display: inline-block;
+          background: var(--rose-deep);
+          color: white;
+          font-size: 0.75rem;
+          font-weight: 800;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          padding: 8px 18px;
+          border-radius: 999px;
+        }
         .page-header {
           max-width: 720px;
           margin: 0 auto;
