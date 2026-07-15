@@ -67,7 +67,8 @@ export default function Layout({ children }) {
           <li><Link href="/map">{t('nav_find_help')}</Link></li>
           <li><Link href="/rights">{t('nav_rights')}</Link></li>
           <li><Link href="/support">{t('nav_support')}</Link></li>
-          <li><Link href="/chat">Chat</Link></li>
+          <li><Link href="/chat">Ask Jennet</Link></li>
+          <li><Link href="/insights">The Data</Link></li>
           {user ? (
             <>
               <li>
@@ -109,11 +110,12 @@ export default function Layout({ children }) {
             <Link href="/map">{t('footer_find_shelter')}</Link>
             <Link href="/rights">{t('footer_legal_rights')}</Link>
             <Link href="/support">{t('footer_talk')}</Link>
+            <Link href="/chat">Ask Jennet</Link>
           </div>
           <div className="footer-col">
             <p className="footer-heading">{t('footer_heading_platform')}</p>
             <Link href="/about-abuse">{t('footer_about_abuse')}</Link>
-            <Link href="/">{t('footer_languages')}</Link>
+            <Link href="/insights">The data behind the crisis</Link>
             <Link href="/">{t('footer_about')}</Link>
           </div>
         </div>
