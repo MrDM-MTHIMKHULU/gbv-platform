@@ -8,7 +8,7 @@ export default function ChatPage() {
     {
       role: 'assistant',
       content:
-        "Hi, I'm here to help with questions about abuse, your rights, or finding support in South Africa. What's on your mind?",
+        "Hi, I'm Jennet. I'm here to help with questions about abuse, your rights, or finding support in South Africa. What's on your mind?",
     },
   ]);
   const [input, setInput] = useState('');
@@ -75,18 +75,18 @@ export default function ChatPage() {
   return (
     <Layout>
       <Head>
-        <title>Chat with SafeHaven Assistant</title>
+        <title>Ask Jennet | SafeHaven</title>
         <meta
           name="description"
-          content="Ask questions about abuse, your rights, or finding support — a GBV-focused AI assistant."
+          content="Ask Jennet, SafeHaven's AI agent, anything about abuse, your rights, or finding support in South Africa."
         />
       </Head>
 
       <section className="page-header">
         <p className="eyebrow">Talk it through</p>
-        <h1>SafeHaven Assistant</h1>
+        <h1>Ask Jennet</h1>
         <p className="sub">
-          This is an AI assistant, not a person and not a substitute for
+          Jennet is an AI agent, not a person and not a substitute for
           professional help. In an emergency, call{' '}
           <a href="tel:10111">10111</a> or the{' '}
           <a href="tel:0800428428">GBV Command Centre on 0800 428 428</a>.
