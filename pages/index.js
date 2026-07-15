@@ -106,30 +106,110 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="features">
-        <h2>Everything you need, in one place</h2>
-        <div className="features-grid">
-          <Link href="/map" className="feature-card feature-shelter">
-            <p className="feature-icon">🏠</p>
-            <p className="feature-title">Find Shelter</p>
-            <p className="feature-sub">Shelters near you, across South Africa.</p>
-          </Link>
-          <Link href="/insights" className="feature-card feature-data">
-            <p className="feature-icon">📊</p>
-            <p className="feature-title">The Data Behind the Crisis</p>
-            <p className="feature-sub">
-              See how GBV services are actually distributed across the country
-              — and where the gaps are.
+      <section className="showcase">
+        <div className="showcase-block">
+          <div className="showcase-text">
+            <p className="section-tag">Data Intelligence</p>
+            <h2 className="section-title">
+              The data behind
+              <br />
+              <strong>the crisis.</strong>
+            </h2>
+            <p className="section-body">
+              Verified figures on how GBV services are actually distributed
+              across South Africa — and exactly where the gaps are, province
+              by province.
             </p>
-          </Link>
-          <Link href="/chat" className="feature-card feature-chat">
-            <p className="feature-icon">💬</p>
-            <p className="feature-title">Ask Jennet</p>
-            <p className="feature-sub">
-              Ask Jennet anything about GBV — private, judgment-free, and
-              available any time.
+            <Link href="/insights" className="btn-primary">
+              View the data
+            </Link>
+          </div>
+          <div className="showcase-visual">
+            <div className="mini-chart">
+              <p className="mini-chart-title">Verified services by province</p>
+              <div className="mini-bar-row">
+                <span className="mini-bar-label">Western Cape</span>
+                <div className="mini-bar-track">
+                  <div className="mini-bar-fill" style={{ width: '92%' }} />
+                </div>
+              </div>
+              <div className="mini-bar-row">
+                <span className="mini-bar-label">Gauteng</span>
+                <div className="mini-bar-track">
+                  <div className="mini-bar-fill" style={{ width: '84%' }} />
+                </div>
+              </div>
+              <div className="mini-bar-row">
+                <span className="mini-bar-label">KwaZulu-Natal</span>
+                <div className="mini-bar-track">
+                  <div className="mini-bar-fill" style={{ width: '68%' }} />
+                </div>
+              </div>
+              <div className="mini-bar-row">
+                <span className="mini-bar-label">Limpopo</span>
+                <div className="mini-bar-track">
+                  <div className="mini-bar-fill" style={{ width: '30%' }} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="showcase-block reverse">
+          <div className="showcase-text">
+            <p className="section-tag">Find Shelter</p>
+            <h2 className="section-title">
+              Shelters near you,
+              <br />
+              <strong>across South Africa.</strong>
+            </h2>
+            <p className="section-body">
+              An interactive map of every verified shelter and safe house
+              across all 9 provinces — with contact details you can trust.
             </p>
-          </Link>
+            <Link href="/map" className="btn-primary">
+              Find shelter near me
+            </Link>
+          </div>
+          <div className="showcase-visual">
+            <div className="mini-map">
+              <p className="mini-map-num">127+</p>
+              <p className="mini-map-label">verified shelters &amp; services</p>
+              <p className="mini-map-num small">9</p>
+              <p className="mini-map-label">provinces covered</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="showcase-block">
+          <div className="showcase-text">
+            <p className="section-tag">Jennet AI Agent</p>
+            <h2 className="section-title">
+              Ask Jennet anything
+              <br />
+              <strong>about GBV.</strong>
+            </h2>
+            <p className="section-body">
+              Jennet is an AI agent trained on gender-based violence in the
+              South African context. She knows the law, she knows the
+              resources, and she responds with empathy — no judgement, no
+              pressure.
+            </p>
+            <Link href="/chat" className="btn-primary">
+              Ask Jennet
+            </Link>
+          </div>
+          <div className="showcase-visual">
+            <div className="mini-chat">
+              <p className="mini-chat-name">Jennet</p>
+              <div className="mini-chat-bubble">
+                Sawubona 🌸 I&apos;m Jennet. I&apos;m here to help with any
+                questions about gender-based violence — what can I help you
+                with?
+              </div>
+              <div className="mini-chat-input">Ask Jennet anything about GBV…</div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -306,56 +386,159 @@ export default function Home() {
           font-weight: 400;
         }
 
-        .features {
-          max-width: 1000px;
+        .showcase {
+          max-width: 1080px;
           margin: 0 auto;
-          padding: 90px 24px 20px;
+          padding: 90px 24px 40px;
+          display: flex;
+          flex-direction: column;
+          gap: 90px;
         }
-        .features h2 {
-          font-size: 1.8rem;
-          font-weight: 800;
-          text-align: center;
-          margin-bottom: 40px;
-          color: var(--ink);
-        }
-        .features-grid {
+        .showcase-block {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 24px;
+          grid-template-columns: 1fr 1fr;
+          gap: 56px;
+          align-items: center;
         }
-        .features-grid :global(.feature-card) {
-          display: block;
-          padding: 32px 26px;
-          border-radius: 14px;
+        .showcase-block.reverse .showcase-text {
+          order: 2;
+        }
+        .showcase-block.reverse .showcase-visual {
+          order: 1;
+        }
+        .section-tag {
+          font-size: 0.75rem;
+          font-weight: 800;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: var(--rose);
+          margin-bottom: 16px;
+        }
+        .section-title {
+          font-size: clamp(1.7rem, 3.4vw, 2.4rem);
+          font-weight: 800;
+          line-height: 1.2;
+          color: var(--ink);
+          margin-bottom: 20px;
+          letter-spacing: -0.02em;
+        }
+        .section-title strong {
+          color: var(--rose-deep);
+        }
+        .section-body {
+          font-size: 1rem;
+          line-height: 1.65;
+          color: var(--muted);
+          margin-bottom: 28px;
+          max-width: 440px;
+        }
+        .showcase-text :global(.btn-primary) {
+          display: inline-block;
+          background: var(--rose);
+          color: white;
+          padding: 14px 28px;
+          font-weight: 700;
+          font-size: 0.88rem;
           text-decoration: none;
-          transition: transform 0.15s ease;
+          border-radius: 8px;
         }
-        .features-grid :global(.feature-card:hover) {
-          transform: translateY(-3px);
+
+        .showcase-visual {
+          display: flex;
+          justify-content: center;
         }
-        .features-grid :global(.feature-shelter) {
-          background: var(--teal-light);
-        }
-        .features-grid :global(.feature-data) {
+
+        .mini-chart {
           background: var(--warm);
+          border-radius: 16px;
+          padding: 30px;
+          width: 100%;
+          max-width: 400px;
         }
-        .features-grid :global(.feature-chat) {
-          background: var(--blush);
+        .mini-chart-title {
+          font-size: 0.82rem;
+          font-weight: 700;
+          color: var(--ink);
+          margin-bottom: 20px;
         }
-        .feature-icon {
-          font-size: 1.8rem;
+        .mini-bar-row {
+          display: grid;
+          grid-template-columns: 110px 1fr;
+          align-items: center;
+          gap: 10px;
           margin-bottom: 14px;
         }
-        .feature-title {
-          font-size: 1.1rem;
+        .mini-bar-label {
+          font-size: 0.78rem;
+          font-weight: 600;
+          color: var(--ink);
+        }
+        .mini-bar-track {
+          background: var(--sand);
+          border-radius: 6px;
+          height: 10px;
+          overflow: hidden;
+        }
+        .mini-bar-fill {
+          height: 100%;
+          background: var(--rose);
+          border-radius: 6px;
+        }
+
+        .mini-map {
+          background: var(--teal-light);
+          border-radius: 16px;
+          padding: 40px;
+          width: 100%;
+          max-width: 400px;
+          text-align: center;
+        }
+        .mini-map-num {
+          font-size: 2.6rem;
           font-weight: 800;
           color: var(--ink);
-          margin-bottom: 8px;
         }
-        .feature-sub {
-          font-size: 0.9rem;
+        .mini-map-num.small {
+          font-size: 2rem;
+          margin-top: 20px;
+        }
+        .mini-map-label {
+          font-size: 0.85rem;
           color: var(--muted);
+          font-weight: 600;
+          margin-bottom: 6px;
+        }
+
+        .mini-chat {
+          background: white;
+          border: 1px solid var(--sand);
+          border-radius: 16px;
+          padding: 26px;
+          width: 100%;
+          max-width: 400px;
+        }
+        .mini-chat-name {
+          font-size: 0.85rem;
+          font-weight: 800;
+          color: var(--rose-deep);
+          margin-bottom: 12px;
+        }
+        .mini-chat-bubble {
+          background: var(--blush);
+          border-radius: 12px;
+          border-bottom-left-radius: 4px;
+          padding: 14px 16px;
+          font-size: 0.88rem;
           line-height: 1.55;
+          color: var(--ink);
+          margin-bottom: 14px;
+        }
+        .mini-chat-input {
+          border: 1px solid var(--sand);
+          border-radius: 10px;
+          padding: 10px 14px;
+          font-size: 0.85rem;
+          color: var(--muted);
         }
 
         .how {
@@ -471,9 +654,21 @@ export default function Home() {
             grid-template-columns: repeat(2, 1fr);
           }
           .how-grid,
-          .resource-grid,
-          .features-grid {
+          .resource-grid {
             grid-template-columns: 1fr;
+          }
+          .showcase {
+            gap: 60px;
+          }
+          .showcase-block,
+          .showcase-block.reverse .showcase-text,
+          .showcase-block.reverse .showcase-visual {
+            grid-template-columns: 1fr;
+            order: initial;
+          }
+          .showcase-block {
+            display: flex;
+            flex-direction: column;
           }
         }
       `}</style>
