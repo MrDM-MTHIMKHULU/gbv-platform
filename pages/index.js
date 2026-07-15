@@ -106,6 +106,33 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="features">
+        <h2>Everything you need, in one place</h2>
+        <div className="features-grid">
+          <Link href="/map" className="feature-card feature-shelter">
+            <p className="feature-icon">🏠</p>
+            <p className="feature-title">Find Shelter</p>
+            <p className="feature-sub">Shelters near you, across South Africa.</p>
+          </Link>
+          <Link href="/insights" className="feature-card feature-data">
+            <p className="feature-icon">📊</p>
+            <p className="feature-title">The Data Behind the Crisis</p>
+            <p className="feature-sub">
+              See how GBV services are actually distributed across the country
+              — and where the gaps are.
+            </p>
+          </Link>
+          <Link href="/chat" className="feature-card feature-chat">
+            <p className="feature-icon">💬</p>
+            <p className="feature-title">Ask Jennet</p>
+            <p className="feature-sub">
+              Ask Jennet anything about GBV — private, judgment-free, and
+              available any time.
+            </p>
+          </Link>
+        </div>
+      </section>
+
       <section className="how">
         <h2>{t('how_title')}</h2>
         <div className="how-grid">
@@ -279,6 +306,58 @@ export default function Home() {
           font-weight: 400;
         }
 
+        .features {
+          max-width: 1000px;
+          margin: 0 auto;
+          padding: 90px 24px 20px;
+        }
+        .features h2 {
+          font-size: 1.8rem;
+          font-weight: 800;
+          text-align: center;
+          margin-bottom: 40px;
+          color: var(--ink);
+        }
+        .features-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 24px;
+        }
+        .features-grid :global(.feature-card) {
+          display: block;
+          padding: 32px 26px;
+          border-radius: 14px;
+          text-decoration: none;
+          transition: transform 0.15s ease;
+        }
+        .features-grid :global(.feature-card:hover) {
+          transform: translateY(-3px);
+        }
+        .features-grid :global(.feature-shelter) {
+          background: var(--teal-light);
+        }
+        .features-grid :global(.feature-data) {
+          background: var(--warm);
+        }
+        .features-grid :global(.feature-chat) {
+          background: var(--blush);
+        }
+        .feature-icon {
+          font-size: 1.8rem;
+          margin-bottom: 14px;
+        }
+        .feature-title {
+          font-size: 1.1rem;
+          font-weight: 800;
+          color: var(--ink);
+          margin-bottom: 8px;
+        }
+        .feature-sub {
+          font-size: 0.9rem;
+          color: var(--muted);
+          line-height: 1.55;
+        }
+
         .how {
           max-width: 1000px;
           margin: 0 auto;
@@ -392,7 +471,8 @@ export default function Home() {
             grid-template-columns: repeat(2, 1fr);
           }
           .how-grid,
-          .resource-grid {
+          .resource-grid,
+          .features-grid {
             grid-template-columns: 1fr;
           }
         }
