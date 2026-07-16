@@ -10,6 +10,8 @@ import { supabase } from '../lib/supabaseClient';
 export default function Home() {
   const { t } = useTranslation('common');
   const [ageGroup, setAgeGroup] = useState(null);
+  const [coverage, setCoverage] = useState(null);
+  const [coverageError, setCoverageError] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -21,6 +23,19 @@ export default function Home() {
     });
 
     return () => listener.subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/insights')
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.error || !json.coverageStats || json.coverageStats.unavailable) {
+          setCoverageError(true);
+        } else {
+          setCoverage(json.coverageStats.byProvince);
+        }
+      })
+      .catch(() => setCoverageError(true));
   }, []);
 
   const isGirl = ageGroup === 'under18';
@@ -175,33 +190,7 @@ export default function Home() {
             </Link>
           </div>
           <div className="showcase-visual">
-            <div className="mini-chart">
-              <p className="mini-chart-title">Verified services by province</p>
-              <div className="mini-bar-row">
-                <span className="mini-bar-label">Western Cape</span>
-                <div className="mini-bar-track">
-                  <div className="mini-bar-fill" style={{ width: '92%' }} />
-                </div>
-              </div>
-              <div className="mini-bar-row">
-                <span className="mini-bar-label">Gauteng</span>
-                <div className="mini-bar-track">
-                  <div className="mini-bar-fill" style={{ width: '84%' }} />
-                </div>
-              </div>
-              <div className="mini-bar-row">
-                <span className="mini-bar-label">KwaZulu-Natal</span>
-                <div className="mini-bar-track">
-                  <div className="mini-bar-fill" style={{ width: '68%' }} />
-                </div>
-              </div>
-              <div className="mini-bar-row">
-                <span className="mini-bar-label">Limpopo</span>
-                <div className="mini-bar-track">
-                  <div className="mini-bar-fill" style={{ width: '30%' }} />
-                </div>
-              </div>
-            </div>
+            <ProvinceCoverageChart coverage={coverage} error={coverageError} />
           </div>
         </div>
       </section>
@@ -441,43 +430,6 @@ export default function Home() {
           justify-content: center;
         }
 
-        .mini-chart {
-          background: var(--warm);
-          border-radius: 16px;
-          padding: 30px;
-          width: 100%;
-          max-width: 400px;
-        }
-        .mini-chart-title {
-          font-size: 0.82rem;
-          font-weight: 700;
-          color: var(--ink);
-          margin-bottom: 20px;
-        }
-        .mini-bar-row {
-          display: grid;
-          grid-template-columns: 110px 1fr;
-          align-items: center;
-          gap: 10px;
-          margin-bottom: 14px;
-        }
-        .mini-bar-label {
-          font-size: 0.78rem;
-          font-weight: 600;
-          color: var(--ink);
-        }
-        .mini-bar-track {
-          background: var(--sand);
-          border-radius: 6px;
-          height: 10px;
-          overflow: hidden;
-        }
-        .mini-bar-fill {
-          height: 100%;
-          background: var(--rose);
-          border-radius: 6px;
-        }
-
         .mini-map {
           background: var(--teal-light);
           border-radius: 16px;
@@ -648,4 +600,108 @@ export async function getStaticProps({ locale }) {
       ...(await serverSideTranslations(locale, ['common'])),
     },
   };
+}
+
+function ProvinceCoverageChart({ coverage, error }) {
+  let body;
+  let total = null;
+
+  if (error) {
+    body = (
+      <p className="mini-chart-empty">
+        Service data isn&apos;t connected yet.{' '}
+        <Link href="/insights">See the full data page</Link> once it is.
+      </p>
+    );
+  } else if (!coverage) {
+    body = <p className="mini-chart-empty">Loading real service data…</p>;
+  } else {
+    const entries = Object.entries(coverage).sort((a, b) => b[1] - a[1]);
+    if (entries.length === 0) {
+      body = <p className="mini-chart-empty">No verified services recorded yet.</p>;
+    } else {
+      const top = entries.slice(0, 5);
+      const max = Math.max(...entries.map(([, v]) => v), 1);
+      total = entries.reduce((sum, [, v]) => sum + v, 0);
+      body = top.map(([province, count]) => (
+        <div className="mini-bar-row" key={province}>
+          <span className="mini-bar-label">{province}</span>
+          <div className="mini-bar-track">
+            <div
+              className="mini-bar-fill"
+              style={{ width: `${(count / max) * 100}%` }}
+            />
+          </div>
+          <span className="mini-bar-value">{count}</span>
+        </div>
+      ));
+    }
+  }
+
+  return (
+    <div className="mini-chart">
+      <p className="mini-chart-title">
+        Verified services by province
+        {total !== null && <span className="mini-chart-total"> · {total} total</span>}
+      </p>
+      {body}
+
+      <style jsx>{`
+        .mini-chart {
+          background: var(--warm);
+          border-radius: 16px;
+          padding: 30px;
+          width: 100%;
+          max-width: 400px;
+        }
+        .mini-chart-title {
+          font-size: 0.82rem;
+          font-weight: 700;
+          color: var(--ink);
+          margin-bottom: 20px;
+        }
+        .mini-chart-total {
+          font-weight: 400;
+          color: var(--muted);
+        }
+        .mini-chart-empty {
+          font-size: 0.82rem;
+          color: var(--muted);
+          line-height: 1.6;
+        }
+        .mini-chart-empty :global(a) {
+          color: var(--rose-deep);
+          font-weight: 700;
+        }
+        .mini-bar-row {
+          display: grid;
+          grid-template-columns: 100px 1fr 28px;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 14px;
+        }
+        .mini-bar-label {
+          font-size: 0.78rem;
+          font-weight: 600;
+          color: var(--ink);
+        }
+        .mini-bar-track {
+          background: var(--sand);
+          border-radius: 6px;
+          height: 10px;
+          overflow: hidden;
+        }
+        .mini-bar-fill {
+          height: 100%;
+          background: var(--rose);
+          border-radius: 6px;
+        }
+        .mini-bar-value {
+          font-size: 0.75rem;
+          color: var(--muted);
+          text-align: right;
+        }
+      `}</style>
+    </div>
+  );
 }
