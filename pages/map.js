@@ -19,7 +19,7 @@ export default function MapPage() {
         <h1>Verified shelters, clinics &amp; legal aid</h1>
         <p className="sub">
           Search by province and service type. Every listing includes a phone
-          number and address — verified before it&apos;s added to this map.
+          number and address, verified before it&apos;s added to this map.
         </p>
       </section>
 
@@ -38,7 +38,7 @@ export default function MapPage() {
       <section className="map-note">
         <p>
           Don&apos;t see a service near you, or notice something outdated?
-          This directory is maintained by volunteers — accuracy matters, so
+          This directory is maintained by volunteers, accuracy matters, so
           please let us know if a listing needs updating.
         </p>
       </section>
@@ -49,7 +49,7 @@ export default function MapPage() {
         <p className="hotspots-sub">
           Officially designated 22 September 2020 by government&apos;s
           Inter-Ministerial Committee on GBVF, based on FY2019/20 data. This
-          designation was last confirmed still in effect in May 2022 — treat
+          designation was last confirmed still in effect in May 2022, treat
           it as a standing list rather than a live ranking.
         </p>
 
@@ -73,13 +73,13 @@ export default function MapPage() {
             Currently highest case-volume stations for rape
           </p>
           <p className="current-sub">
-            SAPS Q3 2024/25 (Oct–Dec 2024) — a live proxy pending an updated
+            SAPS Q3 2024/25 (Oct–Dec 2024), a live proxy pending an updated
             official list. Overlaps substantially with the stations above.
           </p>
           <ol className="current-list">
             {CURRENT_HOTSPOTS.Rape.slice(0, 5).map((h) => (
               <li key={h.station}>
-                {h.station} <span>— {h.province}</span>
+                {h.station} <span>, {h.province}</span>
               </li>
             ))}
           </ol>
