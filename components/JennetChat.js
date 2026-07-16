@@ -7,10 +7,11 @@ export default function JennetChat({ compact = false }) {
   const [messages, setMessages] = useState([{ role: 'assistant', content: GREETING }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const scrollRef = useRef(null);
+  const windowRef = useRef(null);
 
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = windowRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [messages]);
 
   const sendMessage = async () => {
@@ -68,7 +69,7 @@ export default function JennetChat({ compact = false }) {
 
   return (
     <div className={`jennet-chat ${compact ? 'compact' : ''}`}>
-      <div className="chat-window">
+      <div className="chat-window" ref={windowRef}>
         {messages.map((m, i) => (
           <div key={i} className={`bubble-row ${m.role}`}>
             <div className={`bubble ${m.role}`}>{m.content}</div>
@@ -79,7 +80,6 @@ export default function JennetChat({ compact = false }) {
             <div className="bubble assistant typing">Typing…</div>
           </div>
         )}
-        <div ref={scrollRef} />
       </div>
 
       <div className="chat-input-row">
