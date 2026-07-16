@@ -6,12 +6,11 @@ import { useTranslation } from 'next-i18next';
 import Layout from '../components/Layout';
 import JennetChat from '../components/JennetChat';
 import { supabase } from '../lib/supabaseClient';
+import { PROVINCES, NATIONAL_CASE_TYPES, NATIONAL_CASE_TYPES_TOTAL } from '../lib/gbvData';
 
 export default function Home() {
   const { t } = useTranslation('common');
   const [ageGroup, setAgeGroup] = useState(null);
-  const [coverage, setCoverage] = useState(null);
-  const [coverageError, setCoverageError] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -23,19 +22,6 @@ export default function Home() {
     });
 
     return () => listener.subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    fetch('/api/insights')
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.error || !json.coverageStats || json.coverageStats.unavailable) {
-          setCoverageError(true);
-        } else {
-          setCoverage(json.coverageStats.byProvince);
-        }
-      })
-      .catch(() => setCoverageError(true));
   }, []);
 
   const isGirl = ageGroup === 'under18';
@@ -190,7 +176,7 @@ export default function Home() {
             </Link>
           </div>
           <div className="showcase-visual">
-            <ProvinceCoverageChart coverage={coverage} error={coverageError} />
+            <DataDashboard />
           </div>
         </div>
       </section>
@@ -602,104 +588,170 @@ export async function getStaticProps({ locale }) {
   };
 }
 
-function ProvinceCoverageChart({ coverage, error }) {
-  let body;
-  let total = null;
+const PROVINCES_BY_CASES = [...PROVINCES].sort(
+  (a, b) => b.sexualOffences.cases - a.sexualOffences.cases
+);
+const PROVINCES_BY_CHANGE = [...PROVINCES].sort(
+  (a, b) => (b.sexualOffences.change || 0) - (a.sexualOffences.change || 0)
+);
 
-  if (error) {
-    body = (
-      <p className="mini-chart-empty">
-        Service data isn&apos;t connected yet.{' '}
-        <Link href="/insights">See the full data page</Link> once it is.
-      </p>
-    );
-  } else if (!coverage) {
-    body = <p className="mini-chart-empty">Loading real service data…</p>;
-  } else {
-    const entries = Object.entries(coverage).sort((a, b) => b[1] - a[1]);
-    if (entries.length === 0) {
-      body = <p className="mini-chart-empty">No verified services recorded yet.</p>;
-    } else {
-      const top = entries.slice(0, 5);
-      const max = Math.max(...entries.map(([, v]) => v), 1);
-      total = entries.reduce((sum, [, v]) => sum + v, 0);
-      body = top.map(([province, count]) => (
-        <div className="mini-bar-row" key={province}>
-          <span className="mini-bar-label">{province}</span>
-          <div className="mini-bar-track">
-            <div
-              className="mini-bar-fill"
-              style={{ width: `${(count / max) * 100}%` }}
-            />
-          </div>
-          <span className="mini-bar-value">{count}</span>
-        </div>
-      ));
-    }
-  }
+const TABS = ['Reported GBV Cases per Province', 'Trends', 'Case Types'];
+
+function DataDashboard() {
+  const [tab, setTab] = useState(TABS[0]);
 
   return (
-    <div className="mini-chart">
-      <p className="mini-chart-title">
-        Verified services by province
-        {total !== null && <span className="mini-chart-total"> · {total} total</span>}
-      </p>
-      {body}
+    <div className="dashboard">
+      <div className="dash-tabs">
+        {TABS.map((label) => (
+          <button
+            key={label}
+            className={`dash-tab ${tab === label ? 'active' : ''}`}
+            onClick={() => setTab(label)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'Reported GBV Cases per Province' && (
+        <div className="dash-panel">
+          <p className="dash-title">Sexual offences by province — Q3 2024/25 (SAPS)</p>
+          {(() => {
+            const max = PROVINCES_BY_CASES[0].sexualOffences.cases;
+            return PROVINCES_BY_CASES.map((p) => (
+              <div className="bar-row" key={p.name}>
+                <span className="bar-label">{p.name}</span>
+                <div className="bar-track">
+                  <div
+                    className="bar-fill"
+                    style={{ width: `${(p.sexualOffences.cases / max) * 100}%` }}
+                  />
+                </div>
+                <span className="bar-value">{p.sexualOffences.cases.toLocaleString()}</span>
+              </div>
+            ));
+          })()}
+        </div>
+      )}
+
+      {tab === 'Trends' && (
+        <div className="dash-panel">
+          <p className="dash-title">
+            Year-on-year change in sexual offences, Q3 2024/25 vs Q3 2023/24
+          </p>
+          {PROVINCES_BY_CHANGE.map((p) => {
+            const change = p.sexualOffences.change || 0;
+            const width = Math.min(Math.abs(change) * 4, 100);
+            return (
+              <div className="bar-row" key={p.name}>
+                <span className="bar-label">{p.name}</span>
+                <div className="bar-track">
+                  <div
+                    className={`bar-fill ${change > 0 ? 'rising' : 'falling'}`}
+                    style={{ width: `${width}%` }}
+                  />
+                </div>
+                <span className={`bar-value ${change > 0 ? 'rising-text' : ''}`}>
+                  {change > 0 ? '+' : ''}
+                  {change}%
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {tab === 'Case Types' && (
+        <div className="dash-panel">
+          <p className="dash-title">
+            Domestic-violence-linked cases, Q3 2024/25 — {NATIONAL_CASE_TYPES_TOTAL.toLocaleString()} total
+          </p>
+          {NATIONAL_CASE_TYPES.map((c) => (
+            <div className="bar-row" key={c.label}>
+              <span className="bar-label">{c.label}</span>
+              <div className="bar-track">
+                <div className="bar-fill" style={{ width: `${c.pct}%` }} />
+              </div>
+              <span className="bar-value">{c.pct}%</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       <style jsx>{`
-        .mini-chart {
+        .dashboard {
           background: var(--warm);
           border-radius: 16px;
-          padding: 30px;
+          padding: 24px;
           width: 100%;
-          max-width: 400px;
+          max-width: 420px;
         }
-        .mini-chart-title {
-          font-size: 0.82rem;
-          font-weight: 700;
-          color: var(--ink);
+        .dash-tabs {
+          display: flex;
+          gap: 6px;
+          flex-wrap: wrap;
           margin-bottom: 20px;
         }
-        .mini-chart-total {
-          font-weight: 400;
-          color: var(--muted);
-        }
-        .mini-chart-empty {
-          font-size: 0.82rem;
-          color: var(--muted);
-          line-height: 1.6;
-        }
-        .mini-chart-empty :global(a) {
-          color: var(--rose-deep);
+        .dash-tab {
+          background: transparent;
+          border: none;
+          border-radius: 999px;
+          padding: 6px 12px;
+          font-size: 0.72rem;
           font-weight: 700;
+          color: var(--muted);
+          cursor: pointer;
         }
-        .mini-bar-row {
-          display: grid;
-          grid-template-columns: 100px 1fr 28px;
-          align-items: center;
-          gap: 10px;
-          margin-bottom: 14px;
+        .dash-tab.active {
+          background: white;
+          color: var(--ink);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
         }
-        .mini-bar-label {
+        .dash-title {
           font-size: 0.78rem;
+          font-weight: 700;
+          color: var(--ink);
+          margin-bottom: 18px;
+          line-height: 1.4;
+        }
+        .bar-row {
+          display: grid;
+          grid-template-columns: 108px 1fr 52px;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 12px;
+        }
+        .bar-label {
+          font-size: 0.74rem;
           font-weight: 600;
           color: var(--ink);
         }
-        .mini-bar-track {
+        .bar-track {
           background: var(--sand);
           border-radius: 6px;
-          height: 10px;
+          height: 9px;
           overflow: hidden;
         }
-        .mini-bar-fill {
+        .bar-fill {
           height: 100%;
           background: var(--rose);
           border-radius: 6px;
         }
-        .mini-bar-value {
-          font-size: 0.75rem;
+        .bar-fill.rising {
+          background: #c2410c;
+        }
+        .bar-fill.falling {
+          background: #0e6e65;
+        }
+        .bar-value {
+          font-size: 0.72rem;
           color: var(--muted);
           text-align: right;
+        }
+        .bar-value.rising-text {
+          color: #c2410c;
+          font-weight: 700;
         }
       `}</style>
     </div>
