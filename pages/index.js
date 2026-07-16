@@ -82,7 +82,6 @@ export default function Home() {
             <span> {t('hero_title_2')}</span>
           </h1>
           <p className="hero-desc">{t('hero_desc')}</p>
-          <p className="hero-sub">{t('hero_sub')}</p>
           <div className="hero-actions">
             <Link href="/map" className="btn-primary">{t('hero_btn_map')}</Link>
             <Link href="/rights" className="btn-secondary">{t('hero_btn_rights')}</Link>
@@ -213,7 +212,7 @@ export default function Home() {
             </Link>
             <Link href="/support" className="resource-card resource-teal">
               <p className="resource-title">Call Childline</p>
-              <p className="resource-sub">Free, secret, and they get it, 116</p>
+              <p className="resource-sub">Free, secret, and they get it &mdash; 116</p>
             </Link>
             <Link href="/chat" className="resource-card resource-plum">
               <p className="resource-title">Just ask, no pressure</p>
@@ -302,16 +301,9 @@ export default function Home() {
           font-size: 1.1rem;
           line-height: 1.65;
           color: var(--muted);
-          max-width: 560px;
-          margin: 0 auto 18px;
-          font-weight: 400;
-        }
-        .hero-sub {
-          font-size: 0.85rem;
-          font-weight: 600;
-          letter-spacing: 0.02em;
-          color: var(--rose);
+          max-width: 520px;
           margin: 0 auto 40px;
+          font-weight: 400;
         }
         .hero-actions {
           display: flex;
