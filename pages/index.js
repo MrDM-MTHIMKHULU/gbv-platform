@@ -29,7 +29,7 @@ export default function Home() {
   return (
     <Layout>
       <Head>
-        <title>SafeHaven — GBV Support Platform</title>
+        <title>SafeHaven, GBV Support Platform</title>
         <meta
           name="description"
           content="A free platform providing centralised GBV information, resources, and support for South African women and girls."
@@ -120,7 +120,7 @@ export default function Home() {
             <p className="section-body">
               Jennet is an AI agent trained on gender-based violence in the
               South African context. She knows the law, she knows the
-              resources, and she responds with empathy — no judgement, no
+              resources, and she responds with empathy, no judgement, no
               pressure.
             </p>
             <Link href="/chat" className="btn-primary">
@@ -142,7 +142,7 @@ export default function Home() {
             </h2>
             <p className="section-body">
               An interactive map of every verified shelter and safe house
-              across all 9 provinces — with contact details you can trust.
+              across all 9 provinces, with contact details you can trust.
             </p>
             <Link href="/map" className="btn-primary">
               Find shelter near me
@@ -168,7 +168,7 @@ export default function Home() {
             </h2>
             <p className="section-body">
               Verified figures on how GBV services are actually distributed
-              across South Africa — and exactly where the gaps are, province
+              across South Africa, and exactly where the gaps are, province
               by province.
             </p>
             <Link href="/insights" className="btn-primary">
@@ -616,7 +616,7 @@ function DataDashboard() {
 
       {tab === 'Reported GBV Cases per Province' && (
         <div className="dash-panel">
-          <p className="dash-title">Sexual offences by province — Q3 2024/25 (SAPS)</p>
+          <p className="dash-title">Sexual offences by province, Q3 2024/25 (SAPS)</p>
           {(() => {
             const max = PROVINCES_BY_CASES[0].sexualOffences.cases;
             return PROVINCES_BY_CASES.map((p) => (
@@ -665,7 +665,7 @@ function DataDashboard() {
       {tab === 'Case Types' && (
         <div className="dash-panel">
           <p className="dash-title">
-            Domestic-violence-linked cases, Q3 2024/25 — {NATIONAL_CASE_TYPES_TOTAL.toLocaleString()} total
+            Domestic-violence-linked cases, Q3 2024/25, {NATIONAL_CASE_TYPES_TOTAL.toLocaleString()} total
           </p>
           {NATIONAL_CASE_TYPES.map((c) => (
             <div className="bar-row" key={c.label}>
