@@ -42,7 +42,7 @@ export default function InsightsPage() {
         <p className="eyebrow">Data intelligence</p>
         <h1>The data behind the crisis</h1>
         <p className="sub">
-          Verified figures from SAPS and HSRC on where GBV is reported most —
+          Verified figures from SAPS and HSRC on where GBV is reported most,
           and how that compares to where help is actually available.
         </p>
       </section>
@@ -68,7 +68,7 @@ export default function InsightsPage() {
         <div className="block">
           <h2>Reported cases by province</h2>
           <p className="block-sub">
-            SAPS Q3 2024/25 (Oct–Dec 2024) — sorted by rape rate per 100,000
+            SAPS Q3 2024/25 (Oct–Dec 2024), sorted by rape rate per 100,000
             people, the clearest per-capita comparison across provinces of
             very different sizes.
           </p>
@@ -113,7 +113,7 @@ export default function InsightsPage() {
             <ResourceGap coverage={data.coverageStats.byProvince} />
           ) : (
             <p className="empty-note">
-              Shelter data isn&apos;t connected yet — once your service sheet
+              Shelter data isn&apos;t connected yet, once your service sheet
               is linked, this section will pair real service counts against
               reported cases per province to show exactly where the gap is
               widest.
@@ -125,7 +125,7 @@ export default function InsightsPage() {
           <h2>Known hotspot stations</h2>
           <p className="block-sub">
             SAPS&apos;s own Top 30 station rankings by case volume, Q3 2024/25
-            — the best available live proxy for hotspot status. This overlaps
+           , the best available live proxy for hotspot status. This overlaps
             substantially with the officially designated 2020 GBVF hotspot
             list.
           </p>
