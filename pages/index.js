@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 import Layout from '../components/Layout';
+import JennetChat from '../components/JennetChat';
 import { supabase } from '../lib/supabaseClient';
 
 export default function Home() {
@@ -200,15 +201,7 @@ export default function Home() {
             </Link>
           </div>
           <div className="showcase-visual">
-            <div className="mini-chat">
-              <p className="mini-chat-name">Jennet</p>
-              <div className="mini-chat-bubble">
-                Sawubona 🌸 I&apos;m Jennet. I&apos;m here to help with any
-                questions about gender-based violence — what can I help you
-                with?
-              </div>
-              <div className="mini-chat-input">Ask Jennet anything about GBV…</div>
-            </div>
+            <JennetChat compact />
           </div>
         </div>
       </section>
@@ -509,36 +502,9 @@ export default function Home() {
           margin-bottom: 6px;
         }
 
-        .mini-chat {
-          background: white;
-          border: 1px solid var(--sand);
-          border-radius: 16px;
-          padding: 26px;
-          width: 100%;
+        .showcase-visual :global(.jennet-chat) {
           max-width: 400px;
-        }
-        .mini-chat-name {
-          font-size: 0.85rem;
-          font-weight: 800;
-          color: var(--rose-deep);
-          margin-bottom: 12px;
-        }
-        .mini-chat-bubble {
-          background: var(--blush);
-          border-radius: 12px;
-          border-bottom-left-radius: 4px;
-          padding: 14px 16px;
-          font-size: 0.88rem;
-          line-height: 1.55;
-          color: var(--ink);
-          margin-bottom: 14px;
-        }
-        .mini-chat-input {
-          border: 1px solid var(--sand);
-          border-radius: 10px;
-          padding: 10px 14px;
-          font-size: 0.85rem;
-          color: var(--muted);
+          width: 100%;
         }
 
         .how {
