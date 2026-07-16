@@ -110,6 +110,55 @@ export default function Home() {
       <section className="showcase">
         <div className="showcase-block">
           <div className="showcase-text">
+            <p className="section-tag">Jennet AI Agent</p>
+            <h2 className="section-title">
+              Ask Jennet anything
+              <br />
+              <strong>about GBV.</strong>
+            </h2>
+            <p className="section-body">
+              Jennet is an AI agent trained on gender-based violence in the
+              South African context. She knows the law, she knows the
+              resources, and she responds with empathy — no judgement, no
+              pressure.
+            </p>
+            <Link href="/chat" className="btn-primary">
+              Ask Jennet
+            </Link>
+          </div>
+          <div className="showcase-visual">
+            <JennetChat compact />
+          </div>
+        </div>
+
+        <div className="showcase-block reverse">
+          <div className="showcase-text">
+            <p className="section-tag">Find Shelter</p>
+            <h2 className="section-title">
+              Shelters near you,
+              <br />
+              <strong>across South Africa.</strong>
+            </h2>
+            <p className="section-body">
+              An interactive map of every verified shelter and safe house
+              across all 9 provinces — with contact details you can trust.
+            </p>
+            <Link href="/map" className="btn-primary">
+              Find shelter near me
+            </Link>
+          </div>
+          <div className="showcase-visual">
+            <div className="mini-map">
+              <p className="mini-map-num">127+</p>
+              <p className="mini-map-label">verified shelters &amp; services</p>
+              <p className="mini-map-num small">9</p>
+              <p className="mini-map-label">provinces covered</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="showcase-block">
+          <div className="showcase-text">
             <p className="section-tag">Data Intelligence</p>
             <h2 className="section-title">
               The data behind
@@ -153,55 +202,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className="showcase-block reverse">
-          <div className="showcase-text">
-            <p className="section-tag">Find Shelter</p>
-            <h2 className="section-title">
-              Shelters near you,
-              <br />
-              <strong>across South Africa.</strong>
-            </h2>
-            <p className="section-body">
-              An interactive map of every verified shelter and safe house
-              across all 9 provinces — with contact details you can trust.
-            </p>
-            <Link href="/map" className="btn-primary">
-              Find shelter near me
-            </Link>
-          </div>
-          <div className="showcase-visual">
-            <div className="mini-map">
-              <p className="mini-map-num">127+</p>
-              <p className="mini-map-label">verified shelters &amp; services</p>
-              <p className="mini-map-num small">9</p>
-              <p className="mini-map-label">provinces covered</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="showcase-block">
-          <div className="showcase-text">
-            <p className="section-tag">Jennet AI Agent</p>
-            <h2 className="section-title">
-              Ask Jennet anything
-              <br />
-              <strong>about GBV.</strong>
-            </h2>
-            <p className="section-body">
-              Jennet is an AI agent trained on gender-based violence in the
-              South African context. She knows the law, she knows the
-              resources, and she responds with empathy — no judgement, no
-              pressure.
-            </p>
-            <Link href="/chat" className="btn-primary">
-              Ask Jennet
-            </Link>
-          </div>
-          <div className="showcase-visual">
-            <JennetChat compact />
           </div>
         </div>
       </section>
