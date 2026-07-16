@@ -16,7 +16,7 @@ export default function ChatPage() {
 
       <section className="page-header">
         <p className="eyebrow">Talk it through</p>
-        <h1>Ask Jennet</h1>
+        <h1>Jennet, GBV Support Specialist</h1>
         <p className="sub">
           Jennet is an AI agent, not a person and not a substitute for
           professional help. In an emergency, call{' '}
@@ -64,7 +64,7 @@ export default function ChatPage() {
         }
 
         .chat-wrap {
-          max-width: 640px;
+          max-width: 560px;
           margin: 0 auto;
           padding: 0 24px 80px;
         }
