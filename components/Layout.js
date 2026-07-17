@@ -68,6 +68,7 @@ export default function Layout({ children }) {
           <li><Link href="/rights">{t('nav_rights')}</Link></li>
           <li><Link href="/support">{t('nav_support')}</Link></li>
           <li><Link href="/chat">Ask Jennet</Link></li>
+          <li><Link href="/learn">Learn</Link></li>
           <li><Link href="/insights">The Data</Link></li>
           {user ? (
             <>
@@ -115,6 +116,7 @@ export default function Layout({ children }) {
           <div className="footer-col">
             <p className="footer-heading">{t('footer_heading_platform')}</p>
             <Link href="/about-abuse">{t('footer_about_abuse')}</Link>
+            <Link href="/learn">Learning Hub</Link>
             <Link href="/insights">The data behind the crisis</Link>
             <Link href="/">{t('footer_about')}</Link>
           </div>
