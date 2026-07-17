@@ -91,7 +91,13 @@ export default async function handler(req, res) {
     ink
   );
 
-  centerText('SafeHaven', width / 2 - 200, 90, boldFont, 13, ink);
+  page.drawText('SafeHaven', {
+    x: width / 2 - 200,
+    y: 90,
+    size: 13,
+    font: boldFont,
+    color: ink,
+  });
   page.drawLine({
     start: { x: width / 2 - 220, y: 82 },
     end: { x: width / 2 - 40, y: 82 },
