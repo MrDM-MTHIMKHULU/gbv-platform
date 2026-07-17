@@ -81,6 +81,7 @@ export default function Layout({ children }) {
               <span className="dropdown-trigger auth-link">Account ▾</span>
               <ul className="dropdown-menu">
                 <li><Link href="/profile">Profile</Link></li>
+                <li><Link href="/progress">My Progress</Link></li>
                 <li>
                   <button className="auth-btn" onClick={handleLogout}>Log out</button>
                 </li>
