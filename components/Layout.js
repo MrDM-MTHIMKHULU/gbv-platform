@@ -43,13 +43,6 @@ export default function Layout({ children }) {
     <>
       <QuickExitButton label={t('quick_exit')} />
 
-      <div className="e-bar">
-        <span>{t('emergency_prompt')}</span>
-        <a href="tel:10111">SAPS 10111</a>
-        <span className="e-divider">·</span>
-        <a href="tel:0800428428">{t('emergency_gbv')}</a>
-      </div>
-
       <nav>
         <Link href="/" className="logo">SafeHaven</Link>
 
@@ -64,26 +57,41 @@ export default function Layout({ children }) {
         </button>
 
         <ul className={`nav-links ${menuOpen ? 'open' : ''}`}>
-          <li><Link href="/map">{t('nav_find_help')}</Link></li>
-          <li><Link href="/rights">{t('nav_rights')}</Link></li>
-          <li><Link href="/support">{t('nav_support')}</Link></li>
-          <li><Link href="/chat">Ask Jennet</Link></li>
-          <li><Link href="/learn">Learn</Link></li>
-          <li><Link href="/insights">The Data</Link></li>
+          <li className="dropdown">
+            <span className="dropdown-trigger">Get Help ▾</span>
+            <ul className="dropdown-menu">
+              <li><Link href="/map">{t('nav_find_help')}</Link></li>
+              <li><Link href="/rights">{t('nav_rights')}</Link></li>
+              <li><Link href="/support">{t('nav_support')}</Link></li>
+            </ul>
+          </li>
+
+          <li><Link href="/chat" className="nav-cta">Ask Jennet</Link></li>
+
+          <li className="dropdown">
+            <span className="dropdown-trigger">Learn ▾</span>
+            <ul className="dropdown-menu">
+              <li><Link href="/learn">Learning Hub</Link></li>
+              <li><Link href="/insights">The Data</Link></li>
+            </ul>
+          </li>
+
           {user ? (
-            <>
-              <li>
-                <Link href="/profile" className="auth-link">Profile</Link>
-              </li>
-              <li>
-                <button className="auth-btn" onClick={handleLogout}>Log out</button>
-              </li>
-            </>
+            <li className="dropdown">
+              <span className="dropdown-trigger auth-link">Account ▾</span>
+              <ul className="dropdown-menu">
+                <li><Link href="/profile">Profile</Link></li>
+                <li>
+                  <button className="auth-btn" onClick={handleLogout}>Log out</button>
+                </li>
+              </ul>
+            </li>
           ) : (
             <li>
               <Link href="/login" className="auth-link">Log in</Link>
             </li>
           )}
+
           <li>
             <select
               aria-label="Choose language"
@@ -128,28 +136,6 @@ export default function Layout({ children }) {
       </footer>
 
       <style jsx>{`
-        .e-bar {
-          background: var(--ink);
-          color: var(--cream);
-          text-align: center;
-          padding: 10px 20px;
-          font-size: 0.82rem;
-          font-weight: 500;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 12px;
-          flex-wrap: wrap;
-        }
-        .e-bar :global(a) {
-          color: var(--blush);
-          font-weight: 700;
-          text-decoration: none;
-        }
-        .e-divider {
-          opacity: 0.4;
-        }
-
         nav {
           background: var(--white);
           padding: 0 5%;
@@ -190,7 +176,7 @@ export default function Layout({ children }) {
 
         .nav-links {
           display: flex;
-          gap: 20px;
+          gap: 6px;
           list-style: none;
           align-items: center;
           flex-wrap: wrap;
@@ -202,19 +188,27 @@ export default function Layout({ children }) {
           font-weight: 600;
           white-space: nowrap;
         }
+        .nav-links :global(.nav-cta) {
+          background: var(--rose);
+          color: white !important;
+          padding: 8px 16px;
+          border-radius: 999px;
+          font-weight: 700;
+        }
         .auth-link {
           color: var(--rose-deep) !important;
         }
         .auth-btn {
           background: none;
-          border: 1px solid var(--sand);
-          border-radius: 6px;
-          padding: 6px 14px;
+          border: none;
+          padding: 10px 16px;
           font-size: 0.85rem;
           font-weight: 600;
           color: var(--ink);
           cursor: pointer;
           white-space: nowrap;
+          width: 100%;
+          text-align: left;
         }
         .lang-select {
           background: var(--blush);
@@ -224,6 +218,48 @@ export default function Layout({ children }) {
           font-size: 0.8rem;
           color: var(--rose-deep);
           font-weight: 600;
+        }
+
+        .dropdown {
+          position: relative;
+          padding: 20px 10px;
+        }
+        .dropdown-trigger {
+          font-size: 0.88rem;
+          font-weight: 600;
+          color: var(--muted);
+          cursor: pointer;
+          user-select: none;
+        }
+        .dropdown-menu {
+          display: none;
+          list-style: none;
+          position: absolute;
+          top: 100%;
+          left: 10px;
+          background: white;
+          border: 1px solid var(--sand);
+          border-radius: 10px;
+          padding: 8px;
+          min-width: 170px;
+          box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+        .dropdown-menu li {
+          width: 100%;
+        }
+        .dropdown-menu :global(a),
+        .dropdown-menu .auth-btn {
+          display: block;
+          padding: 8px 10px;
+          border-radius: 6px;
+          font-size: 0.85rem;
+        }
+        .dropdown-menu :global(a:hover),
+        .dropdown-menu .auth-btn:hover {
+          background: var(--blush);
+        }
+        .dropdown:hover .dropdown-menu {
+          display: block;
         }
 
         @media (max-width: 860px) {
@@ -247,11 +283,13 @@ export default function Layout({ children }) {
             gap: 4px;
             padding: 16px 5% 20px;
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+            max-height: calc(100vh - 64px);
+            overflow-y: auto;
           }
           .nav-links.open {
             display: flex;
           }
-          .nav-links li {
+          .nav-links > li {
             width: 100%;
           }
           .nav-links :global(a) {
@@ -260,12 +298,37 @@ export default function Layout({ children }) {
             font-size: 0.95rem;
             width: 100%;
           }
+          .nav-links :global(.nav-cta) {
+            display: inline-block;
+            width: auto;
+          }
           .auth-btn,
           .lang-select {
             width: 100%;
             margin: 6px 0;
             text-align: left;
             padding: 10px 12px;
+          }
+
+          .dropdown {
+            padding: 6px 0;
+          }
+          .dropdown-trigger {
+            display: block;
+            padding: 10px 0;
+            font-size: 0.95rem;
+          }
+          .dropdown-menu {
+            display: block;
+            position: static;
+            box-shadow: none;
+            border: none;
+            padding: 0 0 0 14px;
+            background: none;
+            min-width: 0;
+          }
+          .dropdown-menu :global(a) {
+            padding: 8px 0;
           }
         }
 
