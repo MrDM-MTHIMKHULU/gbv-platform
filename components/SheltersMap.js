@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { supabase } from '../lib/supabaseClient';
 
@@ -217,11 +217,30 @@ export default function SheltersMap() {
 
           {showHotspots &&
             hotspots.map((h) => (
+              <Circle
+                key={`${h.id}-area`}
+                center={[h.latitude, h.longitude]}
+                radius={4000}
+                pathOptions={{
+                  color: '#b45309',
+                  weight: 1,
+                  fillColor: '#b45309',
+                  fillOpacity: 0.16,
+                }}
+              />
+            ))}
+
+          {showHotspots &&
+            hotspots.map((h) => (
               <Marker key={h.id} position={[h.latitude, h.longitude]} icon={hotspotIcon}>
                 <Popup>
                   <strong>{h.station}</strong> ({h.province})
                   <br />
                   {h.tooltip}
+                  <br />
+                  <span style={{ fontSize: '0.75rem', color: '#7A6A65', fontStyle: 'italic' }}>
+                    Shaded area is an approximate zone, not an exact boundary.
+                  </span>
                 </Popup>
               </Marker>
             ))}
@@ -235,7 +254,7 @@ export default function SheltersMap() {
           </div>
           <div className="map-legend-row">
             <span className="legend-icon hotspot">!</span>
-            <span>Known hotspot area</span>
+            <span>Known hotspot (approx. zone)</span>
           </div>
           {userPos && (
             <div className="map-legend-row">
