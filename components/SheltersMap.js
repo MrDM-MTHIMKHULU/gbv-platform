@@ -5,22 +5,43 @@ import { supabase } from '../lib/supabaseClient';
 
 // Custom colored pin markers built as divIcons, avoiding the well-known
 // Leaflet + webpack default-marker-asset bug entirely.
-function pinIcon(color) {
+function shelterPinIcon() {
   return L.divIcon({
     className: '',
     html: `<div style="
-      width: 22px; height: 22px; border-radius: 50% 50% 50% 0;
-      background: ${color}; transform: rotate(-45deg);
+      width: 26px; height: 26px; border-radius: 50% 50% 50% 0;
+      background: #0e6e65; transform: rotate(-45deg);
       border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.35);
-    "></div>`,
-    iconSize: [22, 22],
-    iconAnchor: [11, 22],
+      display: flex; align-items: center; justify-content: center;
+    "><span style="transform: rotate(45deg); font-size: 12px; line-height: 1;">🏠</span></div>`,
+    iconSize: [26, 26],
+    iconAnchor: [13, 26],
+    popupAnchor: [0, -26],
+  });
+}
+
+function hotspotWarningIcon() {
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+      width: 0; height: 0;
+      border-left: 13px solid transparent;
+      border-right: 13px solid transparent;
+      border-bottom: 22px solid #b45309;
+      position: relative;
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.35));
+    "><span style="
+      position: absolute; top: 8px; left: -13px; width: 26px;
+      text-align: center; color: white; font-weight: 800; font-size: 12px;
+    ">!</span></div>`,
+    iconSize: [26, 22],
+    iconAnchor: [13, 22],
     popupAnchor: [0, -22],
   });
 }
 
-const shelterIcon = pinIcon('#C41E3A');
-const hotspotIcon = pinIcon('#B45309');
+const shelterIcon = shelterPinIcon();
+const hotspotIcon = hotspotWarningIcon();
 const meIcon = L.divIcon({
   className: '',
   html: `<div style="
@@ -205,15 +226,24 @@ export default function SheltersMap() {
               </Marker>
             ))}
         </MapContainer>
-      </div>
 
-      <div className="legend">
-        <span className="legend-item">
-          <span className="legend-dot shelter" /> Verified shelter/service
-        </span>
-        <span className="legend-item">
-          <span className="legend-dot hotspot" /> Known hotspot area
-        </span>
+        <div className="map-legend">
+          <p className="map-legend-title">Key</p>
+          <div className="map-legend-row">
+            <span className="legend-icon shelter">🏠</span>
+            <span>Verified shelter/service</span>
+          </div>
+          <div className="map-legend-row">
+            <span className="legend-icon hotspot">!</span>
+            <span>Known hotspot area</span>
+          </div>
+          {userPos && (
+            <div className="map-legend-row">
+              <span className="legend-icon me" />
+              <span>Your location</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {shelters.length === 0 && (
@@ -270,33 +300,65 @@ export default function SheltersMap() {
           margin-bottom: 10px;
         }
         .map-wrap {
+          position: relative;
           border-radius: 12px;
           overflow: hidden;
           border: 1px solid var(--sand);
         }
-        .legend {
-          display: flex;
-          gap: 20px;
-          margin-top: 14px;
+        .map-legend {
+          position: absolute;
+          top: 14px;
+          right: 14px;
+          z-index: 1000;
+          background: white;
+          border: 1px solid var(--sand);
+          border-radius: 10px;
+          padding: 12px 14px;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
         }
-        .legend-item {
+        .map-legend-title {
+          font-size: 0.68rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: var(--muted);
+          margin-bottom: 8px;
+        }
+        .map-legend-row {
           display: flex;
           align-items: center;
           gap: 8px;
-          font-size: 0.8rem;
-          color: var(--muted);
+          font-size: 0.78rem;
+          color: var(--ink);
+          margin-bottom: 6px;
+          white-space: nowrap;
         }
-        .legend-dot {
+        .map-legend-row:last-child {
+          margin-bottom: 0;
+        }
+        .legend-icon {
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 11px;
+          flex-shrink: 0;
+        }
+        .legend-icon.shelter {
+          background: #0e6e65;
+        }
+        .legend-icon.hotspot {
+          background: #b45309;
+          color: white;
+          font-weight: 800;
+        }
+        .legend-icon.me {
+          background: #2563eb;
           width: 12px;
           height: 12px;
-          border-radius: 50%;
-          display: inline-block;
-        }
-        .legend-dot.shelter {
-          background: #c41e3a;
-        }
-        .legend-dot.hotspot {
-          background: #b45309;
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
         }
         .empty-note {
           font-size: 0.85rem;
