@@ -37,12 +37,16 @@ function greetingForNow() {
 
 export default function LearnPage() {
   const [user, setUser] = useState(null);
+  const [accessToken, setAccessToken] = useState(null);
   const [progress, setProgress] = useState({});
   const [certifiedCourses, setCertifiedCourses] = useState(new Set());
   const [ageGroup, setAgeGroup] = useState(null);
   const [tab, setTab] = useState('progress');
 
   useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setAccessToken(data.session?.access_token ?? null);
+    });
     supabase.auth.getUser().then(({ data }) => {
       setAgeGroup(data.user?.user_metadata?.age_group ?? null);
       setUser(data.user ?? null);
@@ -206,7 +210,7 @@ export default function LearnPage() {
                   {certifiedCourses.has(c.id) && (
                     <a
                       className="cert-link"
-                      href={`/api/certificate?courseId=${c.id}`}
+                      href={`/api/certificate?courseId=${c.id}&token=${accessToken}`}
                       target="_blank"
                       rel="noreferrer"
                     >
