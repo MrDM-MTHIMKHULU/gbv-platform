@@ -52,6 +52,19 @@ function RecenterOnLocate({ position }) {
   return null;
 }
 
+// Leaflet sometimes calculates its size before the container has finished
+// laying out (especially inside a dynamically-loaded component). This
+// forces a recalculation right after mount so tiles don't render
+// misaligned or cut off.
+function InvalidateSizeOnMount() {
+  const map = useMap();
+  useEffect(() => {
+    const timer = setTimeout(() => map.invalidateSize(), 100);
+    return () => clearTimeout(timer);
+  }, [map]);
+  return null;
+}
+
 export default function SheltersMap() {
   const [shelters, setShelters] = useState([]);
   const [hotspots, setHotspots] = useState([]);
@@ -146,6 +159,7 @@ export default function SheltersMap() {
           scrollWheelZoom={true}
           style={{ height: '520px', width: '100%', borderRadius: '12px' }}
         >
+          <InvalidateSizeOnMount />
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
