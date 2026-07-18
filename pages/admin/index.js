@@ -5,8 +5,23 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Layout from '../../components/Layout';
 import { supabase } from '../../lib/supabaseClient';
 
+const TOOLS = [
+  {
+    href: '/admin/analytics',
+    icon: '📊',
+    title: 'Learning Analytics',
+    desc: 'See course completions, top topics, quiz pass rates, and certificates issued across every learner.',
+  },
+  {
+    href: '/admin/shelters',
+    icon: '📍',
+    title: 'Shelters & Hotspots',
+    desc: 'Add, edit, or remove pins on the Find Help map.',
+  },
+];
+
 export default function AdminHubPage() {
-  const [status, setStatus] = useState('loading'); // loading | unauthorized | ready
+  const [status, setStatus] = useState('loading');
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -76,26 +91,25 @@ export default function AdminHubPage() {
 
       <section className="page-header">
         <p className="eyebrow">Admin</p>
-        <h1>Admin tools</h1>
-        <p className="sub">Everything only you and other admins can see.</p>
+        <h1>Run the platform</h1>
+        <p className="sub">
+          Tools only admin accounts can see or use.
+        </p>
       </section>
 
       <section className="content">
-        <Link href="/admin/analytics" className="admin-card">
-          <p className="admin-card-title">Learning Analytics</p>
-          <p className="admin-card-desc">
-            Aggregated engagement across all learners: course completions,
-            most-engaged topics, quiz pass rates, certificates issued.
-          </p>
-        </Link>
-
-        <Link href="/admin/shelters" className="admin-card">
-          <p className="admin-card-title">Manage Shelters &amp; Hotspots</p>
-          <p className="admin-card-desc">
-            Add, edit, or remove the shelters and hotspot areas shown on the
-            Find Help map.
-          </p>
-        </Link>
+        {TOOLS.map((tool) => (
+          <Link href={tool.href} key={tool.href} className="tool-link">
+            <div className="tool-card">
+              <div className="tool-icon">{tool.icon}</div>
+              <div className="tool-body">
+                <p className="tool-title">{tool.title}</p>
+                <p className="tool-desc">{tool.desc}</p>
+              </div>
+              <div className="tool-arrow">→</div>
+            </div>
+          </Link>
+        ))}
       </section>
 
       <style jsx>{`
@@ -120,35 +134,68 @@ export default function AdminHubPage() {
           margin-bottom: 12px;
         }
         .sub {
-          font-size: 0.92rem;
+          font-size: 0.95rem;
           color: var(--muted);
         }
 
         .content {
           max-width: 640px;
           margin: 0 auto;
-          padding: 20px 24px 100px;
+          padding: 10px 24px 100px;
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: 14px;
         }
-        .admin-card {
-          display: block;
-          background: var(--blush);
-          border-radius: 14px;
-          padding: 26px;
+
+        :global(.tool-link) {
           text-decoration: none;
+          display: block;
         }
-        .admin-card-title {
-          font-size: 1.1rem;
+
+        .tool-card {
+          display: flex;
+          align-items: center;
+          gap: 18px;
+          background: white;
+          border: 1px solid var(--sand);
+          border-radius: 14px;
+          padding: 22px 24px;
+          transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        :global(.tool-link:hover) .tool-card {
+          border-color: var(--rose);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .tool-icon {
+          width: 46px;
+          height: 46px;
+          border-radius: 12px;
+          background: var(--blush);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.3rem;
+          flex-shrink: 0;
+        }
+        .tool-body {
+          flex: 1;
+        }
+        .tool-title {
+          font-size: 1rem;
           font-weight: 800;
           color: var(--ink);
-          margin-bottom: 8px;
+          margin-bottom: 4px;
         }
-        .admin-card-desc {
-          font-size: 0.88rem;
+        .tool-desc {
+          font-size: 0.85rem;
           color: var(--muted);
-          line-height: 1.6;
+          line-height: 1.5;
+        }
+        .tool-arrow {
+          font-size: 1.2rem;
+          color: var(--rose);
+          flex-shrink: 0;
         }
       `}</style>
     </Layout>
