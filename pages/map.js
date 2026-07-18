@@ -1,7 +1,14 @@
+import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Layout from '../components/Layout';
-import { HOTSPOTS_2020, CURRENT_HOTSPOTS } from '../lib/gbvData';
+
+// Leaflet needs the browser (window/document), so this must never render
+// on the server. ssr: false handles that.
+const SheltersMap = dynamic(() => import('../components/SheltersMap'), {
+  ssr: false,
+  loading: () => <p className="map-loading">Loading map…</p>,
+});
 
 export default function MapPage() {
   return (
@@ -10,7 +17,7 @@ export default function MapPage() {
         <title>Find Help Near You | SafeHaven</title>
         <meta
           name="description"
-          content="Search verified shelters, clinics, and legal aid offices across South Africa."
+          content="Search verified shelters, clinics, and legal aid offices across South Africa, and see known GBV hotspot areas."
         />
       </Head>
 
@@ -18,21 +25,13 @@ export default function MapPage() {
         <p className="eyebrow">Find help near you</p>
         <h1>Verified shelters, clinics &amp; legal aid</h1>
         <p className="sub">
-          Search by province and service type. Every listing includes a phone
-          number and address, verified before it&apos;s added to this map.
+          Search by province, or tap &quot;Find shelters near me&quot; to sort
+          by distance. Amber pins mark known GBV hotspot areas.
         </p>
       </section>
 
-      <section className="map-wrap">
-        <iframe
-          title="SafeHaven service map"
-          src="https://datastudio.google.com/embed/reporting/40f1ad2b-8328-4089-9158-2be5908979b5/page/Nfb3F"
-          width="100%"
-          height="600"
-          frameBorder="0"
-          allowFullScreen
-          sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
-        />
+      <section className="map-section">
+        <SheltersMap />
       </section>
 
       <section className="map-note">
@@ -43,47 +42,16 @@ export default function MapPage() {
         </p>
       </section>
 
-      <section className="hotspots">
-        <p className="eyebrow center">Known GBV hotspot areas</p>
-        <h2>Is your area a known hotspot?</h2>
-        <p className="hotspots-sub">
-          Officially designated 22 September 2020 by government&apos;s
-          Inter-Ministerial Committee on GBVF, based on FY2019/20 data. This
-          designation was last confirmed still in effect in May 2022, treat
-          it as a standing list rather than a live ranking.
+      <section className="hotspots-note">
+        <p className="hotspots-title">About the hotspot markers</p>
+        <p className="hotspots-text">
+          Amber pins combine two sources: the 30 GBVF hotspot stations
+          officially designated on 22 September 2020 by government&apos;s
+          Inter-Ministerial Committee (based on FY2019/20 data, last
+          confirmed still in effect May 2022), and the current top-ranked
+          stations by case volume from SAPS&apos;s Q3 2024/25 report. Tap a
+          pin to see which category applies to that area.
         </p>
-
-        <div className="hotspot-groups">
-          {Object.entries(HOTSPOTS_2020).map(([province, stations]) => (
-            <details className="hotspot-group" key={province}>
-              <summary>
-                {province} <span className="count">({stations.length})</span>
-              </summary>
-              <ul>
-                {stations.map((s) => (
-                  <li key={s}>{s}</li>
-                ))}
-              </ul>
-            </details>
-          ))}
-        </div>
-
-        <div className="current-note">
-          <p className="current-title">
-            Currently highest case-volume stations for rape
-          </p>
-          <p className="current-sub">
-            SAPS Q3 2024/25 (Oct–Dec 2024), a live proxy pending an updated
-            official list. Overlaps substantially with the stations above.
-          </p>
-          <ol className="current-list">
-            {CURRENT_HOTSPOTS.Rape.slice(0, 5).map((h) => (
-              <li key={h.station}>
-                {h.station} <span>, {h.province}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
       </section>
 
       <style jsx>{`
@@ -91,7 +59,7 @@ export default function MapPage() {
           max-width: 720px;
           margin: 0 auto;
           text-align: center;
-          padding: 70px 24px 40px;
+          padding: 70px 24px 30px;
         }
         .eyebrow {
           font-size: 0.8rem;
@@ -100,9 +68,6 @@ export default function MapPage() {
           text-transform: uppercase;
           color: var(--rose);
           margin-bottom: 18px;
-        }
-        .eyebrow.center {
-          text-align: center;
         }
         .page-header h1 {
           font-size: clamp(1.9rem, 4vw, 2.6rem);
@@ -115,24 +80,25 @@ export default function MapPage() {
           font-size: 1.02rem;
           line-height: 1.6;
           color: var(--muted);
-          max-width: 500px;
+          max-width: 520px;
           margin: 0 auto;
         }
 
-        .map-wrap {
+        .map-section {
           max-width: 1000px;
           margin: 0 auto;
-          padding: 0 24px 40px;
+          padding: 0 24px 30px;
         }
-        .map-wrap iframe {
-          border-radius: 12px;
-          border: 1px solid var(--sand);
+        :global(.map-loading) {
+          text-align: center;
+          padding: 60px;
+          color: var(--muted);
         }
 
         .map-note {
           max-width: 600px;
           margin: 0 auto;
-          padding: 0 24px 40px;
+          padding: 0 24px 30px;
           text-align: center;
         }
         .map-note p {
@@ -141,82 +107,24 @@ export default function MapPage() {
           line-height: 1.6;
         }
 
-        .hotspots {
+        .hotspots-note {
           max-width: 700px;
           margin: 0 auto;
-          padding: 50px 24px 100px;
+          padding: 30px 24px 100px;
           border-top: 1px solid var(--sand);
         }
-        .hotspots h2 {
-          font-size: 1.5rem;
-          font-weight: 800;
-          color: var(--ink);
-          text-align: center;
-          margin-bottom: 14px;
-        }
-        .hotspots-sub {
-          font-size: 0.88rem;
-          color: var(--muted);
-          line-height: 1.6;
-          text-align: center;
-          max-width: 560px;
-          margin: 0 auto 32px;
-        }
-
-        .hotspot-groups {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          margin-bottom: 40px;
-        }
-        .hotspot-group {
-          background: var(--warm);
-          border-radius: 10px;
-          padding: 14px 18px;
-        }
-        .hotspot-group summary {
-          cursor: pointer;
-          font-weight: 700;
-          color: var(--ink);
-          font-size: 0.92rem;
-        }
-        .hotspot-group .count {
-          color: var(--muted);
-          font-weight: 400;
-        }
-        .hotspot-group ul {
-          margin: 12px 0 0;
-          padding-left: 20px;
-          font-size: 0.85rem;
-          color: var(--muted);
-          line-height: 1.9;
-        }
-
-        .current-note {
-          background: var(--blush);
-          border-radius: 12px;
-          padding: 22px 24px;
-        }
-        .current-title {
+        .hotspots-title {
           font-weight: 800;
           color: var(--ink);
           font-size: 0.95rem;
-          margin-bottom: 6px;
+          margin-bottom: 10px;
+          text-align: center;
         }
-        .current-sub {
-          font-size: 0.8rem;
+        .hotspots-text {
+          font-size: 0.85rem;
           color: var(--muted);
-          line-height: 1.55;
-          margin-bottom: 14px;
-        }
-        .current-list {
-          padding-left: 20px;
-          font-size: 0.88rem;
-          color: var(--ink);
-          line-height: 1.8;
-        }
-        .current-list span {
-          color: var(--muted);
+          line-height: 1.65;
+          text-align: center;
         }
       `}</style>
     </Layout>
