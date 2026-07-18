@@ -220,7 +220,7 @@ export default function SheltersMap() {
               <Circle
                 key={`${h.id}-area`}
                 center={[h.latitude, h.longitude]}
-                radius={7000}
+                radius={3000}
                 pathOptions={{
                   color: '#b45309',
                   weight: 1,
