@@ -10,18 +10,27 @@ export default function Layout({ children }) {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setUser(data.session?.user ?? null);
+      if (data.session?.user) checkAdmin();
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) checkAdmin();
+      else setIsAdmin(false);
     });
 
     return () => listener.subscription.unsubscribe();
   }, []);
+
+  const checkAdmin = async () => {
+    const { data } = await supabase.rpc('is_admin');
+    setIsAdmin(!!data);
+  };
 
   useEffect(() => {
     const closeMenu = () => setMenuOpen(false);
@@ -82,6 +91,7 @@ export default function Layout({ children }) {
               <ul className="dropdown-menu">
                 <li><Link href="/profile">Profile</Link></li>
                 <li><Link href="/progress">My Progress</Link></li>
+                {isAdmin && <li><Link href="/admin">Admin</Link></li>}
                 <li>
                   <button className="auth-btn" onClick={handleLogout}>Log out</button>
                 </li>
