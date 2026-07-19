@@ -1,50 +1,17 @@
-import { createClient } from '@supabase/supabase-js';
-
 const SHEET_CSV_URL = process.env.SHELTER_SHEET_CSV_URL;
 
+// This route is public and unauthenticated, on purpose, it only ever powers
+// the public /insights page. Signup/user demographic data must NEVER be
+// added back here; that lives behind get_admin_signup_stats() in
+// pages/admin/analytics.js instead, which checks is_admin() server-side.
 export default async function handler(req, res) {
   try {
-    const signupStats = await getSignupStats();
     const coverageStats = await getCoverageStats();
-
-    return res.status(200).json({ signupStats, coverageStats });
+    return res.status(200).json({ coverageStats });
   } catch (err) {
     console.error('Insights API error:', err);
     return res.status(500).json({ error: 'Could not load insights' });
   }
-}
-
-async function getSignupStats() {
-  const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  );
-
-  const { data, error } = await supabaseAdmin.auth.admin.listUsers();
-  if (error) throw error;
-
-  const users = data.users || [];
-  const byAgeGroup = {};
-  const byProvince = {};
-  const byLanguage = {};
-
-  users.forEach((u) => {
-    const meta = u.user_metadata || {};
-    const age = meta.age_group || 'Not specified';
-    const province = meta.province || 'Not specified';
-    const lang = meta.preferred_language || 'en';
-
-    byAgeGroup[age] = (byAgeGroup[age] || 0) + 1;
-    byProvince[province] = (byProvince[province] || 0) + 1;
-    byLanguage[lang] = (byLanguage[lang] || 0) + 1;
-  });
-
-  return {
-    total: users.length,
-    byAgeGroup,
-    byProvince,
-    byLanguage,
-  };
 }
 
 async function getCoverageStats() {
