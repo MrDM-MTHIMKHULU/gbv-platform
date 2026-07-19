@@ -15,19 +15,6 @@ const COURSE_ICONS = {
   'online-safety': '🔒',
 };
 
-const DOWNLOADS = [
-  {
-    file: '/downloads/know-your-rights-guide.pdf',
-    icon: '⚖️',
-    title: 'Know Your Rights',
-  },
-  {
-    file: '/downloads/safety-planning-guide.pdf',
-    icon: '🛡️',
-    title: 'Building Your Safety Plan',
-  },
-];
-
 function greetingForNow() {
   const hour = new Date().getHours();
   if (hour < 12) return 'Good morning';
@@ -42,6 +29,15 @@ export default function LearnPage() {
   const [certifiedCourses, setCertifiedCourses] = useState(new Set());
   const [ageGroup, setAgeGroup] = useState(null);
   const [tab, setTab] = useState('progress');
+  const [quickGuides, setQuickGuides] = useState([]);
+
+  useEffect(() => {
+    supabase
+      .from('documents')
+      .select('*')
+      .eq('doc_type', 'quick_guide')
+      .then(({ data }) => setQuickGuides(data || []));
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -253,14 +249,17 @@ export default function LearnPage() {
           <div className="side-card">
             <p className="side-title">Guides to download</p>
             <div className="download-list">
-              {DOWNLOADS.map((d) => (
-                <a href={d.file} className="download-row" key={d.file} download>
-                  <span className="download-icon">{d.icon}</span>
+              {quickGuides.map((d) => (
+                <a href={d.file_url} className="download-row" key={d.id} download>
+                  <span className="download-icon">{d.doc_type === 'ebook' ? '📕' : '📄'}</span>
                   <span className="download-title">{d.title}</span>
                   <span className="download-arrow">↓</span>
                 </a>
               ))}
             </div>
+            <Link href="/library" className="library-link">
+              Browse the full library →
+            </Link>
           </div>
         </div>
       </section>
@@ -487,6 +486,13 @@ export default function LearnPage() {
         .download-arrow {
           color: var(--rose-deep);
           font-weight: 800;
+        }
+        .library-link {
+          display: block;
+          margin-top: 14px;
+          font-size: 0.8rem;
+          font-weight: 700;
+          color: var(--rose-deep);
         }
 
         @media (max-width: 800px) {
