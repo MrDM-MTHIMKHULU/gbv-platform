@@ -2,12 +2,55 @@ import Head from 'next/head';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Layout from '../components/Layout';
 
+// Alphabetical by first name. Keep it this way when adding/removing people.
 const TEAM = [
-  { initials: 'KC', name: 'Khaviso Hatlane', surname: 'Hatlane', gender: 'male', linkedin: '#' },
-  { initials: 'S', name: 'Sihle Majodina', surname: 'Majodina', gender: 'male', linkedin: '#' },
-  { initials: 'SJ', name: 'Sibohelo Moshasha', surname: 'Moshasha', gender: 'female', linkedin: '#' },
-  { initials: 'DM', name: 'Den Mthimkhulu', surname: 'Mthimkhulu', gender: 'male', linkedin: '#' },
-  { initials: 'L', name: 'Lina Mtshatsha', surname: 'Mtshatsha', gender: 'female', linkedin: '#' },
+  { initials: 'DM', name: 'Den Mthimkhulu', gender: 'male', linkedin: '#' },
+  { initials: 'KC', name: 'Khaviso Hatlane', gender: 'male', linkedin: '#' },
+  { initials: 'L', name: 'Lina Mtshatsha', gender: 'female', linkedin: '#' },
+  { initials: 'SJ', name: 'Sibohelo Moshasha', gender: 'female', linkedin: '#' },
+  { initials: 'S', name: 'Sihle Majodina', gender: 'male', linkedin: '#' },
+];
+
+const AUDIENCES = [
+  {
+    tag: 'If it\u2019s happening to you',
+    text: 'Clear information on your rights, shelters near you, and someone to talk to, right now if you need to.',
+  },
+  {
+    tag: 'If you want to understand it',
+    text: 'Structured lessons on what abuse looks like, consent, and healthy relationships, for anyone who wants to learn.',
+  },
+  {
+    tag: 'If someone you know needs you',
+    text: 'A dedicated course on how to support a friend, family member, or colleague without making things harder for them.',
+  },
+];
+
+const FEATURES = [
+  {
+    tag: 'Jennet, our AI agent',
+    text: 'A real conversational assistant scoped strictly to GBV, trained to recognise when to stop being an assistant and hand someone a phone number instead.',
+  },
+  {
+    tag: 'Verified, not scraped',
+    text: 'Every shelter, hotline, and legal process on this platform is checked against Legal Aid South Africa, gov.za, and each organisation\u2019s own published contact details.',
+  },
+  {
+    tag: 'A guided rights wizard',
+    text: 'Five questions, no login required, nothing stored, that walk you to the legal information relevant to your specific situation.',
+  },
+  {
+    tag: 'Built for two different readers',
+    text: 'A 16-year-old and a 35-year-old in an abusive marriage need different information delivered in a different tone. The whole platform, colours included, adjusts for that.',
+  },
+  {
+    tag: 'An emergency alert, not a gimmick',
+    text: 'Save a trusted contact and share your live location with one tap, by SMS through your own messaging app, or automatically by email.',
+  },
+  {
+    tag: 'Real data, honestly presented',
+    text: 'Live province-by-province coverage gaps next to cited SAPS and HSRC statistics, including the reporting caveats most platforms leave out.',
+  },
 ];
 
 export default function AboutUsPage() {
@@ -17,7 +60,7 @@ export default function AboutUsPage() {
         <title>About Us | SafeHaven</title>
         <meta
           name="description"
-          content="SafeHaven brings scattered GBV information, shelters, legal rights, and support into one place for women and girls in South Africa."
+          content="SafeHaven brings scattered GBV information, shelters, legal rights, and support into one place, for survivors, for people learning, and for people who want to help."
         />
       </Head>
 
@@ -28,11 +71,28 @@ export default function AboutUsPage() {
           <span> of getting to safety.</span>
         </h1>
         <p className="sub">
-          SafeHaven is a centralised support platform for women and girls
-          experiencing gender-based violence in South Africa. Support exists,
-          shelters exist, legal protections exist, but the information about
-          them is scattered. We bring it into one place.
+          SafeHaven is a centralised support platform for gender-based
+          violence in South Africa. Support exists, shelters exist, legal
+          protections exist, but the information about them is scattered.
+          We bring it into one place.
         </p>
+      </section>
+
+      <section className="audiences">
+        <p className="audiences-lead">
+          SafeHaven isn&apos;t only for people currently experiencing abuse.
+          It&apos;s also for people who want to understand what GBV looks
+          like before it touches their own life, and for the friends, family,
+          and colleagues who want to help someone else through it.
+        </p>
+        <div className="audience-grid">
+          {AUDIENCES.map((a) => (
+            <div className="audience-card" key={a.tag}>
+              <p className="audience-tag">{a.tag}</p>
+              <p className="audience-text">{a.text}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="intro-block">
@@ -47,7 +107,11 @@ export default function AboutUsPage() {
           scattered across dozens of disconnected websites, PDFs, hotline
           lists, and government departments. For someone in crisis, often
           with limited time and real fear for their safety, that fragmentation
-          is itself a form of inaccessibility.
+          is itself a form of inaccessibility. And accessibility means
+          language too: South Africa has 11 official languages, and
+          information that only exists in one or two of them isn&apos;t
+          truly accessible at all. SafeHaven is built to grow into all 11,
+          not stay limited to the ones it launched with.
         </p>
       </section>
 
@@ -55,20 +119,37 @@ export default function AboutUsPage() {
         <div className="pillar">
           <p className="pillar-tag">Our Vision</p>
           <p className="pillar-text">
-            A South Africa where no woman or girl in crisis has to piece
-            together her own safety from scattered PDFs and disconnected
-            hotline lists, where the right information is always one place
-            away, not twenty.
+            A South Africa where no one, whether they&apos;re in crisis,
+            trying to understand what&apos;s happening to them, or trying to
+            help someone else, has to piece together safety information from
+            scattered PDFs and disconnected hotline lists.
           </p>
         </div>
         <div className="pillar">
           <p className="pillar-tag">Our Mission</p>
           <p className="pillar-text">
-            To bring shelters, legal rights, hotlines, and safety information
-            into a single, trustworthy platform, built with two audiences in
-            mind: girls who need to recognise what&apos;s happening to them,
-            and women who need to act on it.
+            To bring shelters, legal rights, hotlines, education, and
+            safety tools into a single, trustworthy platform, in the
+            languages South Africans actually speak, built for survivors,
+            for learners, and for allies alike.
           </p>
+        </div>
+      </section>
+
+      <section className="features-section">
+        <p className="eyebrow center">More Than a Directory</p>
+        <h2>What makes SafeHaven different</h2>
+        <p className="features-lead">
+          It&apos;s not enough for information to exist. How it&apos;s
+          delivered matters just as much as what&apos;s delivered.
+        </p>
+        <div className="feature-grid">
+          {FEATURES.map((f) => (
+            <div className="feature-card" key={f.tag}>
+              <p className="feature-tag">{f.tag}</p>
+              <p className="feature-text">{f.text}</p>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -132,10 +213,47 @@ export default function AboutUsPage() {
           line-height: 1.7;
         }
 
+        .audiences {
+          max-width: 900px;
+          margin: 20px auto 0;
+          padding: 20px 24px 0;
+        }
+        .audiences-lead {
+          font-size: 0.98rem;
+          color: var(--ink);
+          line-height: 1.75;
+          text-align: center;
+          max-width: 720px;
+          margin: 0 auto 34px;
+        }
+        .audience-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+        }
+        .audience-card {
+          background: white;
+          border: 1px solid var(--sand);
+          border-radius: 14px;
+          padding: 24px 22px;
+        }
+        .audience-tag {
+          font-size: 0.85rem;
+          font-weight: 800;
+          color: var(--rose-deep);
+          margin-bottom: 10px;
+          line-height: 1.4;
+        }
+        .audience-text {
+          font-size: 0.85rem;
+          color: var(--muted);
+          line-height: 1.6;
+        }
+
         .intro-block {
           max-width: 680px;
           margin: 0 auto;
-          padding: 30px 24px 10px;
+          padding: 50px 24px 10px;
         }
         .intro-block p {
           font-size: 0.95rem;
@@ -174,9 +292,52 @@ export default function AboutUsPage() {
           line-height: 1.7;
         }
 
+        .features-section {
+          max-width: 1000px;
+          margin: 90px auto 0;
+          padding: 0 24px;
+          text-align: center;
+        }
+        .features-section h2 {
+          font-size: clamp(1.5rem, 3vw, 2rem);
+          font-weight: 800;
+          color: var(--ink);
+          margin-bottom: 12px;
+        }
+        .features-lead {
+          font-size: 0.95rem;
+          color: var(--muted);
+          max-width: 560px;
+          margin: 0 auto 40px;
+          line-height: 1.6;
+        }
+        .feature-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+          text-align: left;
+        }
+        .feature-card {
+          background: var(--warm);
+          border-radius: 14px;
+          padding: 24px 22px;
+        }
+        .feature-tag {
+          font-size: 0.88rem;
+          font-weight: 800;
+          color: var(--ink);
+          margin-bottom: 10px;
+          line-height: 1.4;
+        }
+        .feature-text {
+          font-size: 0.84rem;
+          color: var(--muted);
+          line-height: 1.65;
+        }
+
         .team-section {
           max-width: 900px;
-          margin: 80px auto 0;
+          margin: 90px auto 0;
           padding: 0 24px 100px;
           text-align: center;
         }
@@ -188,12 +349,14 @@ export default function AboutUsPage() {
         }
 
         .team-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
           gap: 24px;
         }
 
         :global(.team-card) {
+          flex: 0 1 260px;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -249,16 +412,14 @@ export default function AboutUsPage() {
         }
 
         @media (max-width: 760px) {
-          .pillars {
+          .pillars,
+          .audience-grid,
+          .feature-grid {
             grid-template-columns: 1fr;
           }
-          .team-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-        }
-        @media (max-width: 480px) {
-          .team-grid {
-            grid-template-columns: 1fr;
+          .team-card {
+            flex-basis: 100%;
+            max-width: 300px;
           }
         }
       `}</style>
