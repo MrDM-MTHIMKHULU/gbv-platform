@@ -100,25 +100,6 @@ export default function Home() {
         </section>
       )}
 
-      <section className="stats">
-        <div className="stat">
-          <p className="stat-num">127+</p>
-          <p className="stat-label">{t('stat_shelters')}</p>
-        </div>
-        <div className="stat">
-          <p className="stat-num">9</p>
-          <p className="stat-label">{t('stat_provinces')}</p>
-        </div>
-        <div className="stat">
-          <p className="stat-num">5</p>
-          <p className="stat-label">{t('stat_languages')}</p>
-        </div>
-        <div className="stat">
-          <p className="stat-num">24/7</p>
-          <p className="stat-label">{t('stat_available')}</p>
-        </div>
-      </section>
-
       <section className="showcase">
         <div className="showcase-block">
           <div className="showcase-text">
@@ -195,13 +176,13 @@ export default function Home() {
           <div className="showcase-text">
             <p className="section-tag">Learning Hub</p>
             <h2 className="section-title">
-              Learn what abuse
+              Understand
               <br />
-              <strong>actually looks like.</strong>
+              <strong>gender-based violence.</strong>
             </h2>
             <p className="section-body">
-              Short lessons on healthy relationships, consent, and online
-              safety, plus a myth vs fact game. Try it right here.
+              Lessons on recognizing GBV, understanding consent, and staying
+              safe online, plus a myth vs fact game. Try it right here.
             </p>
             <Link href="/learn" className="btn-primary">
               Visit the Learning Hub
@@ -216,13 +197,13 @@ export default function Home() {
           <div className="showcase-text">
             <p className="section-tag">Library</p>
             <h2 className="section-title">
-              Guides and ebooks,
+              Guides and ebooks
               <br />
-              <strong>searchable, not endless scroll.</strong>
+              <strong>on gender-based violence.</strong>
             </h2>
             <p className="section-body">
-              Search by topic, author, or keyword instead of digging through
-              a long list. New guides are added regularly.
+              Practical guides and ebooks on GBV, rights, and safety. New
+              titles are added regularly.
             </p>
             <Link href="/library" className="btn-primary">
               Browse the library
@@ -382,29 +363,6 @@ export default function Home() {
           font-size: 0.92rem;
           text-decoration: none;
           border-radius: 8px;
-        }
-
-        .stats {
-          background: var(--ink);
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          padding: 44px 6%;
-          gap: 20px;
-        }
-        .stat {
-          text-align: center;
-          color: var(--cream);
-        }
-        .stat-num {
-          font-size: 2.2rem;
-          font-weight: 800;
-          color: var(--rose);
-          margin-bottom: 6px;
-        }
-        .stat-label {
-          font-size: 0.85rem;
-          color: var(--sand);
-          font-weight: 400;
         }
 
         .showcase {
@@ -607,9 +565,6 @@ export default function Home() {
         }
 
         @media (max-width: 860px) {
-          .stats {
-            grid-template-columns: repeat(2, 1fr);
-          }
           .how-grid,
           .resource-grid {
             grid-template-columns: 1fr;
