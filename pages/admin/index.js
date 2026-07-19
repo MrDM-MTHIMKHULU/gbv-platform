@@ -18,6 +18,12 @@ const TOOLS = [
     title: 'Shelters & Hotspots',
     desc: 'Add, edit, or remove pins on the Find Help map.',
   },
+  {
+    href: '/admin/documents',
+    icon: '📚',
+    title: 'Guides & Ebooks',
+    desc: 'Add, edit, or remove documents shown in the Library.',
+  },
 ];
 
 export default function AdminHubPage() {
