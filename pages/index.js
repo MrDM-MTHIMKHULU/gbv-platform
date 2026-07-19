@@ -5,12 +5,14 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 import Layout from '../components/Layout';
 import JennetChat from '../components/JennetChat';
+import MythFactGame from '../components/MythFactGame';
 import { supabase } from '../lib/supabaseClient';
 import { PROVINCES, NATIONAL_CASE_TYPES, NATIONAL_CASE_TYPES_TOTAL } from '../lib/gbvData';
 
 export default function Home() {
   const { t } = useTranslation('common');
   const [ageGroup, setAgeGroup] = useState(null);
+  const [libraryPreview, setLibraryPreview] = useState([]);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -22,6 +24,15 @@ export default function Home() {
     });
 
     return () => listener.subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    supabase
+      .from('documents')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(4)
+      .then(({ data }) => setLibraryPreview(data || []));
   }, []);
 
   const isGirl = ageGroup === 'under18';
@@ -177,6 +188,48 @@ export default function Home() {
           </div>
           <div className="showcase-visual">
             <DataDashboard />
+          </div>
+        </div>
+
+        <div className="showcase-block reverse">
+          <div className="showcase-text">
+            <p className="section-tag">Learning Hub</p>
+            <h2 className="section-title">
+              Learn what abuse
+              <br />
+              <strong>actually looks like.</strong>
+            </h2>
+            <p className="section-body">
+              Short lessons on healthy relationships, consent, and online
+              safety, plus a myth vs fact game. Try it right here.
+            </p>
+            <Link href="/learn" className="btn-primary">
+              Visit the Learning Hub
+            </Link>
+          </div>
+          <div className="showcase-visual">
+            <MythFactGame />
+          </div>
+        </div>
+
+        <div className="showcase-block">
+          <div className="showcase-text">
+            <p className="section-tag">Library</p>
+            <h2 className="section-title">
+              Guides and ebooks,
+              <br />
+              <strong>searchable, not endless scroll.</strong>
+            </h2>
+            <p className="section-body">
+              Search by topic, author, or keyword instead of digging through
+              a long list. New guides are added regularly.
+            </p>
+            <Link href="/library" className="btn-primary">
+              Browse the library
+            </Link>
+          </div>
+          <div className="showcase-visual">
+            <LibraryPreview documents={libraryPreview} />
           </div>
         </div>
       </section>
@@ -752,6 +805,74 @@ function DataDashboard() {
         .bar-value.rising-text {
           color: #c2410c;
           font-weight: 700;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+function LibraryPreview({ documents }) {
+  const hasDocuments = documents && documents.length > 0;
+
+  return (
+    <div className="library-preview">
+      {hasDocuments ? (
+        <>
+          <p className="lib-title">Recently added</p>
+          {documents.map((d) => (
+            <a href={d.file_url} className="lib-row" key={d.id} target="_blank" rel="noreferrer">
+              <span className="lib-icon">{d.doc_type === 'ebook' ? '📕' : '📄'}</span>
+              <span className="lib-name">{d.title}</span>
+              <span className="lib-arrow">↓</span>
+            </a>
+          ))}
+        </>
+      ) : (
+        <p className="lib-empty">Library documents will appear here once added.</p>
+      )}
+
+      <style jsx>{`
+        .library-preview {
+          background: var(--warm);
+          border-radius: 16px;
+          padding: 26px;
+          width: 100%;
+          max-width: 400px;
+        }
+        .lib-title {
+          font-size: 0.78rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: var(--rose);
+          margin-bottom: 16px;
+        }
+        .lib-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          background: white;
+          border-radius: 8px;
+          padding: 10px 14px;
+          margin-bottom: 8px;
+          text-decoration: none;
+        }
+        .lib-icon {
+          font-size: 0.95rem;
+        }
+        .lib-name {
+          flex: 1;
+          font-size: 0.82rem;
+          font-weight: 700;
+          color: var(--ink);
+        }
+        .lib-arrow {
+          color: var(--rose-deep);
+          font-weight: 800;
+        }
+        .lib-empty {
+          font-size: 0.85rem;
+          color: var(--muted);
         }
       `}</style>
     </div>
