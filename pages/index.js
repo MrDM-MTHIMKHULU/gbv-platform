@@ -100,6 +100,31 @@ export default function Home() {
         </section>
       )}
 
+      <section className="stats-band">
+        <div className="stats-card">
+          <div className="stat">
+            <p className="stat-icon">🏠</p>
+            <p className="stat-num">127+</p>
+            <p className="stat-label">Verified shelters &amp; services listed</p>
+          </div>
+          <div className="stat">
+            <p className="stat-icon">🗺️</p>
+            <p className="stat-num">9</p>
+            <p className="stat-label">Provinces covered</p>
+          </div>
+          <div className="stat">
+            <p className="stat-icon">🗣️</p>
+            <p className="stat-num">5</p>
+            <p className="stat-label">South African languages</p>
+          </div>
+          <div className="stat">
+            <p className="stat-icon">📞</p>
+            <p className="stat-num">24/7</p>
+            <p className="stat-label">Emergency numbers, always visible</p>
+          </div>
+        </div>
+      </section>
+
       <section className="showcase">
         <div className="showcase-block">
           <div className="showcase-text">
@@ -365,6 +390,41 @@ export default function Home() {
           border-radius: 8px;
         }
 
+        .stats-band {
+          max-width: 1080px;
+          margin: 0 auto;
+          padding: 0 24px;
+        }
+        .stats-card {
+          background: var(--ink);
+          border-radius: 20px;
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 20px;
+          padding: 36px 6%;
+          box-shadow: 0 20px 50px rgba(13, 10, 11, 0.18);
+        }
+        .stat {
+          text-align: center;
+          color: var(--cream);
+        }
+        .stat-icon {
+          font-size: 1.3rem;
+          margin-bottom: 8px;
+        }
+        .stat-num {
+          font-size: 2rem;
+          font-weight: 800;
+          color: var(--rose);
+          margin-bottom: 6px;
+        }
+        .stat-label {
+          font-size: 0.8rem;
+          color: var(--sand);
+          font-weight: 400;
+          line-height: 1.4;
+        }
+
         .showcase {
           max-width: 1080px;
           margin: 0 auto;
@@ -565,6 +625,9 @@ export default function Home() {
         }
 
         @media (max-width: 860px) {
+          .stats-card {
+            grid-template-columns: repeat(2, 1fr);
+          }
           .how-grid,
           .resource-grid {
             grid-template-columns: 1fr;
