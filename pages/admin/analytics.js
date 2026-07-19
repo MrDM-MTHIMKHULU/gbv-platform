@@ -39,21 +39,23 @@ export default function AdminAnalyticsPage() {
   const [courseSummary, setCourseSummary] = useState([]);
   const [quizStats, setQuizStats] = useState([]);
   const [certificates, setCertificates] = useState([]);
+  const [signupStats, setSignupStats] = useState(null);
 
   useEffect(() => {
     load();
   }, []);
 
   const load = async () => {
-    const [lessonRes, courseRes, quizRes, certRes] = await Promise.all([
+    const [lessonRes, courseRes, quizRes, certRes, signupRes] = await Promise.all([
       supabase.rpc('get_admin_lesson_engagement'),
       supabase.rpc('get_admin_course_summary'),
       supabase.rpc('get_admin_quiz_stats'),
       supabase.rpc('get_admin_certificates_issued'),
+      supabase.rpc('get_admin_signup_stats'),
     ]);
 
-    if (lessonRes.error || courseRes.error || quizRes.error || certRes.error) {
-      const anyAuthError = [lessonRes, courseRes, quizRes, certRes].some(
+    if (lessonRes.error || courseRes.error || quizRes.error || certRes.error || signupRes.error) {
+      const anyAuthError = [lessonRes, courseRes, quizRes, certRes, signupRes].some(
         (r) => r.error?.message?.toLowerCase().includes('not authorized')
       );
       setStatus(anyAuthError ? 'unauthorized' : 'error');
@@ -64,6 +66,7 @@ export default function AdminAnalyticsPage() {
     setCourseSummary(courseRes.data || []);
     setQuizStats(quizRes.data || []);
     setCertificates(certRes.data || []);
+    setSignupStats(signupRes.data || null);
     setStatus('ready');
   };
 
@@ -163,6 +166,25 @@ export default function AdminAnalyticsPage() {
       </section>
 
       <section className="content">
+        {signupStats && (
+          <div className="block">
+            <h2>Who SafeHaven is reaching</h2>
+            <p className="block-sub">
+              {signupStats.total} registered accounts so far. Admin-only, no
+              individual user is identifiable here, only aggregate counts.
+            </p>
+
+            <p className="sub-heading">By age group</p>
+            <RatioBars data={relabelAgeGroups(signupStats.byAgeGroup)} variant="" />
+
+            <p className="sub-heading">By province</p>
+            <RatioBars data={signupStats.byProvince} variant="alt" />
+
+            <p className="sub-heading">By preferred language</p>
+            <RatioBars data={relabelLanguages(signupStats.byLanguage)} variant="" />
+          </div>
+        )}
+
         <div className="block">
           <h2>Learners per course</h2>
           {courseSummary.length === 0 ? (
@@ -295,6 +317,18 @@ export default function AdminAnalyticsPage() {
           color: var(--muted);
           margin-bottom: 18px;
         }
+        .sub-heading {
+          font-size: 0.8rem;
+          font-weight: 700;
+          color: var(--ink);
+          margin: 20px 0 8px;
+        }
+        .ratio-bars {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          margin-bottom: 4px;
+        }
         .empty {
           font-size: 0.88rem;
           color: var(--muted);
@@ -369,6 +403,50 @@ export default function AdminAnalyticsPage() {
       `}</style>
     </Layout>
   );
+}
+
+function RatioBars({ data, variant }) {
+  const entries = Object.entries(data || {}).sort((a, b) => b[1] - a[1]);
+  const max = Math.max(...entries.map(([, v]) => v), 1);
+
+  if (entries.length === 0) {
+    return <p className="empty">No data yet.</p>;
+  }
+
+  return (
+    <div className="ratio-bars">
+      {entries.map(([label, value]) => (
+        <div className="bar-row" key={label}>
+          <span className="bar-label">{label}</span>
+          <div className="bar-track">
+            <div
+              className={`bar-fill ${variant}`}
+              style={{ width: `${(value / max) * 100}%` }}
+            />
+          </div>
+          <span className="bar-value">{value}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function relabelAgeGroups(obj) {
+  const map = { under18: 'Under 18', '18plus': '18 and older' };
+  const out = {};
+  Object.entries(obj || {}).forEach(([k, v]) => {
+    out[map[k] || k] = v;
+  });
+  return out;
+}
+
+function relabelLanguages(obj) {
+  const map = { en: 'English', zu: 'isiZulu', xh: 'isiXhosa', af: 'Afrikaans', st: 'Sesotho' };
+  const out = {};
+  Object.entries(obj || {}).forEach(([k, v]) => {
+    out[map[k] || k] = v;
+  });
+  return out;
 }
 
 export async function getStaticProps({ locale }) {
