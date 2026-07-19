@@ -81,6 +81,7 @@ export default function Layout({ children }) {
             <span className="dropdown-trigger">Learn ▾</span>
             <ul className="dropdown-menu">
               <li><Link href="/learn">Learning Hub</Link></li>
+              <li><Link href="/library">Library</Link></li>
               <li><Link href="/insights">The Data</Link></li>
             </ul>
           </li>
