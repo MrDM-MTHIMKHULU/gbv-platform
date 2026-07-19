@@ -13,6 +13,12 @@ const TOOLS = [
     desc: 'See course completions, top topics, quiz pass rates, and certificates issued across every learner.',
   },
   {
+    href: '/admin/site-analytics',
+    icon: '👥',
+    title: 'Site Analytics',
+    desc: 'Registered accounts broken down by age group, province, and preferred language.',
+  },
+  {
     href: '/admin/shelters',
     icon: '📍',
     title: 'Shelters & Hotspots',
