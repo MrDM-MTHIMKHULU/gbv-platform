@@ -157,30 +157,6 @@ export default function InsightsPage() {
           </div>
         </div>
 
-        {data && (
-          <div className="block">
-            <h2>Who SafeHaven is reaching</h2>
-            <p className="block-sub">
-              {data.signupStats.total} registered accounts so far.
-            </p>
-
-            <p className="sub-heading">By age group</p>
-            <BarList
-              data={relabelAgeGroups(data.signupStats.byAgeGroup)}
-              color="var(--rose-deep)"
-            />
-
-            <p className="sub-heading">By province</p>
-            <BarList data={data.signupStats.byProvince} color="var(--rose)" />
-
-            <p className="sub-heading">By preferred language</p>
-            <BarList
-              data={relabelLanguages(data.signupStats.byLanguage)}
-              color="var(--teal)"
-            />
-          </div>
-        )}
-
         <div className="block sources">
           <p>
             Sources: SAPS Quarterly Crime Statistics (Q3 2024/25, Q3 2025/26,
@@ -494,87 +470,6 @@ function ResourceGap({ coverage }) {
       `}</style>
     </div>
   );
-}
-
-function BarList({ data, color }) {
-  const entries = Object.entries(data || {}).sort((a, b) => b[1] - a[1]);
-  const max = Math.max(...entries.map(([, v]) => v), 1);
-
-  if (entries.length === 0) {
-    return <p className="empty">No data yet.</p>;
-  }
-
-  return (
-    <div className="bar-list">
-      {entries.map(([label, value]) => (
-        <div className="bar-row" key={label}>
-          <span className="bar-label">{label}</span>
-          <div className="bar-track">
-            <div
-              className="bar-fill"
-              style={{ width: `${(value / max) * 100}%`, background: color }}
-            />
-          </div>
-          <span className="bar-value">{value}</span>
-        </div>
-      ))}
-      <style jsx>{`
-        .bar-list {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-        }
-        .bar-row {
-          display: grid;
-          grid-template-columns: 130px 1fr 30px;
-          align-items: center;
-          gap: 10px;
-        }
-        .bar-label {
-          font-size: 0.82rem;
-          color: var(--ink);
-          font-weight: 600;
-        }
-        .bar-track {
-          background: var(--sand);
-          border-radius: 6px;
-          height: 10px;
-          overflow: hidden;
-        }
-        .bar-fill {
-          height: 100%;
-          border-radius: 6px;
-        }
-        .bar-value {
-          font-size: 0.8rem;
-          color: var(--muted);
-          text-align: right;
-        }
-        .empty {
-          font-size: 0.85rem;
-          color: var(--muted);
-        }
-      `}</style>
-    </div>
-  );
-}
-
-function relabelAgeGroups(obj) {
-  const map = { under18: 'Under 18', '18plus': '18 and older' };
-  const out = {};
-  Object.entries(obj).forEach(([k, v]) => {
-    out[map[k] || k] = v;
-  });
-  return out;
-}
-
-function relabelLanguages(obj) {
-  const map = { en: 'English', zu: 'isiZulu', xh: 'isiXhosa', af: 'Afrikaans', st: 'Sesotho' };
-  const out = {};
-  Object.entries(obj).forEach(([k, v]) => {
-    out[map[k] || k] = v;
-  });
-  return out;
 }
 
 export async function getStaticProps({ locale }) {
