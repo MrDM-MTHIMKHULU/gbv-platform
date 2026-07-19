@@ -1,6 +1,20 @@
 import { createClient } from '@supabase/supabase-js';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import crypto from 'crypto';
 import { ADVANCED_COURSES } from '../../lib/allyCourseData';
+
+function makeCertificateId(userId, courseId, issuedAt) {
+  const hash = crypto
+    .createHash('sha256')
+    .update(`${userId}:${courseId}:${issuedAt}`)
+    .digest('hex')
+    .toUpperCase();
+  const date = new Date(issuedAt);
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `SH-${y}-${m}-${d}-${hash.slice(0, 4)}-${hash.slice(4, 8)}`;
+}
 
 export default async function handler(req, res) {
   const { courseId, token } = req.query;
@@ -39,70 +53,340 @@ export default async function handler(req, res) {
 
   const recipientName =
     user.user_metadata?.full_name || user.email || 'SafeHaven Learner';
-  const issuedDate = new Date(cert.issued_at).toLocaleDateString('en-ZA', {
+  const issuedDateObj = new Date(cert.issued_at);
+  const issuedDate = issuedDateObj.toLocaleDateString('en-ZA', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
+  const certificateId = makeCertificateId(user.id, courseId, cert.issued_at);
+
+  // ---------- Build the PDF ----------
 
   const pdfDoc = await PDFDocument.create();
   const page = pdfDoc.addPage([842, 595]); // A4 landscape
   const { width, height } = page.getSize();
 
-  const bodyFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-  const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-  const italicFont = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
+  const serif = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+  const serifItalic = await pdfDoc.embedFont(StandardFonts.TimesRomanItalic);
+  const serifBold = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
+  const sans = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const sansBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-  const rose = rgb(0.77, 0.12, 0.23);
-  const ink = rgb(0.17, 0.1, 0.12);
-  const muted = rgb(0.42, 0.35, 0.37);
-  const sand = rgb(0.9, 0.82, 0.78);
+  const rose = rgb(0.83, 0.09, 0.4);
+  const roseDeep = rgb(0.56, 0.06, 0.28);
+  const plum = rgb(0.29, 0.11, 0.31);
+  const ink = rgb(0.13, 0.13, 0.15);
+  const muted = rgb(0.42, 0.42, 0.45);
+  const blush = rgb(0.99, 0.9, 0.94);
+  const sand = rgb(0.93, 0.85, 0.89);
+  const white = rgb(1, 1, 1);
 
-  // Border
+  // Outer thin border + corner brackets
   page.drawRectangle({
-    x: 24,
-    y: 24,
-    width: width - 48,
-    height: height - 48,
+    x: 20,
+    y: 20,
+    width: width - 40,
+    height: height - 40,
     borderColor: sand,
-    borderWidth: 2,
+    borderWidth: 1,
+  });
+  const bracket = (x, y, dx, dy) => {
+    page.drawLine({ start: { x, y }, end: { x: x + dx, y }, thickness: 1.5, color: rose });
+    page.drawLine({ start: { x, y }, end: { x, y: y + dy }, thickness: 1.5, color: rose });
+  };
+  bracket(28, height - 28, 14, -14);
+  bracket(width - 28, height - 28, -14, -14);
+  bracket(28, 28, 14, 14);
+  bracket(width - 28, 28, -14, 14);
+
+  // ---------- Left content column ----------
+  const leftX = 70;
+  const contentWidth = 620;
+
+  // Logo mark: small heart path + wordmark
+  page.drawSvgPath(
+    'M12 21c-4-3-10-7-10-13 a5 5 0 0 1 10-2 a5 5 0 0 1 10 2c0 6-6 10-10 13z',
+    { x: leftX, y: height - 90, scale: 1.3, color: rose }
+  );
+  page.drawText('SafeHaven', {
+    x: leftX + 45,
+    y: height - 82,
+    size: 22,
+    font: sansBold,
+    color: plum,
+  });
+  page.drawText('Building a world free from GBV', {
+    x: leftX + 45,
+    y: height - 100,
+    size: 9,
+    font: sans,
+    color: rose,
   });
 
-  const centerText = (text, y, font, size, color) => {
-    const textWidth = font.widthOfTextAtSize(text, size);
-    page.drawText(text, { x: (width - textWidth) / 2, y, size, font, color });
-  };
+  let cursorY = height - 165;
 
-  centerText('CERTIFICATE OF COMPLETION', height - 110, boldFont, 22, rose);
-  centerText('SafeHaven Learning Hub', height - 138, bodyFont, 12, muted);
-
-  centerText('This certifies that', height - 210, italicFont, 14, muted);
-  centerText(recipientName, height - 250, boldFont, 28, ink);
-
-  centerText('has successfully completed the course', height - 295, italicFont, 14, muted);
-  centerText(course.title, height - 330, boldFont, 20, rose);
-  centerText(course.subtitle, height - 355, bodyFont, 12, muted);
-
-  centerText(
-    `Final assessment score: ${cert.final_score}/5    ·    Issued ${issuedDate}`,
-    height - 410,
-    bodyFont,
-    11,
-    ink
-  );
-
-  page.drawText('SafeHaven', {
-    x: width / 2 - 200,
-    y: 90,
+  page.drawText('This certifies that', {
+    x: leftX,
+    y: cursorY,
     size: 13,
-    font: boldFont,
+    font: serifItalic,
+    color: muted,
+  });
+
+  cursorY -= 48;
+  page.drawText(recipientName, {
+    x: leftX,
+    y: cursorY,
+    size: 34,
+    font: serifBold,
     color: ink,
   });
+
+  cursorY -= 32;
+  page.drawText('has successfully completed the course', {
+    x: leftX,
+    y: cursorY,
+    size: 12,
+    font: serifItalic,
+    color: muted,
+  });
+
+  cursorY -= 42;
+  page.drawText(course.title, {
+    x: leftX,
+    y: cursorY,
+    size: 26,
+    font: sansBold,
+    color: rose,
+  });
+
+  cursorY -= 26;
+  page.drawText(course.subtitle, {
+    x: leftX,
+    y: cursorY,
+    size: 12,
+    font: sans,
+    color: muted,
+    maxWidth: contentWidth,
+  });
+
+  cursorY -= 32;
+  const scoreText = `Final assessment score: ${cert.final_score}/5`;
+  page.drawText(scoreText, { x: leftX, y: cursorY, size: 11, font: sans, color: ink });
+  const scoreWidth = sans.widthOfTextAtSize(scoreText, 11);
+  page.drawText('•', { x: leftX + scoreWidth + 12, y: cursorY, size: 11, font: sans, color: rose });
+  page.drawText(`Issued ${issuedDate}`, {
+    x: leftX + scoreWidth + 24,
+    y: cursorY,
+    size: 11,
+    font: sans,
+    color: ink,
+  });
+
+  // Signature block
+  cursorY -= 70;
+  page.drawText('SafeHaven Certification Team', {
+    x: leftX,
+    y: cursorY,
+    size: 20,
+    font: serifItalic,
+    color: plum,
+  });
+  cursorY -= 10;
   page.drawLine({
-    start: { x: width / 2 - 220, y: 82 },
-    end: { x: width / 2 - 40, y: 82 },
+    start: { x: leftX, y: cursorY },
+    end: { x: leftX + 220, y: cursorY },
     thickness: 1,
     color: sand,
+  });
+  cursorY -= 18;
+  page.drawText('SafeHaven Certification Team', {
+    x: leftX,
+    y: cursorY,
+    size: 11,
+    font: sansBold,
+    color: rose,
+  });
+  cursorY -= 15;
+  page.drawText('Course Certification', { x: leftX, y: cursorY, size: 10, font: sans, color: ink });
+  cursorY -= 14;
+  page.drawText('SafeHaven', { x: leftX, y: cursorY, size: 10, font: sans, color: ink });
+
+  // Bottom disclaimer (course title inline bolded in rose)
+  const discY = 55;
+  const line1a = 'This certificate confirms completion of the ';
+  const line1bWidth = sansBold.widthOfTextAtSize(course.title, 9);
+  page.drawText(line1a, { x: leftX, y: discY + 12, size: 9, font: sans, color: muted });
+  const line1aWidth = sans.widthOfTextAtSize(line1a, 9);
+  page.drawText(course.title, {
+    x: leftX + line1aWidth,
+    y: discY + 12,
+    size: 9,
+    font: sansBold,
+    color: rose,
+  });
+  page.drawText(' course', {
+    x: leftX + line1aWidth + line1bWidth,
+    y: discY + 12,
+    size: 9,
+    font: sans,
+    color: muted,
+  });
+  page.drawText('offered by SafeHaven. It does not confer academic credit or a professional qualification.', {
+    x: leftX,
+    y: discY,
+    size: 9,
+    font: sans,
+    color: muted,
+  });
+
+  // ---------- Right ribbon ----------
+  const ribbonWidth = 165;
+  const ribbonX = width - 40 - ribbonWidth;
+  const ribbonTopY = height - 20;
+  const ribbonNotchY = 140;
+
+  page.drawRectangle({
+    x: ribbonX,
+    y: ribbonNotchY,
+    width: ribbonWidth,
+    height: ribbonTopY - ribbonNotchY,
+    color: blush,
+  });
+  // Triangular notch at the bottom of the ribbon
+  page.drawSvgPath(
+    `M0 0 L${ribbonWidth} 0 L${ribbonWidth / 2} 70 Z`,
+    { x: ribbonX, y: ribbonNotchY, color: blush }
+  );
+
+  const centerX = ribbonX + ribbonWidth / 2;
+  const centerRibbonText = (text, y, font, size, color) => {
+    const w = font.widthOfTextAtSize(text, size);
+    page.drawText(text, { x: centerX - w / 2, y, size, font, color });
+  };
+
+  centerRibbonText('COURSE', height - 75, sansBold, 14, roseDeep);
+  centerRibbonText('CERTIFICATE', height - 92, sansBold, 14, roseDeep);
+  page.drawLine({
+    start: { x: centerX - 18, y: height - 104 },
+    end: { x: centerX + 18, y: height - 104 },
+    thickness: 1.5,
+    color: rose,
+  });
+
+  // Circular seal with arced text
+  const sealCenterY = height - 230;
+  const sealRadius = 62;
+
+  // dotted outer ring
+  const dotCount = 40;
+  for (let i = 0; i < dotCount; i++) {
+    const angle = (i / dotCount) * Math.PI * 2;
+    const dx = centerX + Math.cos(angle) * (sealRadius + 8);
+    const dy = sealCenterY + Math.sin(angle) * (sealRadius + 8);
+    page.drawCircle({ x: dx, y: dy, size: 0.8, color: rose });
+  }
+  page.drawCircle({
+    x: centerX,
+    y: sealCenterY,
+    size: sealRadius,
+    borderColor: rose,
+    borderWidth: 1,
+  });
+
+  // Arced text helper: draws text along a circular arc, one letter at a
+  // time. side is 'top' or 'bottom', matching how text reads normally
+  // when arcing over the top vs. under the bottom of a circle.
+  const drawArcText = (text, radius, side, font, size, color) => {
+    const chars = text.split('');
+    const anglePerChar = 9;
+    const spread = anglePerChar * (chars.length - 1);
+    let angle;
+    let angleStep;
+    let rotationOffset;
+    if (side === 'top') {
+      angle = 90 + spread / 2;
+      angleStep = -anglePerChar;
+      rotationOffset = -90;
+    } else {
+      angle = -90 - spread / 2;
+      angleStep = anglePerChar;
+      rotationOffset = 90;
+    }
+    chars.forEach((ch) => {
+      const rad = (angle * Math.PI) / 180;
+      const x = centerX + Math.cos(rad) * radius;
+      const y = sealCenterY + Math.sin(rad) * radius;
+      const rotation = angle + rotationOffset;
+      page.drawText(ch, {
+        x,
+        y,
+        size,
+        font,
+        color,
+        rotate: { type: 'degrees', angle: rotation },
+      });
+      angle += angleStep;
+    });
+  };
+
+  drawArcText('BUILDING A WORLD', sealRadius - 8, 'top', sansBold, 7, roseDeep);
+  drawArcText('FREE FROM GBV', sealRadius - 8, 'bottom', sansBold, 7, roseDeep);
+
+  // Small heart + wordmark inside the seal
+  page.drawSvgPath('M12 21c-4-3-10-7-10-13 a5 5 0 0 1 10-2 a5 5 0 0 1 10 2c0 6-6 10-10 13z', {
+    x: centerX - 10,
+    y: sealCenterY + 10,
+    scale: 0.9,
+    color: rose,
+  });
+  centerRibbonText('SafeHaven', sealCenterY - 12, sansBold, 11, plum);
+
+  // Verify + certificate ID
+  centerRibbonText('Verify at:', 190, sans, 10, ink);
+
+  const pillY = 155;
+  const pillHeight = 24;
+  const pillWidth = 150;
+  const pillRadius = pillHeight / 2;
+  page.drawRectangle({
+    x: centerX - pillWidth / 2 + pillRadius,
+    y: pillY,
+    width: pillWidth - pillRadius * 2,
+    height: pillHeight,
+    color: rose,
+  });
+  page.drawCircle({
+    x: centerX - pillWidth / 2 + pillRadius,
+    y: pillY + pillRadius,
+    size: pillRadius,
+    color: rose,
+  });
+  page.drawCircle({
+    x: centerX + pillWidth / 2 - pillRadius,
+    y: pillY + pillRadius,
+    size: pillRadius,
+    color: rose,
+  });
+  const verifyText = 'safehaven.org/verify';
+  const verifyWidth = sansBold.widthOfTextAtSize(verifyText, 8.5);
+  page.drawText(verifyText, {
+    x: centerX - verifyWidth / 2,
+    y: pillY + 8,
+    size: 8.5,
+    font: sansBold,
+    color: white,
+  });
+
+  const idText = `Certificate ID: ${certificateId}`;
+  const idWidth = sans.widthOfTextAtSize(idText, 8);
+  page.drawText(idText, {
+    x: centerX - idWidth / 2,
+    y: 40,
+    size: 8,
+    font: sans,
+    color: muted,
   });
 
   const pdfBytes = await pdfDoc.save();
