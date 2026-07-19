@@ -195,13 +195,12 @@ export default function Home() {
           <div className="showcase-text">
             <p className="section-tag">Learning Hub</p>
             <h2 className="section-title">
-              Learn what abuse
+              A few minutes,
               <br />
-              <strong>actually looks like.</strong>
+              <strong>a lot more clarity.</strong>
             </h2>
             <p className="section-body">
-              Short lessons on healthy relationships, consent, and online
-              safety, plus a myth vs fact game. Try it right here.
+              Short lessons, a myth vs fact game, right here on the page.
             </p>
             <Link href="/learn" className="btn-primary">
               Visit the Learning Hub
@@ -218,11 +217,10 @@ export default function Home() {
             <h2 className="section-title">
               Guides and ebooks,
               <br />
-              <strong>searchable, not endless scroll.</strong>
+              <strong>ready to download.</strong>
             </h2>
             <p className="section-body">
-              Search by topic, author, or keyword instead of digging through
-              a long list. New guides are added regularly.
+              New guides added regularly.
             </p>
             <Link href="/library" className="btn-primary">
               Browse the library
