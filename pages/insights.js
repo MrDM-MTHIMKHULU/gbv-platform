@@ -1,3 +1,4 @@
+import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -8,25 +9,31 @@ import {
   NATIONAL_HEADLINES,
   PROVINCES,
   TREND_FLAGS,
-  CURRENT_HOTSPOTS,
+  NATIONAL_CASE_TYPES,
 } from '../lib/gbvData';
+
+// Leaflet needs the browser, this must never render on the server.
+const HotspotDataMap = dynamic(() => import('../components/HotspotDataMap'), {
+  ssr: false,
+  loading: () => <p className="map-loading">Loading map…</p>,
+});
+
+const CASE_TYPE_COLORS = ['#8e1046', '#c2185b', '#0f6e63', '#4a2545', '#eab308'];
 
 export default function InsightsPage() {
   const [data, setData] = useState(null);
-  const [error, setError] = useState('');
-  const [hotspotTab, setHotspotTab] = useState('Sexual Offences');
 
   useEffect(() => {
     fetch('/api/insights')
       .then((res) => res.json())
       .then((json) => {
-        if (json.error) setError(json.error);
-        else setData(json);
+        if (!json.error) setData(json);
       })
-      .catch(() => setError('Could not load insights'));
+      .catch(() => {});
   }, []);
 
   const provincesByRapeRate = [...PROVINCES].sort((a, b) => b.rape.rate - a.rape.rate);
+  const maxRate = provincesByRapeRate[0].rape.rate;
 
   return (
     <Layout>
@@ -42,8 +49,8 @@ export default function InsightsPage() {
         <p className="eyebrow">Data intelligence</p>
         <h1>The data behind the crisis</h1>
         <p className="sub">
-          Verified figures from SAPS and HSRC on where GBV is reported most,
-          and how that compares to where help is actually available.
+          Verified figures from SAPS and HSRC, visualised to show where GBV
+          is reported most, and where help is hardest to find.
         </p>
       </section>
 
@@ -53,50 +60,65 @@ export default function InsightsPage() {
 
       <section className="content">
         <div className="block">
-          <h2>National headline figures</h2>
           <div className="headline-grid">
             {NATIONAL_HEADLINES.map((h) => (
               <div className="headline-card" key={h.label}>
                 <p className="headline-value">{h.value}</p>
                 <p className="headline-label">{h.label}</p>
-                {h.note && <p className="headline-note">{h.note}</p>}
               </div>
             ))}
           </div>
         </div>
 
-        <div className="block">
-          <h2>Reported cases by province</h2>
-          <p className="block-sub">
-            SAPS Q3 2024/25 (Oct–Dec 2024), sorted by rape rate per 100,000
-            people, the clearest per-capita comparison across provinces of
-            very different sizes.
-          </p>
-          <div className="province-table">
-            <div className="province-row province-head">
-              <span>Province</span>
-              <span>Rape rate /100k</span>
-              <span>Sexual offences</span>
-              <span>Murder rate /100k</span>
+        <div className="card-grid">
+          <div className="card">
+            <h2>Reported Cases by Province</h2>
+            <p className="card-sub">SAPS Q3 2024/25 · rape rate per 100k</p>
+            <div className="bar-list">
+              {provincesByRapeRate.map((p) => (
+                <div className="bar-row" key={p.name}>
+                  <span className="bar-label">{p.name}</span>
+                  <div className="bar-track">
+                    <div
+                      className="bar-fill"
+                      style={{ width: `${(p.rape.rate / maxRate) * 100}%` }}
+                    />
+                  </div>
+                  <span className="bar-value">{p.rape.rate}</span>
+                </div>
+              ))}
             </div>
-            {provincesByRapeRate.map((p) => (
-              <div className="province-row" key={p.name}>
-                <span className="province-name">{p.name}</span>
-                <span>{p.rape.rate}</span>
-                <span>
-                  {p.sexualOffences.cases.toLocaleString()}
-                  {typeof p.sexualOffences.change === 'number' && (
-                    <ChangeBadge value={p.sexualOffences.change} />
-                  )}
-                </span>
-                <span>{p.murder.rate}</span>
+          </div>
+
+          <div className="card">
+            <h2>GBV Case Types</h2>
+            <p className="card-sub">DV-linked cases · SAPS Q3 2024/25</p>
+            <div className="donut-row">
+              <div
+                className="donut"
+                style={{ background: donutGradient(NATIONAL_CASE_TYPES) }}
+              >
+                <div className="donut-hole" />
               </div>
-            ))}
+              <div className="donut-legend">
+                {NATIONAL_CASE_TYPES.map((c, i) => (
+                  <div className="legend-item" key={c.label}>
+                    <span
+                      className="legend-dot"
+                      style={{ background: CASE_TYPE_COLORS[i % CASE_TYPE_COLORS.length] }}
+                    />
+                    <span>
+                      {c.label} ({c.pct}%)
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
         <div className="block">
-          <h2>What the trends show</h2>
+          <h2>What the Trends Show</h2>
           <div className="flag-list">
             {TREND_FLAGS.map((f) => (
               <div className="flag-card" key={f.tag}>
@@ -108,53 +130,22 @@ export default function InsightsPage() {
         </div>
 
         <div className="block">
-          <h2>Where the gap is widest</h2>
+          <h2>Resource Gap Index</h2>
+          <p className="card-sub">Cases per verified service · higher = bigger gap</p>
           {data && !data.coverageStats.unavailable ? (
-            <ResourceGap coverage={data.coverageStats.byProvince} />
+            <GapTiles coverage={data.coverageStats.byProvince} />
           ) : (
             <p className="empty-note">
-              Shelter data isn&apos;t connected yet, once your service sheet
-              is linked, this section will pair real service counts against
-              reported cases per province to show exactly where the gap is
-              widest.
+              Shelter data isn&apos;t connected yet, once linked, this will
+              show real service counts against reported cases per province.
             </p>
           )}
         </div>
 
         <div className="block">
-          <h2>Known hotspot stations</h2>
-          <p className="block-sub">
-            SAPS&apos;s own Top 30 station rankings by case volume, Q3 2024/25
-           , the best available live proxy for hotspot status. This overlaps
-            substantially with the officially designated 2020 GBVF hotspot
-            list.
-          </p>
-          <div className="tab-row">
-            {Object.keys(CURRENT_HOTSPOTS).map((tab) => (
-              <button
-                key={tab}
-                className={`tab-btn ${hotspotTab === tab ? 'active' : ''}`}
-                onClick={() => setHotspotTab(tab)}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-          <div className="hotspot-list">
-            {CURRENT_HOTSPOTS[hotspotTab].map((h, i) => (
-              <div className="hotspot-row" key={h.station}>
-                <span className="hotspot-rank">{i + 1}</span>
-                <span className="hotspot-station">{h.station}</span>
-                <span className="hotspot-province">{h.province}</span>
-                {typeof h.cases === 'number' && (
-                  <span className="hotspot-cases">
-                    {h.cases} cases
-                    {typeof h.change === 'number' && <ChangeBadge value={h.change} />}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
+          <h2>GBV Hotspot Map</h2>
+          <p className="card-sub">Amber pins mark known hotspot areas</p>
+          <HotspotDataMap />
         </div>
 
         <div className="block sources">
@@ -198,7 +189,7 @@ export default function InsightsPage() {
         }
 
         .disclaimer {
-          max-width: 700px;
+          max-width: 900px;
           margin: 0 auto 20px;
           padding: 0 24px;
         }
@@ -212,39 +203,24 @@ export default function InsightsPage() {
           color: var(--ink);
         }
 
-        .msg-box {
-          max-width: 500px;
-          margin: 0 auto;
-          padding: 40px 24px;
-          text-align: center;
-          color: var(--muted);
-        }
-
         .content {
-          max-width: 700px;
+          max-width: 900px;
           margin: 0 auto;
           padding: 20px 24px 100px;
         }
         .block {
-          margin-bottom: 56px;
+          margin-bottom: 48px;
         }
         .block h2 {
           font-size: 1.3rem;
           font-weight: 800;
           color: var(--ink);
-          margin-bottom: 10px;
+          margin-bottom: 6px;
         }
-        .block-sub {
-          font-size: 0.9rem;
+        .card-sub {
+          font-size: 0.82rem;
           color: var(--muted);
-          line-height: 1.6;
-          margin-bottom: 20px;
-        }
-        .sub-heading {
-          font-size: 0.85rem;
-          font-weight: 700;
-          color: var(--ink);
-          margin: 24px 0 10px;
+          margin-bottom: 18px;
         }
         .empty-note {
           font-size: 0.9rem;
@@ -253,59 +229,126 @@ export default function InsightsPage() {
           border-radius: 10px;
           padding: 18px 20px;
         }
+        :global(.map-loading) {
+          text-align: center;
+          padding: 60px;
+          color: var(--muted);
+        }
 
         .headline-grid {
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 16px;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 14px;
         }
         .headline-card {
           background: var(--blush);
           border-radius: 12px;
-          padding: 20px;
+          padding: 18px;
         }
         .headline-value {
-          font-size: 1.8rem;
+          font-size: 1.5rem;
           font-weight: 800;
           color: var(--rose-deep);
           margin-bottom: 6px;
         }
         .headline-label {
-          font-size: 0.85rem;
+          font-size: 0.78rem;
           font-weight: 600;
           color: var(--ink);
           line-height: 1.4;
         }
-        .headline-note {
-          font-size: 0.78rem;
-          color: var(--muted);
-          margin-top: 6px;
-          line-height: 1.5;
+
+        .card-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+          margin-bottom: 48px;
+        }
+        .card {
+          background: white;
+          border: 1px solid var(--sand);
+          border-radius: 14px;
+          padding: 24px;
+        }
+        .card h2 {
+          font-size: 1.05rem;
+          font-weight: 800;
+          color: var(--ink);
+          margin-bottom: 4px;
         }
 
-        .province-table {
+        .bar-list {
           display: flex;
           flex-direction: column;
+          gap: 10px;
         }
-        .province-row {
+        .bar-row {
           display: grid;
-          grid-template-columns: 1.4fr 1fr 1.3fr 1fr;
-          gap: 8px;
-          padding: 12px 0;
-          border-bottom: 1px solid var(--sand);
-          font-size: 0.82rem;
+          grid-template-columns: 100px 1fr 34px;
           align-items: center;
+          gap: 8px;
         }
-        .province-head {
-          font-weight: 700;
-          color: var(--muted);
-          font-size: 0.72rem;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
-        }
-        .province-name {
-          font-weight: 700;
+        .bar-label {
+          font-size: 0.78rem;
+          font-weight: 600;
           color: var(--ink);
+        }
+        .bar-track {
+          background: var(--sand);
+          border-radius: 6px;
+          height: 9px;
+          overflow: hidden;
+        }
+        .bar-fill {
+          height: 100%;
+          border-radius: 6px;
+          background: linear-gradient(90deg, var(--rose) 0%, var(--rose-deep) 100%);
+        }
+        .bar-value {
+          font-size: 0.78rem;
+          font-weight: 700;
+          color: var(--rose-deep);
+          text-align: right;
+        }
+
+        .donut-row {
+          display: flex;
+          align-items: center;
+          gap: 24px;
+          flex-wrap: wrap;
+        }
+        .donut {
+          width: 150px;
+          height: 150px;
+          border-radius: 50%;
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .donut-hole {
+          width: 62%;
+          height: 62%;
+          background: white;
+          border-radius: 50%;
+        }
+        .donut-legend {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .legend-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 0.8rem;
+          color: var(--ink);
+        }
+        .legend-dot {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          flex-shrink: 0;
         }
 
         .flag-list {
@@ -332,55 +375,6 @@ export default function InsightsPage() {
           line-height: 1.55;
         }
 
-        .tab-row {
-          display: flex;
-          gap: 8px;
-          flex-wrap: wrap;
-          margin-bottom: 20px;
-        }
-        .tab-btn {
-          background: var(--warm);
-          border: none;
-          border-radius: 999px;
-          padding: 8px 16px;
-          font-size: 0.8rem;
-          font-weight: 600;
-          color: var(--muted);
-          cursor: pointer;
-        }
-        .tab-btn.active {
-          background: var(--rose);
-          color: white;
-        }
-        .hotspot-list {
-          display: flex;
-          flex-direction: column;
-        }
-        .hotspot-row {
-          display: grid;
-          grid-template-columns: 24px 1.4fr 1fr 1.2fr;
-          gap: 8px;
-          padding: 10px 0;
-          border-bottom: 1px solid var(--sand);
-          font-size: 0.85rem;
-          align-items: center;
-        }
-        .hotspot-rank {
-          color: var(--rose);
-          font-weight: 800;
-        }
-        .hotspot-station {
-          font-weight: 700;
-          color: var(--ink);
-        }
-        .hotspot-province {
-          color: var(--muted);
-        }
-        .hotspot-cases {
-          color: var(--muted);
-          text-align: right;
-        }
-
         .sources p {
           font-size: 0.78rem;
           color: var(--muted);
@@ -389,13 +383,12 @@ export default function InsightsPage() {
           padding-top: 20px;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 760px) {
           .headline-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr 1fr;
           }
-          .province-row,
-          .hotspot-row {
-            font-size: 0.75rem;
+          .card-grid {
+            grid-template-columns: 1fr;
           }
         }
       `}</style>
@@ -403,69 +396,95 @@ export default function InsightsPage() {
   );
 }
 
-function ChangeBadge({ value }) {
-  if (!value) return null;
-  const up = value > 0;
-  return (
-    <span
-      style={{
-        marginLeft: 6,
-        fontSize: '0.72rem',
-        fontWeight: 700,
-        color: up ? '#c2410c' : '#0e6e65',
-      }}
-    >
-      {up ? '▲' : '▼'} {Math.abs(value)}%
-    </span>
-  );
+function donutGradient(caseTypes) {
+  let acc = 0;
+  const stops = caseTypes.map((c, i) => {
+    const start = acc;
+    acc += c.pct;
+    return `${CASE_TYPE_COLORS[i % CASE_TYPE_COLORS.length]} ${start}% ${acc}%`;
+  });
+  return `conic-gradient(${stops.join(', ')})`;
 }
 
-function ResourceGap({ coverage }) {
+function GapTiles({ coverage }) {
   const rows = PROVINCES.map((p) => {
     const services = coverage[p.name] || 0;
-    const gapIndex = services > 0 ? +(services / p.sexualOffences.cases).toFixed(4) : 0;
-    return { name: p.name, cases: p.sexualOffences.cases, services, gapIndex };
-  }).sort((a, b) => a.gapIndex - b.gapIndex);
+    const perService = services > 0 ? p.sexualOffences.cases / services : null;
+    return { name: p.name, cases: p.sexualOffences.cases, services, perService };
+  });
+
+  const ranked = rows.filter((r) => r.perService !== null).sort((a, b) => b.perService - a.perService);
+  const tierFor = (r) => {
+    const idx = ranked.indexOf(r);
+    const pct = idx / Math.max(ranked.length - 1, 1);
+    if (pct <= 0.25) return { label: 'Critical gap', className: 'critical' };
+    if (pct <= 0.5) return { label: 'High gap', className: 'high' };
+    if (pct <= 0.75) return { label: 'Moderate gap', className: 'moderate' };
+    return { label: 'Low gap', className: 'low' };
+  };
+
+  const sorted = [...rows].sort((a, b) => (b.perService || 0) - (a.perService || 0));
 
   return (
-    <div className="gap-list">
-      {rows.map((r) => (
-        <div className="gap-row" key={r.name}>
-          <span className="gap-name">{r.name}</span>
-          <span className="gap-detail">
-            {r.cases.toLocaleString()} sexual offence cases · {r.services}{' '}
-            verified service{r.services === 1 ? '' : 's'}
-          </span>
-          <span className="gap-index">
-            {r.services > 0 ? r.gapIndex : 'no data'}
-          </span>
-        </div>
-      ))}
+    <div className="gap-grid">
+      {sorted.map((r) => {
+        const tier = r.perService !== null ? tierFor(r) : { label: 'No data', className: 'nodata' };
+        return (
+          <div className="gap-tile" key={r.name}>
+            <p className="gap-name">{r.name}</p>
+            <p className={`gap-value ${tier.className}`}>
+              {r.perService !== null ? r.perService.toFixed(1) : '—'}
+            </p>
+            <p className="gap-tier">{tier.label}</p>
+          </div>
+        );
+      })}
       <style jsx>{`
-        .gap-list {
-          display: flex;
-          flex-direction: column;
+        .gap-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 14px;
         }
-        .gap-row {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          padding: 14px 0;
-          border-bottom: 1px solid var(--sand);
+        .gap-tile {
+          background: var(--warm);
+          border-radius: 12px;
+          padding: 18px 16px;
         }
         .gap-name {
+          font-size: 0.85rem;
           font-weight: 700;
           color: var(--ink);
-          font-size: 0.92rem;
+          margin-bottom: 8px;
         }
-        .gap-detail {
-          font-size: 0.8rem;
+        .gap-value {
+          font-size: 1.6rem;
+          font-weight: 800;
+          margin-bottom: 4px;
+        }
+        .gap-value.critical {
+          color: #b91c1c;
+        }
+        .gap-value.high {
+          color: var(--rose-deep);
+        }
+        .gap-value.moderate {
+          color: #b45309;
+        }
+        .gap-value.low {
+          color: var(--teal);
+        }
+        .gap-value.nodata {
           color: var(--muted);
         }
-        .gap-index {
+        .gap-tier {
           font-size: 0.75rem;
-          color: var(--rose-deep);
-          font-weight: 700;
+          color: var(--muted);
+          font-weight: 600;
+        }
+        @media (max-width: 600px) {
+          .gap-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
         }
       `}</style>
     </div>
