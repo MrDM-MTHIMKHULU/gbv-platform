@@ -121,9 +121,6 @@ export default function ProgressPage() {
       <section className="page-header">
         <p className="eyebrow">My progress</p>
         <h1>Your learning, at a glance</h1>
-        <p className="sub">
-          Every course, quiz, and certificate in one place.
-        </p>
       </section>
 
       <section className="content">
