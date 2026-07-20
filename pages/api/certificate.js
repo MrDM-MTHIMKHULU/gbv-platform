@@ -65,23 +65,31 @@ export default async function handler(req, res) {
 
   // ---------- Build the PDF ----------
 
-  const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage([842, 595]); // A4 landscape
-  const { width, height } = page.getSize();
+  let pdfBytes;
+  try {
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([842, 595]); // A4 landscape
+    const { width, height } = page.getSize();
 
-  const serif = await pdfDoc.embedFont(StandardFonts.TimesRoman);
-  const serifItalic = await pdfDoc.embedFont(StandardFonts.TimesRomanItalic);
-  const serifBold = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
-  const sans = await pdfDoc.embedFont(StandardFonts.Helvetica);
-  const sansBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    const serif = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+    const serifItalic = await pdfDoc.embedFont(StandardFonts.TimesRomanItalic);
+    const serifBold = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
+    const sans = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const sansBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-  const signatureBytes = fs.readFileSync(
-    path.join(process.cwd(), 'public', 'signature-lina.png')
-  );
-  const signatureImage = await pdfDoc.embedPng(signatureBytes);
-  const signatureWidth = 165;
-  const signatureHeight =
-    signatureWidth * (signatureImage.height / signatureImage.width);
+    let signatureImage = null;
+    let signatureWidth = 0;
+    let signatureHeight = 0;
+    try {
+      const signatureBytes = fs.readFileSync(
+        path.join(process.cwd(), 'public', 'signature-lina.png')
+      );
+      signatureImage = await pdfDoc.embedPng(signatureBytes);
+      signatureWidth = 230;
+      signatureHeight = signatureWidth * (signatureImage.height / signatureImage.width);
+    } catch (sigErr) {
+      console.error('Signature image not found, continuing without it:', sigErr.message);
+    }
 
   const rose = rgb(0.83, 0.09, 0.4);
   const roseDeep = rgb(0.56, 0.06, 0.28);
@@ -196,12 +204,15 @@ export default async function handler(req, res) {
 
   // Signature block
   cursorY -= 70;
-  page.drawImage(signatureImage, {
-    x: leftX,
-    y: cursorY - signatureHeight + 14,
-    width: signatureWidth,
-    height: signatureHeight,
-  });
+  const signatureLineY = cursorY - 10;
+  if (signatureImage) {
+    page.drawImage(signatureImage, {
+      x: leftX,
+      y: signatureLineY + 6,
+      width: signatureWidth,
+      height: signatureHeight,
+    });
+  }
   cursorY -= 10;
   page.drawLine({
     start: { x: leftX, y: cursorY },
@@ -398,7 +409,11 @@ export default async function handler(req, res) {
     color: muted,
   });
 
-  const pdfBytes = await pdfDoc.save();
+    pdfBytes = await pdfDoc.save();
+  } catch (buildErr) {
+    console.error('Certificate PDF build error:', buildErr);
+    return res.status(500).json({ error: 'Could not generate certificate PDF' });
+  }
 
   res.setHeader('Content-Type', 'application/pdf');
   res.setHeader(
