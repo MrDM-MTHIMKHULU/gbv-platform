@@ -59,7 +59,6 @@ export default function LibraryPage() {
       <section className="page-header">
         <p className="eyebrow">Library</p>
         <h1>Guides &amp; ebooks</h1>
-        <p className="sub">Search or filter, instead of scrolling through everything.</p>
       </section>
 
       <section className="content">
