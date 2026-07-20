@@ -66,10 +66,7 @@ export default function SupportPage() {
           <p className="eyebrow">Talk to someone</p>
           <h1>You don&apos;t have to carry this alone</h1>
           <p className="sub">
-            All of the services below are free and confidential. Calls don&apos;t
-            appear as a specific number on some phone bills, if you&apos;re
-            worried about your call history, use Quick Exit and consider
-            calling from a phone your abuser can&apos;t access.
+            All of the services below are free and confidential.
           </p>
         </section>
       )}
