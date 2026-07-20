@@ -427,6 +427,45 @@ function RatioBars({ data, variant }) {
           <span className="bar-value">{value}</span>
         </div>
       ))}
+
+      <style jsx>{`
+        .bar-row {
+          display: grid;
+          grid-template-columns: 140px 1fr 36px;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 10px;
+        }
+        .bar-label {
+          font-size: 0.82rem;
+          font-weight: 600;
+          color: var(--ink);
+        }
+        .bar-track {
+          background: var(--sand);
+          border-radius: 6px;
+          height: 10px;
+          overflow: hidden;
+        }
+        .bar-fill {
+          height: 100%;
+          background: var(--rose);
+          border-radius: 6px;
+        }
+        .bar-fill.alt {
+          background: var(--teal);
+        }
+        .bar-value {
+          font-size: 0.8rem;
+          color: var(--muted);
+          text-align: right;
+        }
+        @media (max-width: 600px) {
+          .bar-row {
+            grid-template-columns: 100px 1fr 30px;
+          }
+        }
+      `}</style>
     </div>
   );
 }
