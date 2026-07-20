@@ -69,7 +69,7 @@ export default function RightsPage() {
         <section className="girl-banner">
           <p className="girl-banner-title">Real talk if you&apos;re under 18</p>
           <p className="girl-banner-text">
-            You can&apos;t usually do the court thing alone &mdash; you&apos;ll
+            You can&apos;t usually do the court thing alone, you&apos;ll
             need an adult on your side. Sounds annoying, but Childline can
             help you work out who that could be, fast and privately.
           </p>
@@ -153,6 +153,34 @@ export default function RightsPage() {
             South Africa can advise which apply to you, free of charge if
             you qualify.
           </p>
+        </div>
+
+        <div className="block">
+          <h2>Guides to keep</h2>
+          <p className="guides-note">
+            Downloadable versions of this information are on their way, so
+            you can save or print them for reference even without signal.
+          </p>
+          <div className="guides-grid">
+            <div className="guide-card">
+              <span className="guide-badge">PDF</span>
+              <p className="guide-title">Protection Orders, Step by Step</p>
+              <p className="guide-desc">
+                How to apply, what it costs (nothing), and what happens in
+                court.
+              </p>
+              <span className="guide-status">Coming soon</span>
+            </div>
+            <div className="guide-card">
+              <span className="guide-badge">PDF</span>
+              <p className="guide-title">Your Rights After Sexual Assault</p>
+              <p className="guide-desc">
+                What to expect at a Thuthuzela Care Centre and your reporting
+                options.
+              </p>
+              <span className="guide-status">Coming soon</span>
+            </div>
+          </div>
         </div>
 
         <div className="contacts">
@@ -300,6 +328,64 @@ export default function RightsPage() {
           line-height: 1.7;
           color: var(--muted);
           margin-bottom: 16px;
+        }
+
+        .guides-note {
+          font-size: 0.92rem;
+          color: var(--muted);
+          margin-bottom: 20px;
+        }
+        .guides-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 16px;
+        }
+        .guide-card {
+          background: var(--blush);
+          border-radius: 12px;
+          padding: 20px 18px;
+          display: flex;
+          flex-direction: column;
+        }
+        .guide-badge {
+          align-self: flex-start;
+          background: var(--rose-deep);
+          color: white;
+          font-size: 0.68rem;
+          font-weight: 800;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          padding: 4px 10px;
+          border-radius: 999px;
+          margin-bottom: 12px;
+        }
+        .guide-title {
+          font-size: 0.98rem;
+          font-weight: 700;
+          color: var(--ink);
+          margin-bottom: 6px;
+        }
+        .guide-desc {
+          font-size: 0.85rem;
+          color: var(--muted);
+          line-height: 1.55;
+          margin-bottom: 16px;
+          flex-grow: 1;
+        }
+        .guide-status {
+          align-self: flex-start;
+          font-size: 0.78rem;
+          font-weight: 700;
+          color: var(--rose-deep);
+          border: 1px solid var(--rose-deep);
+          padding: 5px 12px;
+          border-radius: 999px;
+        }
+
+        @media (max-width: 700px) {
+          .guides-grid {
+            grid-template-columns: 1fr;
+          }
         }
 
         .contacts {
