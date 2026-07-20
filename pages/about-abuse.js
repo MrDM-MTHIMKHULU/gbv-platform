@@ -26,7 +26,7 @@ export default function AboutAbusePage() {
         <title>Is This Abuse? | SafeHaven</title>
         <meta
           name="description"
-          content="Understand the different forms abuse can take, and recognise the signs — in plain, non-judgmental language."
+          content="Understand the different forms abuse can take, and recognise the signs, in plain, non-judgmental language."
         />
       </Head>
 
@@ -68,7 +68,7 @@ export default function AboutAbusePage() {
           <h1>Abuse doesn&apos;t always look like you&apos;d expect</h1>
           <p className="sub">
             Under South African law, abuse isn&apos;t only physical. If
-            something here sounds familiar, you&apos;re not overreacting —
+            something here sounds familiar, you&apos;re not overreacting,
             and you&apos;re not alone.
           </p>
         </section>
@@ -79,7 +79,7 @@ export default function AboutAbusePage() {
           <p className="type-label">Physical</p>
           <p className="type-text">
             Hitting, slapping, pushing, choking, or any use of force against
-            you — including threats of physical harm, even if never carried
+            you, including threats of physical harm, even if never carried
             out.
           </p>
         </div>
@@ -103,14 +103,14 @@ export default function AboutAbusePage() {
           <p className="type-label">Sexual</p>
           <p className="type-text">
             Any sexual act or contact without your full, freely given
-            consent — including within a marriage or relationship.
+            consent, including within a marriage or relationship.
           </p>
         </div>
         <div className="type-card">
           <p className="type-label">Coercive control</p>
           <p className="type-text">
-            A pattern of controlling behaviour — monitoring your phone,
-            dictating what you wear, who you see, or where you go — that
+            A pattern of controlling behaviour, monitoring your phone,
+            dictating what you wear, who you see, or where you go, that
             builds fear and dependence over time.
           </p>
         </div>
@@ -136,7 +136,7 @@ export default function AboutAbusePage() {
         <p className="patterns-note">
           None of these on their own prove abuse, and only you know your
           situation. But if several of these feel familiar, it&apos;s worth
-          talking to someone — you don&apos;t need to have all the answers
+          talking to someone. You don&apos;t need to have all the answers
           before you reach out.
         </p>
       </section>
