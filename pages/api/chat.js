@@ -1,10 +1,28 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Server-side only, uses the service role key, never exposed to the browser
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+// Server-side only, uses the service role key, never exposed to the browser.
+// Created lazily (not at module load time) so a missing env var produces a
+// clean error response instead of crashing the entire serverless function.
+let supabase = null;
+function getSupabase() {
+  if (supabase) return supabase;
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !key) {
+    console.error(
+      'Missing Supabase env vars. NEXT_PUBLIC_SUPABASE_URL present:',
+      !!url,
+      'SUPABASE_SERVICE_ROLE_KEY present:',
+      !!key
+    );
+    return null;
+  }
+
+  supabase = createClient(url, key);
+  return supabase;
+}
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const EMBED_MODEL = 'text-embedding-004';
@@ -59,7 +77,10 @@ async function embedQuery(text) {
 async function retrieveContext(queryEmbedding, matchCount = 5) {
   if (!queryEmbedding) return [];
 
-  const { data, error } = await supabase.rpc('match_document_chunks', {
+  const client = getSupabase();
+  if (!client) return []; // Supabase not configured, Jennet still answers, just without grounding
+
+  const { data, error } = await client.rpc('match_document_chunks', {
     query_embedding: queryEmbedding,
     match_count: matchCount,
   });
