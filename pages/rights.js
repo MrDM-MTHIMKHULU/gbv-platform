@@ -89,7 +89,7 @@ export default function RightsPage() {
             order.
           </p>
           <p>
-            It also covers people beyond spouses — partners, ex-partners,
+            It also covers people beyond spouses, partners, ex-partners,
             family members, someone you share a child with, or someone you
             currently or previously lived with.
           </p>
@@ -107,11 +107,11 @@ export default function RightsPage() {
         </div>
 
         <div className="block">
-          <h2>How to apply — step by step</h2>
+          <h2>How to apply: step by step</h2>
           <ol>
             <li>
               Go to the Magistrate&apos;s Court nearest to where you live or
-              work — or your temporary address, if you&apos;ve had to leave
+              work, or your temporary address, if you&apos;ve had to leave
               home. This service is free.
             </li>
             <li>
@@ -121,7 +121,7 @@ export default function RightsPage() {
               applying against.
             </li>
             <li>
-              You&apos;ll write an affidavit describing what happened —
+              You&apos;ll write an affidavit describing what happened:
               dates, incidents, and any evidence such as messages, photos,
               or witnesses. This is a sworn statement, so it needs to be
               accurate.
@@ -133,7 +133,7 @@ export default function RightsPage() {
             </li>
             <li>
               The order must then be formally served on the abuser by a
-              Sheriff or police officer — not by you personally. Once
+              Sheriff or police officer, not by you personally. Once
               served, it&apos;s legally enforceable.
             </li>
             <li>
@@ -149,7 +149,7 @@ export default function RightsPage() {
             Depending on your situation, you may also be able to pursue
             divorce or separation, apply for custody protection for your
             children, or open a criminal case with SAPS in addition to a
-            protection order. These are separate legal processes — Legal Aid
+            protection order. These are separate legal processes. Legal Aid
             South Africa can advise which apply to you, free of charge if
             you qualify.
           </p>
