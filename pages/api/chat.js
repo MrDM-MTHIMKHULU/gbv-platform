@@ -25,8 +25,8 @@ function getSupabase() {
 }
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const EMBED_MODEL = 'text-embedding-004';
-const CHAT_MODEL = 'gemini-2.5-flash';
+const EMBED_MODEL = 'gemini-embedding-001';
+const CHAT_MODEL = 'gemini-3.5-flash';
 
 const SYSTEM_PROMPT = `You are Jennet, GBV Support Specialist, the AI agent built for SafeHaven, a South African platform supporting women and girls experiencing gender-based violence (GBV).
 
@@ -50,7 +50,9 @@ Hard rules:
 - Keep responses concise (3-5 sentences typically), this is a chat interface, not an essay.
 - Never claim certainty about someone's danger level. You can express concern and point to real help; you cannot assess risk clinically.`;
 
-// Embed the user's question using Gemini's embedding endpoint
+// Embed the user's question using Gemini's embedding endpoint.
+// outputDimensionality is set to 768 to match the vector(768) column in
+// Supabase (gemini-embedding-001 defaults to 3072-dimension vectors).
 async function embedQuery(text) {
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${EMBED_MODEL}:embedContent?key=${GEMINI_API_KEY}`,
@@ -60,6 +62,7 @@ async function embedQuery(text) {
       body: JSON.stringify({
         model: `models/${EMBED_MODEL}`,
         content: { parts: [{ text }] },
+        outputDimensionality: 768,
       }),
     }
   );
