@@ -67,7 +67,7 @@ export default function SupportPage() {
           <h1>You don&apos;t have to carry this alone</h1>
           <p className="sub">
             All of the services below are free and confidential. Calls don&apos;t
-            appear as a specific number on some phone bills — if you&apos;re
+            appear as a specific number on some phone bills, if you&apos;re
             worried about your call history, use Quick Exit and consider
             calling from a phone your abuser can&apos;t access.
           </p>
@@ -313,7 +313,7 @@ function ChildlineCard({ isGirl }) {
             <p className="c-desc">
               {isGirl
                 ? "They won't judge you, and it's totally free"
-                : '24/7, free, and confidential — for children and teens facing abuse of any kind'}
+                : '24/7, free, and confidential, for children and teens facing abuse of any kind'}
             </p>
           </div>
           <a href="tel:116">116</a>
@@ -321,8 +321,8 @@ function ChildlineCard({ isGirl }) {
       </div>
       <p className="note">
         {isGirl
-          ? "They won't force you to do anything \u2014 they'll just help you figure out your next move."
-          : "Childline will always try to help you talk to a trusted adult — you won't be forced to do anything you're not ready for."}
+          ? "They won't force you to do anything. They'll just help you figure out your next move."
+          : "Childline will always try to help you talk to a trusted adult. You won't be forced to do anything you're not ready for."}
       </p>
 
       <style jsx>{`
