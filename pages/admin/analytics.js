@@ -150,6 +150,11 @@ export default function AdminAnalyticsPage() {
   const maxCompletions = Math.max(...topLessons.map((l) => l.completions), 1);
   const maxLearners = Math.max(...courseSummary.map((c) => c.learners), 1);
 
+  const totalCertificates = certificates.reduce((sum, c) => sum + c.issued, 0);
+  const avgPassRate = quizStats.length
+    ? Math.round(quizStats.reduce((sum, q) => sum + q.pass_rate, 0) / quizStats.length)
+    : null;
+
   return (
     <Layout>
       <Head>
@@ -165,6 +170,17 @@ export default function AdminAnalyticsPage() {
         </p>
       </section>
 
+      <section className="stat-row">
+        <StatCard label="Registered accounts" value={signupStats?.total ?? '—'} color="rose" />
+        <StatCard label="Certificates issued" value={totalCertificates} color="teal" />
+        <StatCard label="Courses with activity" value={courseSummary.length} color="plum" />
+        <StatCard
+          label="Average quiz pass rate"
+          value={avgPassRate !== null ? `${avgPassRate}%` : '—'}
+          color="rose"
+        />
+      </section>
+
       <section className="content">
         {signupStats && (
           <div className="block">
@@ -174,14 +190,21 @@ export default function AdminAnalyticsPage() {
               individual user is identifiable here, only aggregate counts.
             </p>
 
-            <p className="sub-heading">By age group</p>
-            <RatioBars data={relabelAgeGroups(signupStats.byAgeGroup)} variant="" />
+            <div className="donut-row">
+              <DonutChart
+                title="By age group"
+                data={relabelAgeGroups(signupStats.byAgeGroup)}
+                colors={['#c2185b', '#f97316']}
+              />
+              <DonutChart
+                title="By preferred language"
+                data={relabelLanguages(signupStats.byLanguage)}
+                colors={['#c2185b', '#0f6e63', '#f97316', '#8e1046', '#eab308']}
+              />
+            </div>
 
             <p className="sub-heading">By province</p>
             <RatioBars data={signupStats.byProvince} variant="alt" />
-
-            <p className="sub-heading">By preferred language</p>
-            <RatioBars data={relabelLanguages(signupStats.byLanguage)} variant="" />
           </div>
         )}
 
@@ -237,19 +260,19 @@ export default function AdminAnalyticsPage() {
           {quizStats.length === 0 ? (
             <p className="empty">No quiz attempts yet.</p>
           ) : (
-            <div className="quiz-table">
-              <div className="quiz-row quiz-head">
-                <span>Quiz</span>
-                <span>Attempts</span>
-                <span>Avg score</span>
-                <span>Pass rate</span>
-              </div>
+            <div className="quiz-grid">
               {quizStats.map((q) => (
-                <div className="quiz-row" key={`${q.course_id}:${q.quiz_id}`}>
-                  <span>{lessonTitles[`${q.course_id}:${q.quiz_id}`] || q.quiz_id}</span>
-                  <span>{q.attempts}</span>
-                  <span>{q.avg_score}</span>
-                  <span>{q.pass_rate}%</span>
+                <div className="quiz-card" key={`${q.course_id}:${q.quiz_id}`}>
+                  <p className="quiz-name">
+                    {lessonTitles[`${q.course_id}:${q.quiz_id}`] || q.quiz_id}
+                  </p>
+                  <div className="quiz-meta">
+                    <span>{q.attempts} attempts</span>
+                    <span>Avg {q.avg_score}</span>
+                  </div>
+                  <div className={`pass-badge ${q.pass_rate >= 70 ? 'good' : q.pass_rate >= 40 ? 'mid' : 'low'}`}>
+                    {q.pass_rate}% pass rate
+                  </div>
                 </div>
               ))}
             </div>
@@ -261,12 +284,14 @@ export default function AdminAnalyticsPage() {
           {certificates.length === 0 ? (
             <p className="empty">No certificates issued yet.</p>
           ) : (
-            certificates.map((c) => (
-              <div className="cert-row" key={c.course_id}>
-                <span>{courseTitles[c.course_id] || c.course_id}</span>
-                <span className="cert-count">{c.issued}</span>
-              </div>
-            ))
+            <div className="cert-grid">
+              {certificates.map((c) => (
+                <div className="cert-card" key={c.course_id}>
+                  <p className="cert-num">{c.issued}</p>
+                  <p className="cert-name">{courseTitles[c.course_id] || c.course_id}</p>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </section>
@@ -366,42 +391,267 @@ export default function AdminAnalyticsPage() {
           text-align: right;
         }
 
-        .quiz-table {
-          display: flex;
-          flex-direction: column;
-        }
-        .quiz-row {
+        .stat-row {
+          max-width: 1000px;
+          margin: 0 auto;
+          padding: 0 24px 20px;
           display: grid;
-          grid-template-columns: 2fr 1fr 1fr 1fr;
-          gap: 8px;
-          padding: 10px 0;
-          border-bottom: 1px solid var(--sand);
-          font-size: 0.85rem;
-        }
-        .quiz-head {
-          font-weight: 700;
-          color: var(--muted);
-          font-size: 0.72rem;
-          text-transform: uppercase;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 14px;
         }
 
-        .cert-row {
-          display: flex;
-          justify-content: space-between;
-          padding: 12px 16px;
-          background: var(--teal-light);
-          border-radius: 10px;
+        .donut-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+          margin-bottom: 24px;
+        }
+
+        .quiz-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
+        }
+        .quiz-card {
+          background: var(--warm);
+          border-radius: 12px;
+          padding: 16px 18px;
+        }
+        .quiz-name {
+          font-size: 0.88rem;
+          font-weight: 700;
+          color: var(--ink);
           margin-bottom: 8px;
-          font-size: 0.9rem;
+        }
+        .quiz-meta {
+          display: flex;
+          gap: 14px;
+          font-size: 0.78rem;
+          color: var(--muted);
+          margin-bottom: 10px;
+        }
+        .pass-badge {
+          display: inline-block;
+          font-size: 0.75rem;
+          font-weight: 700;
+          padding: 5px 12px;
+          border-radius: 999px;
+        }
+        .pass-badge.good {
+          background: #dcfce7;
+          color: #166534;
+        }
+        .pass-badge.mid {
+          background: #fef9c3;
+          color: #854d0e;
+        }
+        .pass-badge.low {
+          background: #fee2e2;
+          color: #991b1b;
+        }
+
+        .cert-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 12px;
+        }
+        .cert-card {
+          background: var(--teal-light);
+          border-radius: 12px;
+          padding: 20px 16px;
+          text-align: center;
+        }
+        .cert-num {
+          font-size: 1.8rem;
+          font-weight: 800;
+          color: var(--rose-deep);
+          margin-bottom: 4px;
+        }
+        .cert-name {
+          font-size: 0.8rem;
           font-weight: 600;
           color: var(--ink);
         }
-        .cert-count {
-          font-weight: 800;
-          color: var(--rose-deep);
+
+        @media (max-width: 700px) {
+          .stat-row {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .donut-row,
+          .quiz-grid,
+          .cert-grid {
+            grid-template-columns: 1fr;
+          }
         }
       `}</style>
     </Layout>
+  );
+}
+
+function StatCard({ label, value, color }) {
+  return (
+    <div className={`stat-card ${color}`}>
+      <p className="stat-value">{value}</p>
+      <p className="stat-label">{label}</p>
+
+      <style jsx>{`
+        .stat-card {
+          border-radius: 14px;
+          padding: 20px 18px;
+          text-align: center;
+        }
+        .stat-card.rose {
+          background: var(--blush);
+        }
+        .stat-card.teal {
+          background: var(--teal-light);
+        }
+        .stat-card.plum {
+          background: var(--warm);
+        }
+        .stat-value {
+          font-size: 1.9rem;
+          font-weight: 800;
+          color: var(--rose-deep);
+          margin-bottom: 4px;
+        }
+        .stat-label {
+          font-size: 0.78rem;
+          font-weight: 600;
+          color: var(--muted);
+        }
+      `}</style>
+    </div>
+  );
+}
+
+function DonutChart({ title, data, colors }) {
+  const entries = Object.entries(data || {}).filter(([, v]) => v > 0);
+  const total = entries.reduce((sum, [, v]) => sum + v, 0);
+
+  if (total === 0) {
+    return (
+      <div className="donut-card">
+        <p className="donut-title">{title}</p>
+        <p className="empty">No data yet.</p>
+        <style jsx>{`
+          .donut-card {
+            background: var(--warm);
+            border-radius: 14px;
+            padding: 20px;
+          }
+          .donut-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 10px;
+          }
+          .empty {
+            font-size: 0.85rem;
+            color: var(--muted);
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  const radius = 44;
+  const circumference = 2 * Math.PI * radius;
+  let offsetAccum = 0;
+
+  const arcs = entries.map(([label, value], i) => {
+    const fraction = value / total;
+    const dash = fraction * circumference;
+    const arc = {
+      label,
+      value,
+      color: colors[i % colors.length],
+      dashArray: `${dash} ${circumference - dash}`,
+      dashOffset: -offsetAccum,
+    };
+    offsetAccum += dash;
+    return arc;
+  });
+
+  return (
+    <div className="donut-card">
+      <p className="donut-title">{title}</p>
+      <div className="donut-body">
+        <svg viewBox="0 0 120 120" className="donut-svg">
+          {arcs.map((arc) => (
+            <circle
+              key={arc.label}
+              cx="60"
+              cy="60"
+              r={radius}
+              fill="none"
+              stroke={arc.color}
+              strokeWidth="18"
+              strokeDasharray={arc.dashArray}
+              strokeDashoffset={arc.dashOffset}
+              transform="rotate(-90 60 60)"
+            />
+          ))}
+        </svg>
+        <ul className="donut-legend">
+          {arcs.map((arc) => (
+            <li key={arc.label}>
+              <span className="dot" style={{ background: arc.color }} />
+              {arc.label} ({arc.value})
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <style jsx>{`
+        .donut-card {
+          background: var(--warm);
+          border-radius: 14px;
+          padding: 20px;
+        }
+        .donut-title {
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: var(--ink);
+          margin-bottom: 14px;
+        }
+        .donut-body {
+          display: flex;
+          align-items: center;
+          gap: 18px;
+        }
+        .donut-svg {
+          width: 100px;
+          height: 100px;
+          flex-shrink: 0;
+        }
+        .donut-legend {
+          list-style: none;
+          font-size: 0.78rem;
+          color: var(--ink);
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+        .donut-legend li {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .dot {
+          width: 9px;
+          height: 9px;
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+        @media (max-width: 420px) {
+          .donut-body {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+        }
+      `}</style>
+    </div>
   );
 }
 
