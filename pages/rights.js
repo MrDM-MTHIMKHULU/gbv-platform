@@ -146,12 +146,11 @@ export default function RightsPage() {
         <div className="block">
           <h2>Other legal options</h2>
           <p>
-            Depending on your situation, you may also be able to pursue
-            divorce or separation, apply for custody protection for your
-            children, or open a criminal case with SAPS in addition to a
-            protection order. These are separate legal processes. Legal Aid
-            South Africa can advise which apply to you, free of charge if
-            you qualify.
+            Depending on your situation, you may also be able to apply for
+            custody protection for your children, or open a criminal case
+            with SAPS in addition to a protection order. These are separate
+            legal processes. Legal Aid South Africa can advise which apply
+            to you, free of charge if you qualify.
           </p>
         </div>
 
