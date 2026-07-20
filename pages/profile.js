@@ -111,7 +111,7 @@ export default function ProfilePage() {
           <h1>Your details</h1>
           <p className="sub">
             Update your information any time. Your email can&apos;t be
-            changed here — contact support if you need to update it.
+            changed here. Contact support if you need to update it.
           </p>
 
           <form onSubmit={handleSave}>
