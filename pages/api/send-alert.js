@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
   const bodyText = mapLink
     ? `${name} needs help. This isn't a test.\n\nTheir location: ${mapLink}`
-    : `${name} needs help. This isn't a test.\n\nLocation could not be determined — please try calling them.`;
+    : `${name} needs help. This isn't a test.\n\nLocation could not be determined. Please try calling them.`;
 
   try {
     const response = await fetch('https://api.resend.com/emails', {
