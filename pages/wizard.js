@@ -98,7 +98,7 @@ export default function WizardPage() {
         {!showResults && (
           <p className="sub">
             This takes about a minute. Nothing you answer here is saved or
-            sent anywhere — it only exists in your browser right now.
+            sent anywhere. It only exists in your browser right now.
           </p>
         )}
       </section>
@@ -385,7 +385,7 @@ function buildRecommendations(answers) {
   if (answers.need === 'order' || answers.relationship) {
     recs.push({
       title: 'You likely qualify for a protection order',
-      text: 'Under South African law, this covers spouses, partners, ex-partners, family members, and people you share a home or child with — go to the Magistrate\u2019s Court nearest you and ask for the Clerk of the Court. It\u2019s free, and an interim order can often be granted the same day.',
+      text: 'Under South African law, this covers spouses, partners, ex-partners, family members, and people you share a home or child with, go to the Magistrate\u2019s Court nearest you and ask for the Clerk of the Court. It\u2019s free, and an interim order can often be granted the same day.',
       link: { href: '/rights', label: 'See the full step-by-step process' },
     });
   }
@@ -417,7 +417,7 @@ function buildRecommendations(answers) {
   if (answers.need === 'info') {
     recs.push({
       title: 'Understand what you\u2019re experiencing',
-      text: 'It can help to first understand whether what\u2019s happening fits a recognised pattern of abuse — this isn\u2019t about needing a label, just information.',
+      text: 'It can help to first understand whether what\u2019s happening fits a recognised pattern of abuse, this isn\u2019t about needing a label, just information.',
       link: { href: '/about-abuse', label: 'Read about types of abuse' },
     });
   }
@@ -425,7 +425,7 @@ function buildRecommendations(answers) {
   if (recs.length === 0) {
     recs.push({
       title: 'Talk to someone who can guide you',
-      text: 'Every situation is different — a free call to Legal Aid or the GBV Command Centre can help you figure out the right next step for you specifically.',
+      text: 'Every situation is different. A free call to Legal Aid or the GBV Command Centre can help you figure out the right next step for you specifically.',
       link: { href: '/support', label: 'See who to contact' },
     });
   }
