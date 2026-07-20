@@ -58,7 +58,7 @@ export default function EmergencyAlert({ initialContacts, senderName, onSaved })
         return;
       }
 
-      // Automatic email — sent from the server, no app opens
+      // Automatic email, sent from the server, no app opens
       try {
         const res = await fetch('/api/send-alert', {
           method: 'POST',
@@ -99,7 +99,7 @@ export default function EmergencyAlert({ initialContacts, senderName, onSaved })
       <p className="note">
         Save someone you trust below. &quot;Text my location&quot; opens your
         messages app so you confirm before sending. &quot;Email my
-        location&quot; sends automatically the moment you tap it \u2014 make
+        location&quot; sends automatically the moment you tap it. Make
         sure that\u2019s really what you want before you press it.
       </p>
 
