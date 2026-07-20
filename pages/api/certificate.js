@@ -1,6 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 import { ADVANCED_COURSES } from '../../lib/allyCourseData';
 
 function makeCertificateId(userId, courseId, issuedAt) {
@@ -72,6 +74,14 @@ export default async function handler(req, res) {
   const serifBold = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
   const sans = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const sansBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  const signatureBytes = fs.readFileSync(
+    path.join(process.cwd(), 'public', 'signature-lina.png')
+  );
+  const signatureImage = await pdfDoc.embedPng(signatureBytes);
+  const signatureWidth = 165;
+  const signatureHeight =
+    signatureWidth * (signatureImage.height / signatureImage.width);
 
   const rose = rgb(0.83, 0.09, 0.4);
   const roseDeep = rgb(0.56, 0.06, 0.28);
@@ -186,12 +196,11 @@ export default async function handler(req, res) {
 
   // Signature block
   cursorY -= 70;
-  page.drawText('SafeHaven Certification Team', {
+  page.drawImage(signatureImage, {
     x: leftX,
-    y: cursorY,
-    size: 20,
-    font: serifItalic,
-    color: plum,
+    y: cursorY - signatureHeight + 14,
+    width: signatureWidth,
+    height: signatureHeight,
   });
   cursorY -= 10;
   page.drawLine({
@@ -201,7 +210,7 @@ export default async function handler(req, res) {
     color: sand,
   });
   cursorY -= 18;
-  page.drawText('SafeHaven Certification Team', {
+  page.drawText('L. Mtshatsha', {
     x: leftX,
     y: cursorY,
     size: 11,
@@ -209,7 +218,7 @@ export default async function handler(req, res) {
     color: rose,
   });
   cursorY -= 15;
-  page.drawText('Course Certification', { x: leftX, y: cursorY, size: 10, font: sans, color: ink });
+  page.drawText('Head of Learning Hub and Certificate', { x: leftX, y: cursorY, size: 10, font: sans, color: ink });
   cursorY -= 14;
   page.drawText('SafeHaven', { x: leftX, y: cursorY, size: 10, font: sans, color: ink });
 
