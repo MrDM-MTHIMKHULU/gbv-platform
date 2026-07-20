@@ -87,7 +87,6 @@ export default function Home() {
         </section>
       ) : (
         <section className="hero">
-          <p className="eyebrow">{t('hero_eyebrow')}</p>
           <h1>
             {t('hero_title_1')}
             <span> {t('hero_title_2')}</span>
@@ -298,12 +297,6 @@ export default function Home() {
           </div>
         </section>
       )}
-
-      <section className="cta">
-        <h2>{t('cta_title')}</h2>
-        <p>{t('cta_desc')}</p>
-        <Link href="/map" className="btn-primary">{t('cta_btn')}</Link>
-      </section>
 
       </div>
 
@@ -573,35 +566,6 @@ export default function Home() {
           font-size: 0.85rem;
           color: var(--muted);
           line-height: 1.5;
-        }
-
-        .cta {
-          background: var(--rose-deep);
-          color: white;
-          text-align: center;
-          padding: 80px 24px;
-        }
-        .cta h2 {
-          font-size: 1.8rem;
-          font-weight: 800;
-          margin-bottom: 14px;
-        }
-        .cta p {
-          font-size: 1rem;
-          color: var(--blush);
-          margin-bottom: 32px;
-          max-width: 480px;
-          margin-left: auto;
-          margin-right: auto;
-        }
-        .cta :global(.btn-primary) {
-          background: white;
-          color: var(--rose-deep);
-          padding: 15px 34px;
-          font-weight: 700;
-          font-size: 0.92rem;
-          text-decoration: none;
-          border-radius: 8px;
         }
 
         @media (max-width: 860px) {
