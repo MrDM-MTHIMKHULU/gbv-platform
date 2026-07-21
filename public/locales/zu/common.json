@@ -14,19 +14,16 @@
   "footer_bottom": "SafeHaven · Yakhelwe abesifazane nezintombazane zaseNingizimu Afrika",
   "emergency_prompt": "Ingozi manje?",
   "emergency_gbv": "I-GBV Command Centre 0800 428 428",
-
   "hero_eyebrow": "Mahhala · Kuyimfihlo · Kutholakala ngezilimi ezi-5",
   "hero_title_1": "Ukusekelwa kwabesifazane nezintombazane,",
   "hero_title_2": "uma ukudinga kakhulu.",
   "hero_desc": "I-SafeHaven ihlanganisa izindawo zokuphephela, iseluleko lomthetho, kanye nomuntu ongakhuluma naye ndaweni nye, yakhelwe iNingizimu Afrika, ngezilimi ozikhulumayo.",
   "hero_btn_map": "Thola usizo eduze kwami",
   "hero_btn_rights": "Yazi amalungelo akho",
-
   "stat_shelters": "Izindawo zokuphephela nezinsizakalo eziqinisekisiwe",
   "stat_provinces": "Izifundazwe ezihlanganyelwe",
   "stat_languages": "Izilimi zaseNingizimu Afrika",
   "stat_available": "Izinombolo zezimo eziphuthumayo, zibonakala njalo",
-
   "how_title": "I-SafeHaven isiza kanjani",
   "how_1_title": "Thola izinsizakalo eziseduze nawe",
   "how_1_text": "Sesha izindawo zokuphephela, amakliniki, namahhovisi osizo lomthetho ngesifundazwe, ubone ukuthi ngayinye inikezani ngaphambi kokuya khona.",
@@ -34,7 +31,6 @@
   "how_2_text": "Imihlahlandlela elula ichaza ama-protection order, ukubika udlame, nalokho umthetho waseNingizimu Afrika okuvumela ukwenza.",
   "how_3_title": "Thola usizo, ngokuphepha",
   "how_3_text": "Konke kule sayithi kungavalwa ngokushesha nge-Quick Exit, futhi akukho okugcinwayo noma okulandelelwayo lapha.",
-
   "resources_title": "Lapho ongaqala khona",
   "resource_abuse_title": "Ingabe lokhu ukuhlukunyezwa?",
   "resource_abuse_sub": "Bona izimpawu zezinhlobo ezahlukene zokuhlukunyezwa",
@@ -44,10 +40,20 @@
   "resource_rights_sub": "Umhlahlandlela wesinyathelo nesinyathelo wokufaka isicelo, mahhala",
   "resource_support_title": "Khuluma nomuntu",
   "resource_support_sub": "Izinombolo zosizo nezinsizakalo zokweluleka, noma nini ngosuku",
-
   "cta_title": "Awudingi ukubhekana nalokhu wedwa.",
   "cta_desc": "Konke okuku-SafeHaven mahhala, kuyimfihlo, futhi kwakhelwe ukusebenza ngisho noma kunoxhumano oluncane.",
   "cta_btn": "Qala lapha",
-
-  "quick_exit": "Phuma Ngokushesha"
+  "quick_exit": "Phuma Ngokushesha",
+  "nav_get_help": "Usizo",
+  "nav_ai_specialist": "Uchwepheshe we-AI Wodlame Olususelwa Ebulilini",
+  "nav_learn": "Funda",
+  "nav_learning_hub": "Isikhungo Sokufunda",
+  "nav_library": "Umtapo Wolwazi",
+  "nav_our_data": "Imininingwane Yethu",
+  "nav_account": "I-akhawunti",
+  "nav_profile": "Iphrofayela",
+  "nav_my_progress": "Inqubekelaphambili Yami",
+  "nav_admin": "Umlawuli",
+  "nav_logout": "Phuma",
+  "nav_login": "Ngena"
 }
