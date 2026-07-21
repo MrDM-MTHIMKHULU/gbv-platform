@@ -318,7 +318,7 @@ export default function CoursePlayerPage() {
           opacity: 0.4;
           cursor: not-allowed;
         }
-        .back-link {
+        :global(.back-link) {
           display: block;
           margin-top: 20px;
           font-size: 0.82rem;
