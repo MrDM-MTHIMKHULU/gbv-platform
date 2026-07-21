@@ -254,7 +254,7 @@ export default function RightsPage() {
           color: var(--rose-deep);
           font-weight: 700;
         }
-        .wizard-cta {
+        :global(.wizard-cta) {
           display: inline-block;
           margin-top: 22px;
           background: var(--rose);
