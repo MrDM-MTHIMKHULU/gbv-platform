@@ -162,8 +162,13 @@ export default function SupportPage() {
               <span className="guide-badge">eBook</span>
               <p className="guide-title">Building a Safety Plan</p>
               <p className="guide-desc">
-                A guided workbook for preparing to leave safely: documents
-                to gather, people to tell, and what to pack.
+                Covers the leaving period specifically, since danger often
+                increases right after you go: recognising escalation, a
+                code word with people you trust, where to go immediately,
+                evidence to keep for a protection order, money he
+                doesn&apos;t know about, and a plan for children and
+                devices. Includes a plan for staying safer if you&apos;re
+                not able to leave yet.
               </p>
               <span className="guide-status">Coming soon</span>
             </div>
@@ -171,8 +176,11 @@ export default function SupportPage() {
               <span className="guide-badge">eBook</span>
               <p className="guide-title">After the Shelter: Rebuilding</p>
               <p className="guide-desc">
-                A gentle guide to trauma, counselling options, and practical
-                first steps once you are safe.
+                What comes after safety: understanding trauma responses like
+                hypervigilance or trauma bonding, rebuilding a support
+                network an abuser may have cut you off from, staying safe
+                if you share custody, and practical first steps on housing,
+                income, and finalising any protection order.
               </p>
               <span className="guide-status">Coming soon</span>
             </div>
