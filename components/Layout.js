@@ -67,7 +67,7 @@ export default function Layout({ children }) {
 
         <ul className={`nav-links ${menuOpen ? 'open' : ''}`}>
           <li className="dropdown">
-            <span className="dropdown-trigger">Get Help ▾</span>
+            <span className="dropdown-trigger">{t('nav_get_help')} ▾</span>
             <ul className="dropdown-menu">
               <li><Link href="/map">{t('nav_find_help')}</Link></li>
               <li><Link href="/rights">{t('nav_rights')}</Link></li>
@@ -75,33 +75,33 @@ export default function Layout({ children }) {
             </ul>
           </li>
 
-          <li><Link href="/chat" className="nav-cta">GBV AI specialist</Link></li>
+          <li><Link href="/chat" className="nav-cta">{t('nav_ai_specialist')}</Link></li>
 
           <li className="dropdown">
-            <span className="dropdown-trigger">Learn ▾</span>
+            <span className="dropdown-trigger">{t('nav_learn')} ▾</span>
             <ul className="dropdown-menu">
-              <li><Link href="/learn">Learning Hub</Link></li>
-              <li><Link href="/library">Library</Link></li>
+              <li><Link href="/learn">{t('nav_learning_hub')}</Link></li>
+              <li><Link href="/library">{t('nav_library')}</Link></li>
             </ul>
           </li>
 
-          <li><Link href="/insights">Our Data</Link></li>
+          <li><Link href="/insights">{t('nav_our_data')}</Link></li>
 
           {user ? (
             <li className="dropdown">
-              <span className="dropdown-trigger auth-link">Account ▾</span>
+              <span className="dropdown-trigger auth-link">{t('nav_account')} ▾</span>
               <ul className="dropdown-menu">
-                <li><Link href="/profile">Profile</Link></li>
-                <li><Link href="/progress">My Progress</Link></li>
-                {isAdmin && <li><Link href="/admin">Admin</Link></li>}
+                <li><Link href="/profile">{t('nav_profile')}</Link></li>
+                <li><Link href="/progress">{t('nav_my_progress')}</Link></li>
+                {isAdmin && <li><Link href="/admin">{t('nav_admin')}</Link></li>}
                 <li>
-                  <button className="auth-btn" onClick={handleLogout}>Log out</button>
+                  <button className="auth-btn" onClick={handleLogout}>{t('nav_logout')}</button>
                 </li>
               </ul>
             </li>
           ) : (
             <li>
-              <Link href="/login" className="auth-link">Log in</Link>
+              <Link href="/login" className="auth-link">{t('nav_login')}</Link>
             </li>
           )}
 
@@ -152,6 +152,7 @@ export default function Layout({ children }) {
         nav {
           background: var(--white);
           padding: 0 5%;
+          padding-right: calc(5% + 150px);
           display: flex;
           align-items: center;
           justify-content: space-between;
