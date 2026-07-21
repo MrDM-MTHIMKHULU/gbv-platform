@@ -4,7 +4,7 @@ export const JENNET_NAME = 'Jennet';
 export const JENNET_TITLE = 'GBV Support Specialist';
 
 const GREETING =
-  "Sawubona 🌸 I'm Jennet, your GBV Support Specialist. I'm here to help with any questions about gender-based violence, whether that's understanding your rights, finding help near you, or just talking through what you're experiencing. You're safe here. What can I help you with?";
+  "Hello 🌸 I'm Jennet, your GBV Support Specialist. I'm here to help with any questions about gender-based violence, whether that's understanding your rights, finding help near you, or just talking through what you're experiencing. You're safe here. What can I help you with?";
 
 const SUGGESTIONS = [
   'What is a protection order?',
