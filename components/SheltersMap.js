@@ -148,6 +148,7 @@ export default function SheltersMap() {
   const [userPos, setUserPos] = useState(null);
   const [locating, setLocating] = useState(false);
   const [locateError, setLocateError] = useState('');
+  const [mapView, setMapView] = useState('street'); // 'street' | 'satellite'
 
   useEffect(() => {
     supabase
@@ -222,6 +223,13 @@ export default function SheltersMap() {
           {locating ? 'Locating…' : 'Find shelters near me'}
         </button>
 
+        <button
+          className="view-toggle-btn"
+          onClick={() => setMapView((v) => (v === 'street' ? 'satellite' : 'street'))}
+        >
+          {mapView === 'street' ? '🛰️ Satellite view' : '🗺️ Street view'}
+        </button>
+
         <div className="filter-panel">
           <label className="filter-toggle">
             <input
@@ -260,10 +268,17 @@ export default function SheltersMap() {
           style={{ height: '520px', width: '100%', borderRadius: '12px' }}
         >
           <InvalidateSizeOnMount />
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
+          {mapView === 'street' ? (
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          ) : (
+            <TileLayer
+              attribution='Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community'
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            />
+          )}
 
           {userPos && (
             <>
@@ -400,6 +415,19 @@ export default function SheltersMap() {
         .locate-btn:disabled {
           opacity: 0.6;
           cursor: not-allowed;
+        }
+        .view-toggle-btn {
+          background: white;
+          color: var(--ink);
+          border: 1px solid var(--sand);
+          padding: 10px 18px;
+          border-radius: 8px;
+          font-weight: 700;
+          font-size: 0.85rem;
+          cursor: pointer;
+        }
+        .view-toggle-btn:hover {
+          border-color: var(--rose);
         }
         .filter-panel {
           display: flex;
