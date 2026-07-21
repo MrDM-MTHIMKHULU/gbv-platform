@@ -442,7 +442,7 @@ export default function ProgressPage() {
           text-decoration: none;
         }
 
-        .back-link {
+        :global(.back-link) {
           font-size: 0.85rem;
           color: var(--muted);
         }
