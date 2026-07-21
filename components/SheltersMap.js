@@ -40,8 +40,57 @@ function hotspotWarningIcon() {
   });
 }
 
+// Thuthuzela Care Centre: one-stop rape crisis centres, medical in
+// character, so a cross on a rose/wine pin distinguishes it from the
+// generic shelter pin at a glance.
+function tccPinIcon() {
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+      width: 26px; height: 26px; border-radius: 50% 50% 50% 0;
+      background: #9d174d; transform: rotate(-45deg);
+      border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+      display: flex; align-items: center; justify-content: center;
+    "><span style="transform: rotate(45deg); font-size: 12px; line-height: 1;">➕</span></div>`,
+    iconSize: [26, 26],
+    iconAnchor: [13, 26],
+    popupAnchor: [0, -26],
+  });
+}
+
+// SAPS FCS Unit: distinct from a generic police station, marked in blue
+// with a shield to signal "specialised", not "walk-in front desk".
+function fcsPinIcon() {
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+      width: 26px; height: 26px; border-radius: 50% 50% 50% 0;
+      background: #1e3a8a; transform: rotate(-45deg);
+      border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+      display: flex; align-items: center; justify-content: center;
+    "><span style="transform: rotate(45deg); font-size: 12px; line-height: 1;">🛡️</span></div>`,
+    iconSize: [26, 26],
+    iconAnchor: [13, 26],
+    popupAnchor: [0, -26],
+  });
+}
+
 const shelterIcon = shelterPinIcon();
 const hotspotIcon = hotspotWarningIcon();
+const tccIcon = tccPinIcon();
+const fcsIcon = fcsPinIcon();
+
+const FACILITY_ICONS = {
+  shelter: shelterIcon,
+  tcc: tccIcon,
+  fcs: fcsIcon,
+};
+
+const FACILITY_LABELS = {
+  shelter: 'Verified shelter/service',
+  tcc: 'Thuthuzela Care Centre',
+  fcs: 'SAPS FCS Unit',
+};
 const meIcon = L.divIcon({
   className: '',
   html: `<div style="
@@ -89,7 +138,12 @@ function InvalidateSizeOnMount() {
 export default function SheltersMap() {
   const [shelters, setShelters] = useState([]);
   const [hotspots, setHotspots] = useState([]);
-  const [showHotspots, setShowHotspots] = useState(true);
+  const [filters, setFilters] = useState({
+    shelter: true,
+    tcc: true,
+    fcs: true,
+    hotspot: true,
+  });
   const [province, setProvince] = useState('All');
   const [userPos, setUserPos] = useState(null);
   const [locating, setLocating] = useState(false);
@@ -113,6 +167,9 @@ export default function SheltersMap() {
 
   const filteredShelters = useMemo(() => {
     let list = province === 'All' ? shelters : shelters.filter((s) => s.province === province);
+    // Legacy rows created before facility_type existed have it as
+    // null/undefined; treat those as ordinary shelters.
+    list = list.filter((s) => filters[s.facility_type || 'shelter']);
     if (userPos) {
       list = [...list].sort(
         (a, b) =>
@@ -121,7 +178,7 @@ export default function SheltersMap() {
       );
     }
     return list;
-  }, [shelters, province, userPos]);
+  }, [shelters, province, userPos, filters]);
 
   const findNearMe = () => {
     if (!navigator.geolocation) {
@@ -140,6 +197,10 @@ export default function SheltersMap() {
         setLocating(false);
       }
     );
+  };
+
+  const toggleFilter = (key) => {
+    setFilters((f) => ({ ...f, [key]: !f[key] }));
   };
 
   return (
@@ -161,14 +222,32 @@ export default function SheltersMap() {
           {locating ? 'Locating…' : 'Find shelters near me'}
         </button>
 
-        <label className="hotspot-toggle">
-          <input
-            type="checkbox"
-            checked={showHotspots}
-            onChange={(e) => setShowHotspots(e.target.checked)}
-          />
-          Show hotspot areas
-        </label>
+        <div className="filter-panel">
+          <label className="filter-toggle">
+            <input
+              type="checkbox"
+              checked={filters.shelter}
+              onChange={() => toggleFilter('shelter')}
+            />
+            🏠 Shelters &amp; services
+          </label>
+          <label className="filter-toggle">
+            <input type="checkbox" checked={filters.tcc} onChange={() => toggleFilter('tcc')} />
+            ➕ Thuthuzela Care Centres
+          </label>
+          <label className="filter-toggle">
+            <input type="checkbox" checked={filters.fcs} onChange={() => toggleFilter('fcs')} />
+            🛡️ FCS Units
+          </label>
+          <label className="filter-toggle">
+            <input
+              type="checkbox"
+              checked={filters.hotspot}
+              onChange={() => toggleFilter('hotspot')}
+            />
+            ⚠️ Hotspot areas
+          </label>
+        </div>
       </div>
 
       {locateError && <p className="locate-error">{locateError}</p>}
@@ -196,9 +275,17 @@ export default function SheltersMap() {
           )}
 
           {filteredShelters.map((s) => (
-            <Marker key={s.id} position={[s.latitude, s.longitude]} icon={shelterIcon}>
+            <Marker
+              key={s.id}
+              position={[s.latitude, s.longitude]}
+              icon={FACILITY_ICONS[s.facility_type || 'shelter'] || shelterIcon}
+            >
               <Popup>
                 <strong>{s.name}</strong>
+                <br />
+                <span className="popup-type">
+                  {FACILITY_LABELS[s.facility_type || 'shelter']}
+                </span>
                 <br />
                 {s.address}
                 <br />
@@ -215,7 +302,7 @@ export default function SheltersMap() {
             </Marker>
           ))}
 
-          {showHotspots &&
+          {filters.hotspot &&
             hotspots.map((h) => (
               <Circle
                 key={`${h.id}-area`}
@@ -231,7 +318,7 @@ export default function SheltersMap() {
               />
             ))}
 
-          {showHotspots &&
+          {filters.hotspot &&
             hotspots.map((h) => (
               <Marker key={h.id} position={[h.latitude, h.longitude]} icon={hotspotIcon}>
                 <Popup>
@@ -252,6 +339,14 @@ export default function SheltersMap() {
           <div className="map-legend-row">
             <span className="legend-icon shelter">🏠</span>
             <span>Verified shelter/service</span>
+          </div>
+          <div className="map-legend-row">
+            <span className="legend-icon tcc">➕</span>
+            <span>Thuthuzela Care Centre</span>
+          </div>
+          <div className="map-legend-row">
+            <span className="legend-icon fcs">🛡️</span>
+            <span>SAPS FCS Unit</span>
           </div>
           <div className="map-legend-row">
             <span className="legend-icon hotspot">!</span>
@@ -306,13 +401,20 @@ export default function SheltersMap() {
           opacity: 0.6;
           cursor: not-allowed;
         }
-        .hotspot-toggle {
+        .filter-panel {
+          display: flex;
+          gap: 14px;
+          flex-wrap: wrap;
+          align-items: center;
+        }
+        .filter-toggle {
           display: flex;
           align-items: center;
-          gap: 8px;
-          font-size: 0.85rem;
+          gap: 6px;
+          font-size: 0.82rem;
           color: var(--muted);
           font-weight: 600;
+          white-space: nowrap;
         }
         .locate-error {
           font-size: 0.82rem;
@@ -369,6 +471,12 @@ export default function SheltersMap() {
         .legend-icon.shelter {
           background: #0e6e65;
         }
+        .legend-icon.tcc {
+          background: #9d174d;
+        }
+        .legend-icon.fcs {
+          background: #1e3a8a;
+        }
         .legend-icon.hotspot {
           background: #b45309;
           color: white;
@@ -391,6 +499,13 @@ export default function SheltersMap() {
         .popup-services {
           font-size: 0.82rem;
           color: var(--muted);
+        }
+        .popup-type {
+          font-size: 0.75rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.03em;
+          color: var(--rose-deep);
         }
       `}</style>
     </div>
