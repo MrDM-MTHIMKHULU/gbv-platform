@@ -75,7 +75,7 @@ export default function Layout({ children }) {
             </ul>
           </li>
 
-          <li><Link href="/chat" className="nav-cta">Ask Jennet</Link></li>
+          <li><Link href="/chat" className="nav-cta">GBV AI specialist</Link></li>
 
           <li className="dropdown">
             <span className="dropdown-trigger">Learn ▾</span>
