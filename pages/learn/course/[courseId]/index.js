@@ -221,7 +221,7 @@ export default function CourseOverviewPage() {
           font-weight: 600;
         }
 
-        .enroll-btn {
+        :global(.enroll-btn) {
           display: inline-block;
           background: var(--rose);
           color: white;
