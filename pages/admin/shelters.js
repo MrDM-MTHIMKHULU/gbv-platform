@@ -7,6 +7,7 @@ import { supabase } from '../../lib/supabaseClient';
 const EMPTY_SHELTER = {
   id: null,
   name: '',
+  facility_type: 'shelter',
   province: '',
   district: '',
   address: '',
@@ -103,6 +104,7 @@ export default function AdminSheltersPage() {
     setSaveMsg('');
     const payload = {
       name: shelterForm.name,
+      facility_type: shelterForm.facility_type || 'shelter',
       province: shelterForm.province,
       district: shelterForm.district || null,
       address: shelterForm.address,
@@ -138,6 +140,7 @@ export default function AdminSheltersPage() {
   const editShelter = (s) => {
     setShelterForm({
       ...s,
+      facility_type: s.facility_type || 'shelter',
       services: (s.services || []).join(', '),
     });
     setSaveMsg('');
@@ -305,6 +308,19 @@ export default function AdminSheltersPage() {
                   />
                 </label>
                 <label>
+                  Facility type
+                  <select
+                    value={shelterForm.facility_type}
+                    onChange={(e) =>
+                      setShelterForm({ ...shelterForm, facility_type: e.target.value })
+                    }
+                  >
+                    <option value="shelter">Shelter / service</option>
+                    <option value="tcc">Thuthuzela Care Centre</option>
+                    <option value="fcs">SAPS FCS Unit</option>
+                  </select>
+                </label>
+                <label>
                   Province
                   <input
                     value={shelterForm.province}
@@ -408,7 +424,15 @@ export default function AdminSheltersPage() {
               {shelters.map((s) => (
                 <div className="list-row" key={s.id}>
                   <div>
-                    <p className="list-name">{s.name}</p>
+                    <p className="list-name">
+                      {s.name}
+                      {s.facility_type === 'tcc' && (
+                        <span className="type-badge tcc"> TCC</span>
+                      )}
+                      {s.facility_type === 'fcs' && (
+                        <span className="type-badge fcs"> FCS</span>
+                      )}
+                    </p>
                     <p className="list-sub">
                       {s.province} {s.district ? `· ${s.district}` : ''}
                     </p>
@@ -634,6 +658,7 @@ export default function AdminSheltersPage() {
           gap: 8px;
         }
         input,
+        select,
         textarea {
           border: 1px solid var(--sand);
           border-radius: 8px;
@@ -716,6 +741,21 @@ export default function AdminSheltersPage() {
           font-weight: 700;
           color: var(--ink);
           font-size: 0.9rem;
+        }
+        .type-badge {
+          font-size: 0.68rem;
+          font-weight: 800;
+          padding: 2px 7px;
+          border-radius: 999px;
+          letter-spacing: 0.03em;
+        }
+        .type-badge.tcc {
+          background: #fce7f3;
+          color: #9d174d;
+        }
+        .type-badge.fcs {
+          background: #dbeafe;
+          color: #1e3a8a;
         }
         .list-sub {
           font-size: 0.78rem;
