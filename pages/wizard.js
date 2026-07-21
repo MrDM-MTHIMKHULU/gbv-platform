@@ -342,7 +342,7 @@ function ResultsScreen({ answers, onRestart }) {
           color: var(--muted);
           margin-bottom: 10px;
         }
-        .rec-link {
+        :global(.rec-link) {
           font-size: 0.88rem;
           font-weight: 700;
           color: var(--rose-deep);
