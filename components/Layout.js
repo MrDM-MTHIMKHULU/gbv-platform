@@ -208,7 +208,7 @@ export default function Layout({ children }) {
           border-radius: 999px;
           font-weight: 700;
         }
-        .auth-link {
+        :global(.auth-link) {
           color: var(--rose-deep) !important;
         }
         .auth-btn {
