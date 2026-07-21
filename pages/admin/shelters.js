@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Layout from '../../components/Layout';
 import { supabase } from '../../lib/supabaseClient';
+import { TCC_LIST } from '../../data/tccList';
 
 const EMPTY_SHELTER = {
   id: null,
@@ -59,6 +60,10 @@ export default function AdminSheltersPage() {
   const [geocoding, setGeocoding] = useState(false);
   const [geocodeMsg, setGeocodeMsg] = useState('');
   const [saveMsg, setSaveMsg] = useState('');
+
+  const [bulkImporting, setBulkImporting] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState({ done: 0, total: 0 });
+  const [bulkLog, setBulkLog] = useState([]);
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -150,6 +155,72 @@ export default function AdminSheltersPage() {
   const deleteShelter = async (id) => {
     if (!confirm('Delete this shelter? This cannot be undone.')) return;
     await supabase.from('shelters').delete().eq('id', id);
+    loadData();
+  };
+
+  // ---------- Bulk import: Thuthuzela Care Centres ----------
+
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const handleBulkImportTCCs = async () => {
+    const existingNames = new Set(
+      shelters
+        .filter((s) => s.facility_type === 'tcc')
+        .map((s) => s.name.trim().toLowerCase())
+    );
+    const toImport = TCC_LIST.filter((t) => !existingNames.has(t.name.trim().toLowerCase()));
+
+    if (toImport.length === 0) {
+      setBulkLog(['All 68 TCCs already appear to be imported (matched by name). Nothing to do.']);
+      return;
+    }
+
+    if (
+      !confirm(
+        `This will look up coordinates for ${toImport.length} Thuthuzela Care Centres (one request per second) and add them to the shelters table. Continue?`
+      )
+    ) {
+      return;
+    }
+
+    setBulkImporting(true);
+    setBulkProgress({ done: 0, total: toImport.length });
+    setBulkLog([]);
+
+    for (let i = 0; i < toImport.length; i++) {
+      const site = toImport[i];
+      try {
+        const coords = await geocode(site.address);
+        if (!coords) {
+          setBulkLog((log) => [...log, `⚠️ Could not geocode: ${site.name}`]);
+        } else {
+          const { error } = await supabase.from('shelters').insert({
+            name: site.name,
+            facility_type: 'tcc',
+            province: site.province,
+            district: site.district || null,
+            address: site.address,
+            phone: null,
+            services: ['Sexual offences care', 'Medical examination', 'Counselling'],
+            latitude: coords.lat,
+            longitude: coords.lng,
+            tooltip: 'Thuthuzela Care Centre — one-stop care for survivors of sexual violence.',
+          });
+          if (error) {
+            setBulkLog((log) => [...log, `❌ ${site.name}: ${error.message}`]);
+          } else {
+            setBulkLog((log) => [...log, `✅ ${site.name}`]);
+          }
+        }
+      } catch (err) {
+        setBulkLog((log) => [...log, `❌ ${site.name}: ${err.message}`]);
+      }
+      setBulkProgress({ done: i + 1, total: toImport.length });
+      // Nominatim's usage policy asks for max 1 request/second
+      await sleep(1100);
+    }
+
+    setBulkImporting(false);
     loadData();
   };
 
@@ -293,6 +364,32 @@ export default function AdminSheltersPage() {
 
         {tab === 'shelters' && (
           <>
+            <div className="bulk-card">
+              <p className="form-title">Bulk import: Thuthuzela Care Centres</p>
+              <p className="bulk-sub">
+                Adds all 68 officially listed TCCs (NPA, 30 March 2026) that aren't already in
+                the table, one geocoding request per second. This can take a few minutes — leave
+                this tab open while it runs.
+              </p>
+              <button
+                type="button"
+                className="bulk-btn"
+                onClick={handleBulkImportTCCs}
+                disabled={bulkImporting}
+              >
+                {bulkImporting
+                  ? `Importing… (${bulkProgress.done}/${bulkProgress.total})`
+                  : 'Bulk import TCCs'}
+              </button>
+              {bulkLog.length > 0 && (
+                <div className="bulk-log">
+                  {bulkLog.map((line, i) => (
+                    <p key={i}>{line}</p>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <form className="form-card" onSubmit={saveShelter}>
               <p className="form-title">
                 {shelterForm.id ? 'Edit shelter' : 'Add a new shelter'}
@@ -622,6 +719,48 @@ export default function AdminSheltersPage() {
         .tab-btn.active {
           background: var(--rose);
           color: white;
+        }
+
+        .bulk-card {
+          background: var(--blush);
+          border: 1px dashed var(--rose);
+          border-radius: 16px;
+          padding: 22px 26px;
+          margin-bottom: 24px;
+        }
+        .bulk-sub {
+          font-size: 0.82rem;
+          color: var(--muted);
+          line-height: 1.5;
+          margin-bottom: 14px;
+        }
+        .bulk-btn {
+          background: var(--rose-deep, var(--rose));
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 8px;
+          font-weight: 700;
+          font-size: 0.85rem;
+          cursor: pointer;
+        }
+        .bulk-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+        .bulk-log {
+          margin-top: 14px;
+          max-height: 220px;
+          overflow-y: auto;
+          background: white;
+          border-radius: 10px;
+          padding: 12px 16px;
+          font-size: 0.76rem;
+          font-family: monospace;
+          color: var(--ink);
+        }
+        .bulk-log p {
+          margin: 2px 0;
         }
 
         .form-card {
