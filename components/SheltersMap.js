@@ -455,11 +455,20 @@ export default function SheltersMap() {
           overflow: hidden;
           border: 1px solid var(--sand);
         }
+        /* Leaflet's own CSS hardcodes z-index: 1000 on its control containers
+           (zoom buttons etc), the same z-index this site's sticky nav uses.
+           On a tie, later DOM order wins, so the map controls were painting
+           on top of the nav once scrolled. Capping this below the nav's
+           1000 (but above the map's internal panes, ~200-700) fixes it. */
+        :global(.leaflet-top),
+        :global(.leaflet-bottom) {
+          z-index: 800;
+        }
         .map-legend {
           position: absolute;
           top: 14px;
           right: 14px;
-          z-index: 1000;
+          z-index: 800;
           background: white;
           border: 1px solid var(--sand);
           border-radius: 10px;
