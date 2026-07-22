@@ -212,9 +212,6 @@ export default function AboutUsPage() {
               <p className="team-name">{member.name}</p>
               <span className="team-linkedin">
                 Linked<span className="li-in">in</span>
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                  <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.6v1.7h.05c.5-.9 1.8-1.9 3.7-1.9 3.9 0 4.65 2.6 4.65 5.9V21h-4v-5.4c0-1.3 0-3-1.85-3s-2.1 1.4-2.1 2.9V21H9z" />
-                </svg>
               </span>
             </a>
           ))}
