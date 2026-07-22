@@ -14,7 +14,7 @@ export default function MapPage() {
   return (
     <Layout>
       <Head>
-        <title>Find Help Near You | SafeHaven</title>
+        <title>Shelter &amp; Service Map | SafeHaven</title>
         <meta
           name="description"
           content="Search verified shelters, clinics, and legal aid offices across South Africa, and see known GBV hotspot areas."
@@ -22,7 +22,7 @@ export default function MapPage() {
       </Head>
 
       <section className="page-header">
-        <p className="eyebrow">Find help near you</p>
+        <p className="eyebrow">Shelter &amp; service map</p>
         <h1>Verified shelters, clinics &amp; legal aid</h1>
         <p className="sub">
           Search by province, or tap &quot;Find shelters near me&quot; to sort
