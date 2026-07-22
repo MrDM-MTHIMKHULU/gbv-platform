@@ -112,27 +112,26 @@ export default function AboutUsPage() {
             <p className="ifap-tag">Information Accessibility</p>
             <p className="ifap-text">
               In South Africa, GBV information is not scarce, it is
-              fragmented. Legal guidance, shelters, crisis hotlines,
-              healthcare services, and support organisations are scattered
-              across government websites, NGOs, PDFs, and independent
-              platforms. For someone experiencing abuse, often with limited
-              time, limited internet access, and genuine fear for their
-              safety, that fragmentation becomes a barrier to getting the
-              information they need. SafeHaven centralises verified GBV
-              information into a single, easy-to-use platform, so essential
-              support is easier to find, understand, and act upon.
+              fragmented, scattered across government websites, NGOs, PDFs,
+              and independent platforms. For someone experiencing abuse,
+              often with limited time and genuine fear for their safety,
+              that fragmentation becomes a barrier to getting the help they
+              need. SafeHaven centralises verified GBV information into a
+              single, easy-to-use platform, so support is easier to find,
+              understand, and act on.
             </p>
           </div>
           <div className="ifap-card">
             <p className="ifap-tag">Information Literacy</p>
             <p className="ifap-text">
               Access to information alone isn&apos;t enough. People also need
-              to be able to interpret it, recognise different forms of
-              abuse, understand their legal rights, tell myths from facts,
-              and make informed decisions. SafeHaven supports this through
-              structured educational resources, including courses, ebooks,
-              quizzes, and guided learning pathways that build practical
-              knowledge, not just answer a single question in the moment.
+              to interpret it: recognise different forms of abuse,
+              understand their legal rights, tell myths from facts, and make
+              informed decisions with confidence. SafeHaven supports this
+              through structured educational resources, including courses,
+              ebooks, quizzes, and guided learning pathways that build real,
+              lasting knowledge, not just answer a single question in the
+              moment.
             </p>
           </div>
           <div className="ifap-card">
@@ -142,10 +141,10 @@ export default function AboutUsPage() {
               people actually understand. South Africa has 11 official
               languages, yet most digital resources exist only in English or
               a handful of others. SafeHaven embraces multilingualism in
-              cyberspace by offering multilingual content today and building
-              an architecture designed to grow into all eleven official
-              languages over time, so language is never the barrier standing
-              between someone and life-saving information.
+              cyberspace with multilingual content today, and an
+              architecture built to grow into all eleven official languages
+              over time, so language is never a barrier to life-saving
+              information.
             </p>
           </div>
         </div>
@@ -212,7 +211,7 @@ export default function AboutUsPage() {
               <div className={`avatar ${member.gender}`}>{member.initials}</div>
               <p className="team-name">{member.name}</p>
               <span className="team-linkedin">
-                LinkedIn
+                Linked<span className="li-in">in</span>
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
                   <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.6v1.7h.05c.5-.9 1.8-1.9 3.7-1.9 3.9 0 4.65 2.6 4.65 5.9V21h-4v-5.4c0-1.3 0-3-1.85-3s-2.1 1.4-2.1 2.9V21H9z" />
                 </svg>
@@ -479,6 +478,13 @@ export default function AboutUsPage() {
           font-weight: 700;
           color: var(--ink);
           margin-bottom: 8px;
+        }
+        .li-in {
+          color: #0a66c2;
+          font-weight: 800;
+        }
+        :global(.team-card:hover) .li-in {
+          color: #0a66c2;
         }
         .team-linkedin {
           display: inline-flex;
