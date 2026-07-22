@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 import Layout from '../components/Layout';
@@ -8,6 +9,13 @@ import JennetChat from '../components/JennetChat';
 import MythFactGame from '../components/MythFactGame';
 import { supabase } from '../lib/supabaseClient';
 import { PROVINCES, NATIONAL_CASE_TYPES, NATIONAL_CASE_TYPES_TOTAL } from '../lib/gbvData';
+
+// Leaflet needs the browser (window/document), so this must never render
+// on the server, same reason pages/map.js dynamic-imports it.
+const SheltersMap = dynamic(() => import('../components/SheltersMap'), {
+  ssr: false,
+  loading: () => <div className="mini-map-loading">Loading map…</div>,
+});
 
 export default function Home() {
   const { t } = useTranslation('common');
@@ -159,11 +167,18 @@ export default function Home() {
             </Link>
           </div>
           <div className="showcase-visual">
-            <div className="mini-map">
-              <p className="mini-map-num">127+</p>
-              <p className="mini-map-label">verified shelters &amp; services</p>
-              <p className="mini-map-num small">9</p>
-              <p className="mini-map-label">provinces covered</p>
+            <div className="mini-map-card">
+              <SheltersMap compact />
+              <div className="mini-map-stats">
+                <div className="mini-map-stat">
+                  <p className="mini-map-num">127+</p>
+                  <p className="mini-map-label">verified shelters &amp; services</p>
+                </div>
+                <div className="mini-map-stat">
+                  <p className="mini-map-num">9</p>
+                  <p className="mini-map-label">provinces covered</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -460,28 +475,50 @@ export default function Home() {
           justify-content: center;
         }
 
-        .mini-map {
-          background: var(--teal-light);
-          border-radius: 16px;
-          padding: 40px;
+        .mini-map-card {
           width: 100%;
-          max-width: 400px;
+          max-width: 440px;
+          border-radius: 16px;
+          overflow: hidden;
+          border: 1px solid var(--sand);
+          box-shadow: 0 20px 60px rgba(13, 10, 11, 0.08);
+          background: white;
+        }
+        .mini-map-loading {
+          height: 280px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--muted);
+          font-size: 0.85rem;
+          background: var(--warm);
+        }
+        .mini-map-stats {
+          display: flex;
+          background: var(--teal-light);
+        }
+        .mini-map-stat {
+          flex: 1;
           text-align: center;
+          padding: 18px 12px;
+        }
+        .mini-map-stat + .mini-map-stat {
+          border-left: 1px solid rgba(13, 10, 11, 0.08);
         }
         .mini-map-num {
-          font-size: 2.6rem;
+          font-size: 1.8rem;
           font-weight: 800;
           color: var(--ink);
         }
-        .mini-map-num.small {
-          font-size: 2rem;
-          margin-top: 20px;
-        }
         .mini-map-label {
-          font-size: 0.85rem;
+          font-size: 0.78rem;
           color: var(--muted);
           font-weight: 600;
-          margin-bottom: 6px;
+          margin-top: 4px;
+        }
+
+        .showcase-visual :global(.shelters-map.compact) {
+          width: 100%;
         }
 
         .showcase-visual :global(.jennet-chat) {
