@@ -97,21 +97,64 @@ export default function AboutUsPage() {
 
       <section className="intro-block">
         <p>
-          The Creation of SafeHaven is inspired by UNESCO&apos;s Information
-          for All Programme (IFAP), specifically the priority of
-          <strong> information accessibility</strong>, applied to a
+          The creation of SafeHaven is inspired by UNESCO&apos;s Information
+          for All Programme (IFAP) and is designed around three of its
+          strategic priorities: <strong>Information Accessibility</strong>,{' '}
+          <strong>Information Literacy</strong>, and{' '}
+          <strong>Multilingualism in Cyberspace</strong>, applied to a
           marginalised group: women and girls.
         </p>
-        <p>
-          GBV information in South Africa is not scarce, it is fragmented,
-          scattered across dozens of disconnected websites, PDFs, hotline
-          lists, and government departments. For someone in crisis, often
-          with limited time and real fear for their safety, that fragmentation
-          is itself a form of inaccessibility. And accessibility means
-          language too: South Africa has 11 official languages, and
-          information that only exists in one or two of them isn&apos;t
-          truly accessible at all. SafeHaven is built to grow into all 11,
-          not stay limited to the ones it launched with.
+      </section>
+
+      <section className="ifap-grid-section">
+        <div className="ifap-grid">
+          <div className="ifap-card">
+            <p className="ifap-tag">Information Accessibility</p>
+            <p className="ifap-text">
+              In South Africa, GBV information is not scarce, it is
+              fragmented. Legal guidance, shelters, crisis hotlines,
+              healthcare services, and support organisations are scattered
+              across government websites, NGOs, PDFs, and independent
+              platforms. For someone experiencing abuse, often with limited
+              time, limited internet access, and genuine fear for their
+              safety, that fragmentation becomes a barrier to getting the
+              information they need. SafeHaven centralises verified GBV
+              information into a single, easy-to-use platform, so essential
+              support is easier to find, understand, and act upon.
+            </p>
+          </div>
+          <div className="ifap-card">
+            <p className="ifap-tag">Information Literacy</p>
+            <p className="ifap-text">
+              Access to information alone isn&apos;t enough. People also need
+              to be able to interpret it, recognise different forms of
+              abuse, understand their legal rights, tell myths from facts,
+              and make informed decisions. SafeHaven supports this through
+              structured educational resources, including courses, ebooks,
+              quizzes, and guided learning pathways that build practical
+              knowledge, not just answer a single question in the moment.
+            </p>
+          </div>
+          <div className="ifap-card">
+            <p className="ifap-tag">Multilingualism in Cyberspace</p>
+            <p className="ifap-text">
+              True accessibility also means being available in languages
+              people actually understand. South Africa has 11 official
+              languages, yet most digital resources exist only in English or
+              a handful of others. SafeHaven embraces multilingualism in
+              cyberspace by offering multilingual content today and building
+              an architecture designed to grow into all eleven official
+              languages over time, so language is never the barrier standing
+              between someone and life-saving information.
+            </p>
+          </div>
+        </div>
+        <p className="ifap-closing">
+          By combining information accessibility, information literacy, and
+          multilingualism in cyberspace, SafeHaven aims to reduce information
+          inequalities and empower women and girls with reliable,
+          understandable, and inclusive GBV information when they need it
+          most.
         </p>
       </section>
 
@@ -265,6 +308,44 @@ export default function AboutUsPage() {
           color: var(--rose-deep);
         }
 
+        .ifap-grid-section {
+          max-width: 1000px;
+          margin: 40px auto 0;
+          padding: 0 24px;
+        }
+        .ifap-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+          margin-bottom: 34px;
+        }
+        .ifap-card {
+          background: var(--warm);
+          border-radius: 16px;
+          padding: 26px 24px;
+        }
+        .ifap-tag {
+          font-size: 0.85rem;
+          font-weight: 800;
+          letter-spacing: 0.02em;
+          color: var(--rose-deep);
+          margin-bottom: 12px;
+          line-height: 1.4;
+        }
+        .ifap-text {
+          font-size: 0.86rem;
+          color: var(--ink);
+          line-height: 1.7;
+        }
+        .ifap-closing {
+          font-size: 0.95rem;
+          color: var(--ink);
+          line-height: 1.8;
+          text-align: center;
+          max-width: 720px;
+          margin: 0 auto;
+        }
+
         .pillars {
           max-width: 900px;
           margin: 50px auto 10px;
@@ -414,7 +495,8 @@ export default function AboutUsPage() {
         @media (max-width: 760px) {
           .pillars,
           .audience-grid,
-          .feature-grid {
+          .feature-grid,
+          .ifap-grid {
             grid-template-columns: 1fr;
           }
           .team-card {
