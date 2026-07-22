@@ -122,6 +122,25 @@ function RecenterOnLocate({ position }) {
   return null;
 }
 
+// Compact mode's container is a different width/height than the full map,
+// so a fixed zoom level shows a different amount of territory depending on
+// container size. Fitting to real South Africa bounds after mount (once
+// InvalidateSizeOnMount has settled the container's actual size) frames
+// the whole country correctly no matter how small the box is.
+const SA_BOUNDS = [
+  [-35.3, 15.8],
+  [-21.8, 33.2],
+];
+
+function FitBoundsOnMount({ bounds }) {
+  const map = useMap();
+  useEffect(() => {
+    const timer = setTimeout(() => map.fitBounds(bounds, { padding: [6, 6] }), 150);
+    return () => clearTimeout(timer);
+  }, [map, bounds]);
+  return null;
+}
+
 // Leaflet sometimes calculates its size before the container has finished
 // laying out (especially inside a dynamically-loaded component). This
 // forces a recalculation right after mount so tiles don't render
@@ -140,11 +159,11 @@ export default function SheltersMap({ compact = false }) {
   const [hotspots, setHotspots] = useState([]);
   const [filters, setFilters] = useState({
     shelter: true,
-    tcc: true,
-    fcs: true,
-    // Compact previews have no legend to explain the amber hotspot
-    // markers, so they're off by default there, not removed entirely,
-    // just not the first thing a homepage visitor sees unexplained.
+    // A homepage teaser is meant to be a quick, uncluttered preview, so
+    // it defaults to shelters only. The full facility picture (TCCs,
+    // FCS Units, hotspots) lives on the real /map page with its legend.
+    tcc: !compact,
+    fcs: !compact,
     hotspot: !compact,
   });
   const [province, setProvince] = useState('All');
@@ -268,7 +287,7 @@ export default function SheltersMap({ compact = false }) {
       <div className="map-wrap">
         <MapContainer
           center={[-28.8, 24.7]}
-          zoom={compact ? 4.5 : 5}
+          zoom={5}
           scrollWheelZoom={!compact}
           dragging={!compact}
           doubleClickZoom={!compact}
@@ -284,6 +303,7 @@ export default function SheltersMap({ compact = false }) {
           }}
         >
           <InvalidateSizeOnMount />
+          {compact && <FitBoundsOnMount bounds={SA_BOUNDS} />}
           {compact || mapView === 'street' ? (
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
