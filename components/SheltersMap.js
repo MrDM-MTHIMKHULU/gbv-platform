@@ -122,25 +122,6 @@ function RecenterOnLocate({ position }) {
   return null;
 }
 
-// Compact mode's container is a different width/height than the full map,
-// so a fixed zoom level shows a different amount of territory depending on
-// container size. Fitting to real South Africa bounds after mount (once
-// InvalidateSizeOnMount has settled the container's actual size) frames
-// the whole country correctly no matter how small the box is.
-const SA_BOUNDS = [
-  [-35.3, 15.8],
-  [-21.8, 33.2],
-];
-
-function FitBoundsOnMount({ bounds }) {
-  const map = useMap();
-  useEffect(() => {
-    const timer = setTimeout(() => map.fitBounds(bounds, { padding: [6, 6] }), 150);
-    return () => clearTimeout(timer);
-  }, [map, bounds]);
-  return null;
-}
-
 // Leaflet sometimes calculates its size before the container has finished
 // laying out (especially inside a dynamically-loaded component). This
 // forces a recalculation right after mount so tiles don't render
@@ -154,17 +135,14 @@ function InvalidateSizeOnMount() {
   return null;
 }
 
-export default function SheltersMap({ compact = false }) {
+export default function SheltersMap() {
   const [shelters, setShelters] = useState([]);
   const [hotspots, setHotspots] = useState([]);
   const [filters, setFilters] = useState({
     shelter: true,
-    // A homepage teaser is meant to be a quick, uncluttered preview, so
-    // it defaults to shelters only. The full facility picture (TCCs,
-    // FCS Units, hotspots) lives on the real /map page with its legend.
-    tcc: !compact,
-    fcs: !compact,
-    hotspot: !compact,
+    tcc: true,
+    fcs: true,
+    hotspot: true,
   });
   const [province, setProvince] = useState('All');
   const [userPos, setUserPos] = useState(null);
@@ -227,84 +205,70 @@ export default function SheltersMap({ compact = false }) {
   };
 
   return (
-    <div className={`shelters-map ${compact ? 'compact' : ''}`}>
-      {!compact && (
-        <div className="map-controls">
-          <select
-            className="province-select"
-            value={province}
-            onChange={(e) => setProvince(e.target.value)}
-          >
-            {provinces.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
-          </select>
+    <div className="shelters-map">
+      <div className="map-controls">
+        <select
+          className="province-select"
+          value={province}
+          onChange={(e) => setProvince(e.target.value)}
+        >
+          {provinces.map((p) => (
+            <option key={p} value={p}>
+              {p}
+            </option>
+          ))}
+        </select>
 
-          <button className="locate-btn" onClick={findNearMe} disabled={locating}>
-            {locating ? 'Locating…' : 'Find shelters near me'}
-          </button>
+        <button className="locate-btn" onClick={findNearMe} disabled={locating}>
+          {locating ? 'Locating…' : 'Find shelters near me'}
+        </button>
 
-          <button
-            className="view-toggle-btn"
-            onClick={() => setMapView((v) => (v === 'street' ? 'satellite' : 'street'))}
-          >
-            {mapView === 'street' ? '🛰️ Satellite view' : '🗺️ Street view'}
-          </button>
+        <button
+          className="view-toggle-btn"
+          onClick={() => setMapView((v) => (v === 'street' ? 'satellite' : 'street'))}
+        >
+          {mapView === 'street' ? '🛰️ Satellite view' : '🗺️ Street view'}
+        </button>
 
-          <div className="filter-panel">
-            <label className="filter-toggle">
-              <input
-                type="checkbox"
-                checked={filters.shelter}
-                onChange={() => toggleFilter('shelter')}
-              />
-              🏠 Shelters &amp; services
-            </label>
-            <label className="filter-toggle">
-              <input type="checkbox" checked={filters.tcc} onChange={() => toggleFilter('tcc')} />
-              ➕ Thuthuzela Care Centres
-            </label>
-            <label className="filter-toggle">
-              <input type="checkbox" checked={filters.fcs} onChange={() => toggleFilter('fcs')} />
-              🛡️ FCS Units
-            </label>
-            <label className="filter-toggle">
-              <input
-                type="checkbox"
-                checked={filters.hotspot}
-                onChange={() => toggleFilter('hotspot')}
-              />
-              ⚠️ Hotspot areas
-            </label>
-          </div>
+        <div className="filter-panel">
+          <label className="filter-toggle">
+            <input
+              type="checkbox"
+              checked={filters.shelter}
+              onChange={() => toggleFilter('shelter')}
+            />
+            🏠 Shelters &amp; services
+          </label>
+          <label className="filter-toggle">
+            <input type="checkbox" checked={filters.tcc} onChange={() => toggleFilter('tcc')} />
+            ➕ Thuthuzela Care Centres
+          </label>
+          <label className="filter-toggle">
+            <input type="checkbox" checked={filters.fcs} onChange={() => toggleFilter('fcs')} />
+            🛡️ FCS Units
+          </label>
+          <label className="filter-toggle">
+            <input
+              type="checkbox"
+              checked={filters.hotspot}
+              onChange={() => toggleFilter('hotspot')}
+            />
+            ⚠️ Hotspot areas
+          </label>
         </div>
-      )}
+      </div>
 
-      {!compact && locateError && <p className="locate-error">{locateError}</p>}
+      {locateError && <p className="locate-error">{locateError}</p>}
 
       <div className="map-wrap">
         <MapContainer
           center={[-28.8, 24.7]}
           zoom={5}
-          scrollWheelZoom={!compact}
-          dragging={!compact}
-          doubleClickZoom={!compact}
-          touchZoom={!compact}
-          boxZoom={!compact}
-          keyboard={!compact}
-          zoomControl={!compact}
-          attributionControl={!compact}
-          style={{
-            height: compact ? '280px' : '520px',
-            width: '100%',
-            borderRadius: compact ? '0' : '12px',
-          }}
+          scrollWheelZoom={true}
+          style={{ height: '520px', width: '100%', borderRadius: '12px' }}
         >
           <InvalidateSizeOnMount />
-          {compact && <FitBoundsOnMount bounds={SA_BOUNDS} />}
-          {compact || mapView === 'street' ? (
+          {mapView === 'street' ? (
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -385,36 +349,34 @@ export default function SheltersMap({ compact = false }) {
             ))}
         </MapContainer>
 
-        {!compact && (
-          <div className="map-legend">
-            <p className="map-legend-title">Key</p>
-            <div className="map-legend-row">
-              <span className="legend-icon shelter">🏠</span>
-              <span>Verified shelter/service</span>
-            </div>
-            <div className="map-legend-row">
-              <span className="legend-icon tcc">➕</span>
-              <span>Thuthuzela Care Centre</span>
-            </div>
-            <div className="map-legend-row">
-              <span className="legend-icon fcs">🛡️</span>
-              <span>SAPS FCS Unit</span>
-            </div>
-            <div className="map-legend-row">
-              <span className="legend-icon hotspot">!</span>
-              <span>Known hotspot (approx. zone)</span>
-            </div>
-            {userPos && (
-              <div className="map-legend-row">
-                <span className="legend-icon me" />
-                <span>Your location</span>
-              </div>
-            )}
+        <div className="map-legend">
+          <p className="map-legend-title">Key</p>
+          <div className="map-legend-row">
+            <span className="legend-icon shelter">🏠</span>
+            <span>Verified shelter/service</span>
           </div>
-        )}
+          <div className="map-legend-row">
+            <span className="legend-icon tcc">➕</span>
+            <span>Thuthuzela Care Centre</span>
+          </div>
+          <div className="map-legend-row">
+            <span className="legend-icon fcs">🛡️</span>
+            <span>SAPS FCS Unit</span>
+          </div>
+          <div className="map-legend-row">
+            <span className="legend-icon hotspot">!</span>
+            <span>Known hotspot (approx. zone)</span>
+          </div>
+          {userPos && (
+            <div className="map-legend-row">
+              <span className="legend-icon me" />
+              <span>Your location</span>
+            </div>
+          )}
+        </div>
       </div>
 
-      {!compact && shelters.length === 0 && (
+      {shelters.length === 0 && (
         <p className="empty-note">
           No shelters loaded yet, this map layer will populate once shelter
           data is added.
@@ -492,13 +454,6 @@ export default function SheltersMap({ compact = false }) {
           border-radius: 12px;
           overflow: hidden;
           border: 1px solid var(--sand);
-        }
-        .compact .map-wrap {
-          border: none;
-          border-radius: 0;
-        }
-        .compact :global(.leaflet-container) {
-          cursor: default;
         }
         /* Leaflet's own CSS hardcodes z-index: 1000 on its control containers
            (zoom buttons etc), the same z-index this site's sticky nav uses.
