@@ -1,21 +1,14 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 import Layout from '../components/Layout';
 import JennetChat from '../components/JennetChat';
 import MythFactGame from '../components/MythFactGame';
+import ShelterMapPreview from '../components/ShelterMapPreview';
 import { supabase } from '../lib/supabaseClient';
 import { PROVINCES, NATIONAL_CASE_TYPES, NATIONAL_CASE_TYPES_TOTAL } from '../lib/gbvData';
-
-// Leaflet needs the browser (window/document), so this must never render
-// on the server, same reason pages/map.js dynamic-imports it.
-const SheltersMap = dynamic(() => import('../components/SheltersMap'), {
-  ssr: false,
-  loading: () => <div className="mini-map-loading">Loading map…</div>,
-});
 
 export default function Home() {
   const { t } = useTranslation('common');
@@ -168,7 +161,7 @@ export default function Home() {
           </div>
           <div className="showcase-visual">
             <div className="mini-map-card">
-              <SheltersMap compact />
+              <ShelterMapPreview />
               <div className="mini-map-stats">
                 <div className="mini-map-stat">
                   <p className="mini-map-num">127+</p>
@@ -484,15 +477,6 @@ export default function Home() {
           box-shadow: 0 20px 60px rgba(13, 10, 11, 0.08);
           background: white;
         }
-        .mini-map-loading {
-          height: 280px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--muted);
-          font-size: 0.85rem;
-          background: var(--warm);
-        }
         .mini-map-stats {
           display: flex;
           background: var(--teal-light);
@@ -515,10 +499,6 @@ export default function Home() {
           color: var(--muted);
           font-weight: 600;
           margin-top: 4px;
-        }
-
-        .showcase-visual :global(.shelters-map.compact) {
-          width: 100%;
         }
 
         .showcase-visual :global(.jennet-chat) {
