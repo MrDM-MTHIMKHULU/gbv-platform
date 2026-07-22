@@ -6,7 +6,6 @@ import { useTranslation } from 'next-i18next';
 import Layout from '../components/Layout';
 import JennetChat from '../components/JennetChat';
 import MythFactGame from '../components/MythFactGame';
-import ShelterMapPreview from '../components/ShelterMapPreview';
 import { supabase } from '../lib/supabaseClient';
 import { PROVINCES, NATIONAL_CASE_TYPES, NATIONAL_CASE_TYPES_TOTAL } from '../lib/gbvData';
 
@@ -160,18 +159,11 @@ export default function Home() {
             </Link>
           </div>
           <div className="showcase-visual">
-            <div className="mini-map-card">
-              <ShelterMapPreview />
-              <div className="mini-map-stats">
-                <div className="mini-map-stat">
-                  <p className="mini-map-num">127+</p>
-                  <p className="mini-map-label">verified shelters &amp; services</p>
-                </div>
-                <div className="mini-map-stat">
-                  <p className="mini-map-num">9</p>
-                  <p className="mini-map-label">provinces covered</p>
-                </div>
-              </div>
+            <div className="mini-map">
+              <p className="mini-map-num">127+</p>
+              <p className="mini-map-label">verified shelters &amp; services</p>
+              <p className="mini-map-num small">9</p>
+              <p className="mini-map-label">provinces covered</p>
             </div>
           </div>
         </div>
@@ -468,37 +460,28 @@ export default function Home() {
           justify-content: center;
         }
 
-        .mini-map-card {
-          width: 100%;
-          max-width: 440px;
-          border-radius: 16px;
-          overflow: hidden;
-          border: 1px solid var(--sand);
-          box-shadow: 0 20px 60px rgba(13, 10, 11, 0.08);
-          background: white;
-        }
-        .mini-map-stats {
-          display: flex;
+        .mini-map {
           background: var(--teal-light);
-        }
-        .mini-map-stat {
-          flex: 1;
+          border-radius: 16px;
+          padding: 40px;
+          width: 100%;
+          max-width: 400px;
           text-align: center;
-          padding: 18px 12px;
-        }
-        .mini-map-stat + .mini-map-stat {
-          border-left: 1px solid rgba(13, 10, 11, 0.08);
         }
         .mini-map-num {
-          font-size: 1.8rem;
+          font-size: 2.6rem;
           font-weight: 800;
           color: var(--ink);
         }
+        .mini-map-num.small {
+          font-size: 2rem;
+          margin-top: 20px;
+        }
         .mini-map-label {
-          font-size: 0.78rem;
+          font-size: 0.85rem;
           color: var(--muted);
           font-weight: 600;
-          margin-top: 4px;
+          margin-bottom: 6px;
         }
 
         .showcase-visual :global(.jennet-chat) {
