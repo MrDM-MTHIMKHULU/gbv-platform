@@ -139,7 +139,7 @@ export default function Layout({ children }) {
             <Link href="/about-abuse">{t('footer_about_abuse')}</Link>
             <Link href="/learn">Learning Hub</Link>
             <Link href="/insights">The data behind the crisis</Link>
-            <Link href="/">{t('footer_about')}</Link>
+            <Link href="/about-us">{t('footer_about')}</Link>
           </div>
         </div>
         <div className="footer-bottom">
