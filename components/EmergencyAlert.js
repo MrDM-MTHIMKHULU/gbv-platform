@@ -60,14 +60,29 @@ export default function EmergencyAlert({ initialContacts, senderName, onSaved })
 
       // Automatic email, sent from the server, no app opens
       try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (!session) {
+          setStatus('You need to be logged in to send an email alert.');
+          setLocating(false);
+          return;
+        }
+
         const res = await fetch('/api/send-alert', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
           body: JSON.stringify({ contactEmail, mapLink, senderName: name }),
         });
         const data = await res.json();
         if (data.sent) {
           setStatus('Alert sent.');
+        } else if (res.status === 429) {
+          setStatus('An alert was already sent recently. Please wait a few minutes before sending another.');
         } else {
           setStatus('Could not send the alert. Please try again.');
         }
