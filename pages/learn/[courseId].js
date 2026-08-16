@@ -1,3 +1,4 @@
+// pages/learn/[courseId].js
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -14,6 +15,7 @@ export default function CoursePage() {
   const [completed, setCompleted] = useState(new Set());
   const [activeLesson, setActiveLesson] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [goalsOpen, setGoalsOpen] = useState(true);
 
   const course = COURSES.find((c) => c.id === courseId);
 
@@ -63,9 +65,16 @@ export default function CoursePage() {
     );
   }
 
-  const lesson = course.lessons.find((l) => l.id === activeLesson) || course.lessons[0];
+  const lessonIndex = course.lessons.findIndex((l) => l.id === activeLesson);
+  const lesson = course.lessons[lessonIndex] || course.lessons[0];
   const isDone = completed.has(lesson.id);
   const doneCount = completed.size;
+  const isLastLesson = lessonIndex === course.lessons.length - 1;
+  const nextLesson = !isLastLesson ? course.lessons[lessonIndex + 1] : null;
+
+  const goToNext = () => {
+    if (nextLesson) setActiveLesson(nextLesson.id);
+  };
 
   return (
     <Layout>
@@ -88,22 +97,47 @@ export default function CoursePage() {
       </section>
 
       <section className="course-layout">
-        <aside className="lesson-list">
-          {course.lessons.map((l, i) => (
+        <aside className="sidebar">
+          {/* "Today's goals"-style widget */}
+          <div className="goals-card">
             <button
-              key={l.id}
-              className={`lesson-item ${activeLesson === l.id ? 'active' : ''}`}
-              onClick={() => setActiveLesson(l.id)}
+              className="goals-header"
+              onClick={() => setGoalsOpen((o) => !o)}
             >
-              <span className="lesson-num">
-                {completed.has(l.id) ? '✓' : i + 1}
-              </span>
-              <span>{l.title}</span>
+              <span>Your progress</span>
+              <span className={`chevron ${goalsOpen ? 'open' : ''}`}>▾</span>
             </button>
-          ))}
-          <p className="progress-summary">
-            {doneCount} of {course.lessons.length} complete
-          </p>
+            {goalsOpen && (
+              <div className="goals-body">
+                <p className="goals-line">
+                  {doneCount} of {course.lessons.length} lessons complete
+                </p>
+                <div className="goals-bar">
+                  <div
+                    className="goals-bar-fill"
+                    style={{
+                      width: `${(doneCount / course.lessons.length) * 100}%`,
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="lesson-list">
+            {course.lessons.map((l, i) => (
+              <button
+                key={l.id}
+                className={`lesson-item ${activeLesson === l.id ? 'active' : ''}`}
+                onClick={() => setActiveLesson(l.id)}
+              >
+                <span className="lesson-num">
+                  {completed.has(l.id) ? '✓' : i + 1}
+                </span>
+                <span>{l.title}</span>
+              </button>
+            ))}
+          </div>
         </aside>
 
         <div className="lesson-body">
@@ -112,13 +146,31 @@ export default function CoursePage() {
             <p key={i}>{para}</p>
           ))}
 
-          <button
-            className={`complete-btn ${isDone ? 'done' : ''}`}
-            onClick={() => markComplete(lesson.id)}
-            disabled={isDone || saving}
-          >
-            {isDone ? 'Completed' : 'Mark as complete'}
-          </button>
+          <div className="lesson-actions">
+            <button
+              className={`complete-btn ${isDone ? 'done' : ''}`}
+              onClick={() => markComplete(lesson.id)}
+              disabled={isDone || saving}
+            >
+              {isDone ? 'Completed' : 'Mark as complete'}
+            </button>
+
+            {nextLesson && (
+              <button
+                className="next-btn"
+                onClick={goToNext}
+                disabled={!isDone}
+              >
+                Go to next item →
+              </button>
+            )}
+
+            {isLastLesson && isDone && (
+              <Link href="/learn" className="finish-link">
+                Back to Learning Hub
+              </Link>
+            )}
+          </div>
         </div>
       </section>
 
@@ -167,6 +219,58 @@ export default function CoursePage() {
           grid-template-columns: 220px 1fr;
           gap: 40px;
         }
+
+        .sidebar {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .goals-card {
+          border: 1px solid var(--sand);
+          border-radius: 12px;
+          overflow: hidden;
+        }
+        .goals-header {
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: var(--blush);
+          border: none;
+          padding: 10px 14px;
+          font-size: 0.82rem;
+          font-weight: 700;
+          color: var(--ink);
+          cursor: pointer;
+        }
+        .chevron {
+          transition: transform 0.15s ease;
+        }
+        .chevron.open {
+          transform: rotate(180deg);
+        }
+        .goals-body {
+          padding: 12px 14px;
+        }
+        .goals-line {
+          font-size: 0.78rem;
+          color: var(--muted);
+          margin-bottom: 8px;
+        }
+        .goals-bar {
+          height: 6px;
+          background: var(--sand);
+          border-radius: 4px;
+          overflow: hidden;
+        }
+        .goals-bar-fill {
+          height: 100%;
+          background: var(--rose);
+          border-radius: 4px;
+          transition: width 0.2s ease;
+        }
+
         .lesson-list {
           display: flex;
           flex-direction: column;
@@ -206,12 +310,6 @@ export default function CoursePage() {
           background: var(--rose);
           color: white;
         }
-        .progress-summary {
-          font-size: 0.78rem;
-          color: var(--muted);
-          margin-top: 12px;
-          padding: 0 12px;
-        }
 
         .lesson-body h2 {
           font-size: 1.4rem;
@@ -225,6 +323,14 @@ export default function CoursePage() {
           color: var(--ink);
           margin-bottom: 16px;
         }
+
+        .lesson-actions {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          margin-top: 10px;
+          flex-wrap: wrap;
+        }
         .complete-btn {
           background: var(--rose);
           color: white;
@@ -234,7 +340,6 @@ export default function CoursePage() {
           font-weight: 700;
           font-size: 0.88rem;
           cursor: pointer;
-          margin-top: 10px;
         }
         .complete-btn.done {
           background: var(--teal);
@@ -243,14 +348,29 @@ export default function CoursePage() {
         .complete-btn:disabled {
           opacity: 0.7;
         }
+        .next-btn {
+          background: var(--ink);
+          color: white;
+          border: none;
+          padding: 12px 22px;
+          border-radius: 8px;
+          font-weight: 700;
+          font-size: 0.88rem;
+          cursor: pointer;
+        }
+        .next-btn:disabled {
+          opacity: 0.35;
+          cursor: not-allowed;
+        }
+        .finish-link {
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: var(--rose-deep);
+        }
 
         @media (max-width: 700px) {
           .course-layout {
             grid-template-columns: 1fr;
-          }
-          .lesson-list {
-            flex-direction: row;
-            flex-wrap: wrap;
           }
         }
       `}</style>
