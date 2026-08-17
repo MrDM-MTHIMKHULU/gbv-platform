@@ -1,10 +1,10 @@
-// pages/learn/[courseId].js
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Layout from '../../components/Layout';
+import LessonAudio from '../../components/LessonAudio';
 import { supabase } from '../../lib/supabaseClient';
 import { COURSES } from '../../lib/courseData';
 
@@ -98,7 +98,6 @@ export default function CoursePage() {
 
       <section className="course-layout">
         <aside className="sidebar">
-          {/* "Today's goals"-style widget */}
           <div className="goals-card">
             <button
               className="goals-header"
@@ -141,6 +140,8 @@ export default function CoursePage() {
         </aside>
 
         <div className="lesson-body">
+          <LessonAudio text={lesson.content} key={lesson.id} />
+
           <h2>{lesson.title}</h2>
           {lesson.content.split('\n\n').map((para, i) => (
             <p key={i}>{para}</p>
