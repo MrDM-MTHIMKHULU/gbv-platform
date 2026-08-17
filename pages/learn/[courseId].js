@@ -140,7 +140,10 @@ export default function CoursePage() {
         </aside>
 
         <div className="lesson-body">
-          <LessonAudio text={lesson.content} key={lesson.id} />
+          <LessonAudio
+            src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/lesson-audio/${course.id}/${lesson.id}.mp3`}
+            key={lesson.id}
+          />
 
           <h2>{lesson.title}</h2>
           {lesson.content.split('\n\n').map((para, i) => (
