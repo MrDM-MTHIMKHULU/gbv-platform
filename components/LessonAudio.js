@@ -1,140 +1,86 @@
 import { useEffect, useRef, useState } from 'react';
 
 const RATES = [0.75, 1, 1.25, 1.5];
-const WPM_AT_1X = 155;
 
-function splitSentences(text) {
-  return text
-    .replace(/\n+/g, ' ')
-    .split(/(?<=[.!?])\s+/)
-    .filter((s) => s.trim().length > 0);
-}
-
-export default function LessonAudio({ text }) {
-  const [supported, setSupported] = useState(true);
+export default function LessonAudio({ src }) {
+  const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
   const [rate, setRate] = useState(1);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [elapsedWords, setElapsedWords] = useState(0);
-
-  const utteranceRef = useRef(null);
-  const sentencesRef = useRef([]);
-  const cumulativeWordsRef = useRef([]);
-  const totalWordsRef = useRef(0);
+  const [current, setCurrent] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [errored, setErrored] = useState(false);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !window.speechSynthesis) {
-      setSupported(false);
-      return;
-    }
-    const sentences = splitSentences(text);
-    sentencesRef.current = sentences;
-    let running = 0;
-    cumulativeWordsRef.current = sentences.map((s) => {
-      const before = running;
-      running += s.split(/\s+/).length;
-      return before;
-    });
-    totalWordsRef.current = running;
-    setElapsedWords(0);
     setPlaying(false);
-    window.speechSynthesis.cancel();
-  }, [text]);
-
-  useEffect(() => {
-    return () => {
-      if (typeof window !== 'undefined' && window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, []);
-
-  const sentenceIndexFromWords = (words) => {
-    const cum = cumulativeWordsRef.current;
-    let idx = 0;
-    for (let i = 0; i < cum.length; i++) {
-      if (cum[i] <= words) idx = i;
+    setCurrent(0);
+    setDuration(0);
+    setErrored(false);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
     }
-    return idx;
-  };
-
-  const speakFrom = (words) => {
-    const synth = window.speechSynthesis;
-    synth.cancel();
-    const startIdx = sentenceIndexFromWords(words);
-    const remaining = sentencesRef.current.slice(startIdx).join(' ');
-    const u = new SpeechSynthesisUtterance(remaining);
-    u.rate = rate;
-    u.volume = muted ? 0 : 1;
-
-    let wordsInThisUtterance = 0;
-    const baseWords = cumulativeWordsRef.current[startIdx] || 0;
-
-    u.onboundary = (e) => {
-      if (e.name === 'word' || e.charIndex !== undefined) {
-        wordsInThisUtterance += 1;
-        setElapsedWords(baseWords + wordsInThisUtterance);
-      }
-    };
-    u.onend = () => {
-      setPlaying(false);
-      setElapsedWords(totalWordsRef.current);
-    };
-
-    utteranceRef.current = u;
-    synth.speak(u);
-    setPlaying(true);
-  };
+  }, [src]);
 
   const togglePlay = () => {
-    if (!supported) return;
+    const audio = audioRef.current;
+    if (!audio) return;
     if (playing) {
-      window.speechSynthesis.cancel();
-      setPlaying(false);
+      audio.pause();
     } else {
-      const startWords =
-        elapsedWords >= totalWordsRef.current - 1 ? 0 : elapsedWords;
-      speakFrom(startWords);
+      audio.play();
     }
   };
 
   const handleSeek = (e) => {
-    if (!supported) return;
+    const audio = audioRef.current;
+    if (!audio || !duration) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const pct = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
-    const targetWords = Math.round(pct * totalWordsRef.current);
-    setElapsedWords(targetWords);
-    if (playing) speakFrom(targetWords);
+    audio.currentTime = pct * duration;
+    setCurrent(audio.currentTime);
   };
 
   const changeRate = (r) => {
     setRate(r);
     setSettingsOpen(false);
-    if (playing) speakFrom(elapsedWords);
+    if (audioRef.current) audioRef.current.playbackRate = r;
   };
 
   const toggleMute = () => {
     setMuted((m) => !m);
-    if (playing) speakFrom(elapsedWords);
+    if (audioRef.current) audioRef.current.muted = !muted;
   };
 
-  if (!supported) return null;
+  if (errored) return null;
 
-  const totalWords = totalWordsRef.current || 1;
-  const pct = Math.min(100, (elapsedWords / totalWords) * 100);
-  const totalSec = Math.round((totalWords / WPM_AT_1X) * 60);
-  const elapsedSec = Math.round((elapsedWords / totalWords) * totalSec);
-  const fmt = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+  const pct = duration ? (current / duration) * 100 : 0;
+  const fmt = (s) => {
+    if (!isFinite(s)) return '0:00';
+    return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  };
 
   return (
     <div className="lesson-audio">
+      <audio
+        ref={audioRef}
+        src={src}
+        preload="metadata"
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+        onEnded={() => setPlaying(false)}
+        onTimeUpdate={(e) => setCurrent(e.currentTarget.currentTime)}
+        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+        onError={() => setErrored(true)}
+      />
+
       <button className="play-btn" onClick={togglePlay} aria-label={playing ? 'Pause' : 'Play'}>
         {playing ? '❚❚' : '▶'}
       </button>
 
       <span className="time">
-        {fmt(elapsedSec)} / {fmt(totalSec)}
+        {fmt(current)} / {fmt(duration)}
       </span>
 
       <div className="seek-track" onClick={handleSeek}>
